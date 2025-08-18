@@ -1,0 +1,26 @@
+# GWatch 监控工具配置文件
+redis:
+  addr: "172.235.216.169:6379"
+  password: ""
+  db: 0
+  timeout: 5s
+  pool_size: 5
+  min_idle_conns: 1
+  max_idle_conns: 3
+
+dingtalk:
+  webhook_url: "https://oapi.dingtalk.com/robot/send?access_token=bfd9580e7d49a959e986c7438bfa014ddb694b7b1a695fab1b46c7010b06ebad"
+  secret: "SEC0b0f0a3d4f43d1d21d0a66d0d4dbd6b5c16450266d49aadbae66d12fe97b22fa"
+  at_mobiles: ["19******502"]
+
+monitor:
+  interval: 3s
+  cpu_threshold: 80.0
+  memory_threshold: 70.0
+  disk_threshold: 80.0
+  redis_min_clients: 0
+  redis_max_clients: 10
+  alert_interval: 2m
+
+log:
+  debug: true
