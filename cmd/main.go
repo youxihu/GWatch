@@ -53,7 +53,7 @@ func main() {
 
 	// 立即执行第一次监控
 	metrics := monitor.CollectAndPrint()
-	alarm.CheckAlarmsWithMetrics(metrics)
+	alarm.CheckAlarmsWithMetrics(cfg, metrics)
 
 	// 然后开始定时监控
 	ticker := time.NewTicker(interval)
@@ -63,7 +63,7 @@ func main() {
 		select {
 		case <-ticker.C:
 			metrics := monitor.CollectAndPrint()
-			alarm.CheckAlarmsWithMetrics(metrics)
+			alarm.CheckAlarmsWithMetrics(cfg, metrics)
 		case <-c:
 			log.Println("\nGWatch 正在退出...")
 			log.Println("关闭Redis连接...")

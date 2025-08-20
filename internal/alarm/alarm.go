@@ -5,6 +5,7 @@ import (
 	"GWatch/internal/config"
 	"GWatch/internal/entity"
 	"GWatch/internal/monitor"
+	"GWatch/internal/utils"
 	"fmt"
 	"log"
 	"sync"
@@ -20,7 +21,7 @@ var (
 	mu             sync.RWMutex
 )
 
-// shouldTriggerAlert 判断是否连续超标 N 次才触发（用于根因分析）
+// shouldTriggerAlert 判断是否连续超标 N 次才触发
 func shouldTriggerAlert(alertType string, isAlarming bool, consecutive int) bool {
 	mu.Lock()
 	defer mu.Unlock()
@@ -94,13 +95,7 @@ func infoLog(format string, args ...interface{}) {
 }
 
 // CheckAlarmsWithMetrics 使用指定的监控指标检查告警
-func CheckAlarmsWithMetrics(metrics *entity.SystemMetrics) {
-	cfg := config.GetConfig()
-	if cfg == nil {
-		log.Printf("[WARNING] 配置未加载，无法进行告警检查")
-		return
-	}
-
+func CheckAlarmsWithMetrics(cfg *entity.Config, metrics *entity.SystemMetrics) {
 	var alerts []string
 	var alertTypes []string
 	var cpuDebug, memDebug, diskDebug, redisDebug, netDebug string
@@ -122,7 +117,6 @@ func CheckAlarmsWithMetrics(metrics *entity.SystemMetrics) {
 	} else if metrics.CPU.Percent > cfg.Monitor.CPUThreshold {
 		if shouldTriggerAlert(string(entity.CPUHigh), true, 3) {
 			if isAlertAllowed(string(entity.CPUHigh)) {
-				// 采集高占用进程
 				topCPU, _, err := monitor.GetTopProcesses(5)
 				var culprit string
 				if err == nil && len(topCPU) > 0 {
@@ -310,7 +304,6 @@ func CheckAlarmsWithMetrics(metrics *entity.SystemMetrics) {
 		// 完整监控指标
 		text += "### 完整监控指标\n\n"
 
-		// CPU
 		if metrics.CPU.Error != nil {
 			text += fmt.Sprintf("**CPU**: 监控失败 - %v\n\n", metrics.CPU.Error)
 		} else {
@@ -318,7 +311,6 @@ func CheckAlarmsWithMetrics(metrics *entity.SystemMetrics) {
 				metrics.CPU.Percent, getStatusText(metrics.CPU.Percent, cfg.Monitor.CPUThreshold))
 		}
 
-		// 内存
 		if metrics.Memory.Error != nil {
 			text += fmt.Sprintf("**内存**: 监控失败 - %v\n\n", metrics.Memory.Error)
 		} else {
@@ -327,7 +319,6 @@ func CheckAlarmsWithMetrics(metrics *entity.SystemMetrics) {
 				getStatusText(metrics.Memory.Percent, cfg.Monitor.MemoryThreshold))
 		}
 
-		// 磁盘
 		if metrics.Disk.Error != nil {
 			text += fmt.Sprintf("**磁盘**: 监控失败 - %v\n\n", metrics.Disk.Error)
 		} else {
@@ -336,7 +327,6 @@ func CheckAlarmsWithMetrics(metrics *entity.SystemMetrics) {
 				getStatusText(metrics.Disk.Percent, cfg.Monitor.DiskThreshold))
 		}
 
-		// Redis
 		if metrics.Redis.ConnectionError != nil {
 			text += fmt.Sprintf("**Redis**: 连接失败 - %v\n\n", metrics.Redis.ConnectionError)
 		} else {
@@ -344,7 +334,6 @@ func CheckAlarmsWithMetrics(metrics *entity.SystemMetrics) {
 				metrics.Redis.ClientCount, getRedisStatusText(metrics.Redis.ClientCount, cfg))
 		}
 
-		// 网络
 		if metrics.Network.Error != nil {
 			text += fmt.Sprintf("**网络**: 监控失败 - %v\n\n", metrics.Network.Error)
 		} else {
@@ -352,10 +341,26 @@ func CheckAlarmsWithMetrics(metrics *entity.SystemMetrics) {
 				metrics.Network.DownloadKBps, metrics.Network.UploadKBps)
 		}
 
-		// 添加时间戳
 		text += fmt.Sprintf("**监控时间**: %s\n\n", metrics.Timestamp.Format(time.DateTime))
 
-		// 发送
+		// === 是否需要触发 jmap？仅在 CPU 或内存高时 ===
+		shouldTriggerDump := false
+		for _, typ := range alertTypes {
+			if typ == string(entity.CPUHigh) || typ == string(entity.MemHigh) {
+				shouldTriggerDump = true
+				break
+			}
+		}
+
+		if shouldTriggerDump {
+			// 异步执行脚本，不阻塞通知
+			go utils.ExecuteJavaDumpScriptAsync(cfg.JavaAppDumpScript.Path)
+
+			// 在钉钉中提示“已触发”
+			text += "> 检测到高负载，已自动触发 Java 堆转储生成（异步执行中）...\n\n"
+		}
+
+		// 发送钉钉通知
 		err := dingtalk.SendDingDingNotification(
 			cfg.DingTalk.WebhookURL,
 			cfg.DingTalk.Secret,
@@ -372,7 +377,7 @@ func CheckAlarmsWithMetrics(metrics *entity.SystemMetrics) {
 	}
 }
 
-// getStatusText 根据阈值返回状态文本
+// 工具函数
 func getStatusText(value, threshold float64) string {
 	if value > threshold {
 		return "[异常]"
@@ -380,7 +385,6 @@ func getStatusText(value, threshold float64) string {
 	return "[正常]"
 }
 
-// getRedisStatusText 根据连接数返回状态文本
 func getRedisStatusText(count int, cfg *entity.Config) string {
 	if count < cfg.Monitor.RedisMinClients {
 		return "[连接数过低]"
@@ -390,7 +394,6 @@ func getRedisStatusText(count int, cfg *entity.Config) string {
 	return "[正常]"
 }
 
-// truncate 截断字符串
 func truncate(s string, length int) string {
 	if len(s) <= length {
 		return s

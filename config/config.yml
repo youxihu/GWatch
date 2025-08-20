@@ -24,3 +24,6 @@ monitor:
 
 log:
   debug: true
+
+javaAppDumpScript:
+  path: /home/youxihu/hk_video/createJavaMapDump.sh

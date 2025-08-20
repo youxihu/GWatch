@@ -5,14 +5,18 @@ import "time"
 
 // Config 总配置结构
 type Config struct {
-	Redis    RedisConfig    `yaml:"redis"`
-	DingTalk DingTalkConfig `yaml:"dingtalk"`
-	Monitor  MonitorConfig  `yaml:"monitor"`
-	Log      LogConfig      `yaml:"log" json:"log"` // 新增
+	Redis             RedisConfig       `yaml:"redis"`
+	DingTalk          DingTalkConfig    `yaml:"dingtalk"`
+	Monitor           MonitorConfig     `yaml:"monitor"`
+	Log               LogConfig         `yaml:"log"`
+	JavaAppDumpScript JavaAppDumpScript `yaml:"javaAppDumpScript"`
 }
 
 type LogConfig struct {
 	Debug bool `yaml:"debug" json:"debug"`
+}
+type JavaAppDumpScript struct {
+	Path string `yaml:"path"`
 }
 
 // RedisConfig Redis连接配置

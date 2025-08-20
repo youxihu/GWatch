@@ -2,17 +2,8 @@
 package monitor
 
 import (
-	"time"
-
 	"github.com/shirou/gopsutil/v3/cpu"
 )
-
-var lastCPUSample []float64
-var lastSampleTime time.Time
-
-func init() {
-	lastSampleTime = time.Now()
-}
 
 // GetCPUPercent 获取 CPU 使用率（平均）
 func GetCPUPercent() (float64, error) {
