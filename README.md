@@ -1,129 +1,104 @@
-# GWatch - 轻量级服务器监控工具
+# GWatch
 
-GWatch 是一个用 Go 语言编写的服务器监控工具，可以实时监控服务器的 CPU、内存、磁盘、网络和 Redis 连接状态，并通过钉钉机器人发送告警通知。
+基于 DDD（领域驱动设计）的轻量监控告警工具。按间隔采集主机与服务（Redis）指标，阈值判断 + 防抖/连续计数策略，通过钉钉发送告警；CPU/内存告警时异步触发 Java 堆转储脚本用于定位。
 
-## 功能特性
-
-### 📊 监控指标
-- **CPU 使用率**: 实时监控 CPU 使用率
-- **内存使用率**: 监控内存使用情况和总量
-- **磁盘使用率**: 监控根目录磁盘使用情况
-- **网络状态**: 监控网络上传/下载速率
-- **Redis 连接**: 监控 Redis 连接数和连接详情
-
-### 🔔 告警功能
-- **阈值告警**: 支持自定义各指标阈值
-- **钉钉通知**: 通过钉钉机器人发送告警消息
-- **防抖机制**: 同类告警 30 分钟内不重复发送
-- **完整报告**: 每次告警都包含所有监控指标的完整状态
-
-### ⚙️ 配置参数
-- **CPU 阈值**: 80% (可配置)
-- **内存阈值**: 70% (可配置)
-- **磁盘阈值**: 80% (可配置)
-- **Redis 连接数**: 5-10 个 (可配置)
-- **监控间隔**: 3 秒 (可配置)
-
-使用 Makefile：
-```bash
+### 运行
+```
 make run
 ```
+构建：`make build`
 
-## 监控输出示例
+### 配置
+编辑 `config/config.yml`：
+- monitor: interval、cpu_threshold、memory_threshold、disk_threshold、redis_min_clients、redis_max_clients、alert_interval
+- redis: 连接参数
+- dingtalk: webhook、secret、at_mobiles
+- javaAppDumpScript.path: dump 脚本路径
 
-```
-🚀 GWatch 启动：服务器巡检工具
-按 Ctrl+C 退出
-✅ Redis 连接成功: 192.168.1.218:6379
-📡 开始监控...
-⏰ 监控间隔: 3s
-🔔 报警阈值:
-   CPU: 80.0% | 内存: 70.0% | 磁盘: 80.0%
-   Redis连接数: 5-10
+---
 
---- 📡 系统状态 ---
-📊 CPU 使用率: 15.23%
-🧠 内存使用: 45.67% (8192/16384 MB)
-💾 磁盘使用: 65.43% (120/200 GB)
-🌐 网络波动: ↓ 125.67 KB/s | ↑ 89.34 KB/s
+## 架构与代码逻辑
 
---- 🗄️ Redis 状态 ---
-当前连接数: 8
-ID=1 Addr=192.168.1.100:54321 Age=3600 Idle=5 Flags=N DB=0 CMD=GET
-ID=2 Addr=192.168.1.101:12345 Age=1800 Idle=10 Flags=N DB=1 CMD=SET
-连接池状态: TotalConns=10 IdleConns=2 StaleConns=0
-```
+### 分层
+- domain：领域接口与实体，稳定抽象
+  - collector：主机与服务采集接口（`HostCollector`、`RedisCollector`）
+  - monitor：阈值判断接口（`Evaluator`，只做比较，不含策略/消息）
+  - alert：策略接口（`Policy`）、格式化接口（`Formatter`）、`TriggeredAlert`
+  - config：配置提供者接口（`Provider`）
+  - notifier：通知接口（`Notifier`）
+- infra：基础设施实现
+  - collectors/host：gopsutil 实现 CPU/内存/磁盘/网络速率、TopN 进程
+  - collectors/service：go-redis 实现连接数/详情（排除自连）
+  - monitor：`SimpleEvaluator` 纯阈值比较
+  - alert：`StatefulPolicy`（防抖+CPU/内存连续3次）、`MarkdownFormatter`
+  - notifier：`DingTalkNotifier`
+  - config：`YAMLProvider` 从 `config.yml` 加载配置
+- app：应用编排
+  - runtime.Runner：采集 → 阈值判断 → 策略 → 格式化 → 发送；同时在 CPU/内存告警时触发 dump 脚本并在通知中提示
+- cmd：程序入口，加载配置、组装依赖、按 `interval` 定时执行
 
-## 告警消息示例
+### 指标与采集
+- 主机（HostCollector）
+  - CPU 平均占用率
+  - 内存使用率、已用/总量（MB）
+  - 磁盘使用率（根分区），已用/总量（GB）
+  - 网络速率（KB/s）：首轮为基线 0，之后按差值计算
+  - TopN 进程（CPU/内存），用于“元凶进程”定位
+- Redis（RedisCollector）
+  - 连接数（排除监控自有连接）
+  - 连接详情（排除监控自有连接）
 
-当触发告警时，钉钉会收到包含以下信息的消息：
+### 阈值判断与策略
+- monitor.Evaluator（领域）：仅输出“决策”
+- alert.StatefulPolicy（基础设施）：
+  - 防抖：同类告警间隔 `alert_interval`
+  - 连续计数：CPUHigh、MemHigh 连续 3 次超阈值才触发
+  - 日志：输出第几次不告警/第几次触发，方便观测
 
-### 🚨 触发告警
-- 🚨 CPU 使用率过高: 85.67%
-- 🟡 Redis 连接数过低: 3 (阈值: 5)
+### 消息格式化与通知
+- MarkdownFormatter：
+  - “触发告警项”中包含每条的详细消息
+  - CPU/内存告警会带“元凶进程”（进程名、PID、占用）
+  - 完整监控指标：CPU/内存/磁盘/网络/Redis + 监控时间
+  - 若触发 CPU/内存告警：追加“已自动触发 Java 堆转储生成（异步执行中）...”
+- DingTalkNotifier：发送 Markdown 消息
 
-### 📊 完整监控指标
-- **CPU**: 85.67% 🔴
-- **内存**: 45.23% (8192/16384 MB) 🟢
-- **磁盘**: 65.43% (120/200 GB) 🟢
-- **网络**: ↓ 125.67 KB/s | ↑ 89.34 KB/s
-- **Redis**: 3 个连接 🟡
+### Dump 脚本
+- 触发时机：当告警类型包含 CPUHigh 或 MemHigh
+- 执行方式：`utils.ExecuteJavaDumpScriptAsync` 异步执行，5 分钟超时，日志输出结果（success/file_exist/failed/timeout）
+- 报告呈现：当前通知中包含“已触发 dump”的提示；脚本结果写日志
+- 可选扩展：如需“将最近一次脚本结果呈现在后续通知里”，可在应用层缓存最近结果（内存或文件），在 Formatter 中追加展示（保持现有接口不变）
 
-### 🔍 Redis 当前连接详情
-| ID | IP:端口 | 空闲(s) | 命令 | 标志 |
-|----|--------|--------|------|------|
-| 1 | 192.168.1.100:54321 | 5 | GET | N |
-| 2 | 192.168.1.101:12345 | 10 | SET | N |
+---
 
-## 项目结构
+## 入口与编排
+入口：`cmd/main.go`
+1. `configimpl.NewYAMLProvider("config/config.yml")` 加载配置
+2. 组装：HostCollector + RedisCollector(provider) + SimpleEvaluator + StatefulPolicy + MarkdownFormatter + DingTalkNotifier(provider)
+3. `runtime.Runner` 按 `interval` 定时：
+   - `CollectOnce()` 采集
+   - `EvaluateAndNotify()` 执行判断/策略/格式化/发送
+   - `PrintMetrics()` 简要打印一行 CPU/内存/磁盘/网络/Redis（用于观察节奏与网络）
 
-```
-GWatch/
-├── cmd/
-│   └── main.go              # 主程序入口
-├── internal/
-│   ├── alarm/
-│   │   └── alarm.go         # 告警逻辑
-│   └── monitor/
-│       ├── config.go        # 配置管理
-│       ├── cpu.go           # CPU 监控
-│       ├── disk.go          # 磁盘监控
-│       ├── memory.go        # 内存监控
-│       ├── monitor.go       # 监控主模块
-│       ├── network.go       # 网络监控
-│       └── redis.go         # Redis 监控
-├── go.mod                   # Go 模块文件
-├── go.sum                   # 依赖校验文件
-├── Makefile                 # 构建脚本
-└── README.md               # 项目说明
-```
+---
 
-## 依赖库
+## 运行日志与观测
+- 启动信息、阈值、间隔
+- 每轮采集的关键指标打印
+- 策略日志：第 N/3 次暂不告警、达到 N 次触发等
+- dump 脚本执行结果在日志中输出
 
-- `github.com/go-redis/redis/v8` - Redis 客户端
-- `github.com/shirou/gopsutil/v3` - 系统监控
-- `github.com/youxihu/dingtalk` - 钉钉机器人
+---
 
-## 注意事项
+## 常见问题
+- 首次网络速率为 0？用于基线初始化，后续才有波动值
+- CPU/内存告警为何要 3 次？避免瞬时尖峰误报（可修改策略实现）
+- Redis 为什么只初始化一次？减少连接与性能开销
 
-1. **Redis 连接**: 确保 Redis 服务正在运行且连接参数正确
-2. **权限要求**: 程序需要读取系统信息的权限
-3. **网络访问**: 需要能够访问钉钉 API
-4. **资源消耗**: 监控间隔不宜设置过短，建议 3-10 秒
+---
 
-## 故障排除
+## 扩展建议
+- 在通知中追加“最近一次 dump 结果”：应用层缓存最近结果并在 Formatter 展示
+- 新服务采集：在 domain/collector 增口，infra/collectors 实现，Runner 注入
+- 新通知渠道：在 domain/notifier 保持接口，infra/notifier 新实现
 
-### Redis 连接失败
-- 检查 Redis 服务是否运行
-- 验证连接地址和密码
-- 确认网络连通性
-
-### 监控数据异常
-- 检查程序运行权限
-- 确认系统支持相关监控接口
-- 查看错误日志
-
-### 钉钉通知失败
-- 验证 Webhook URL 和 Secret
-- 检查网络连接
-- 确认手机号格式正确

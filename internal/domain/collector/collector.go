@@ -1,0 +1,27 @@
+package collector
+
+import "GWatch/internal/entity"
+
+// HostCollector defines capabilities for collecting host-level metrics.
+type HostCollector interface {
+	GetCPUPercent() (float64, error)
+	GetMemoryUsage() (float64, uint64, uint64, error)
+	GetDiskUsage() (float64, uint64, uint64, error)
+	GetNetworkRate() (float64, float64, error)
+	// GetTopProcesses returns top N processes by CPU and Memory
+	GetTopProcesses(n int) ([]entity.ProcessInfo, []entity.ProcessInfo, error)
+}
+
+// RedisCollector defines capabilities for collecting Redis service metrics.
+type RedisCollector interface {
+	// Init prepares underlying connections according to global config.
+	Init() error
+	// GetClients returns number of client connections (excluding self when possible).
+	GetClients() (int, error)
+	// GetClientsDetail returns detailed client list (excluding self when possible).
+	GetClientsDetail() ([]entity.ClientInfo, error)
+	// Close releases resources.
+	Close()
+}
+
+
