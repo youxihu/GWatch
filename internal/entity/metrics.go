@@ -1,4 +1,4 @@
-// internal/entity/metrics.go
+// Package entity internal/entity/metrics.go
 package entity
 
 import "time"
@@ -44,19 +44,19 @@ type NetworkMetrics struct {
 
 // RedisMetrics Redis指标
 type RedisMetrics struct {
-	ClientCount    int
-	ClientDetails  []ClientInfo
+	ClientCount     int
+	ClientDetails   []ClientInfo
 	ConnectionError error
-	DetailError    error
+	DetailError     error
 }
 
 // ClientInfo Redis客户端信息
 type ClientInfo struct {
-	ID   string
-	Addr string
-	Age  string
-	Idle string
+	ID    string
+	Addr  string
+	Age   string
+	Idle  string
 	Flags string
-	Db   string
-	Cmd  string
-} 
+	Db    string
+	Cmd   string
+}

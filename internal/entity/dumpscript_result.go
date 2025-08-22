@@ -1,4 +1,4 @@
-// internal/entity/script_result.go
+// Package entity internal/entity/script_result.go
 package entity
 
 // ScriptResult 脚本返回结果类型

@@ -29,5 +29,5 @@ func NewYAMLProvider(path string) (*YAMLProvider, error) {
 
 func (p *YAMLProvider) GetConfig() *entity.Config { return p.cfg }
 
-// 确保实现了领域接口
+// 实现领域接口
 var _ domain.Provider = (*YAMLProvider)(nil)

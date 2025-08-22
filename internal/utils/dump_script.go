@@ -1,4 +1,4 @@
-// internal/utils/dump_script.go
+// Package utils internal/utils/dump_script.go
 package utils
 
 import (

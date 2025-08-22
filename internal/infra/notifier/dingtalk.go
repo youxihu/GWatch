@@ -7,7 +7,7 @@ import (
 	"github.com/youxihu/dingtalk/dingtalk"
 )
 
-// DingTalkNotifier implements Notifier using youxihu/dingtalk.
+// DingTalkNotifier implements Notifier using YouXiHu/dingtalk.
 type DingTalkNotifier struct{ provider domaincfg.Provider }
 
 func NewDingTalkNotifier(p domaincfg.Provider) notifier.Notifier {

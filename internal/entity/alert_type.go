@@ -1,4 +1,4 @@
-// internal/entity/alert_type.go
+// Package entity internal/entity/alert_type.go
 package entity
 
 type AlertType string
@@ -15,9 +15,10 @@ const (
 	RedisLow   AlertType = "redis_low"     // Redis连接数过低
 	RedisErr   AlertType = "redis_error"   // Redis连接异常
 	NetworkErr AlertType = "network_error" // 网络监控失败
+	Info       AlertType = "info"
 )
 
-// 告警类型中文描述映射表
+// AlertTypeText 告警类型中文描述映射表
 var AlertTypeText = map[AlertType]string{
 	CPUHigh:    "CPU 使用率过高",
 	CPUErr:     "CPU 监控失败",
@@ -29,9 +30,10 @@ var AlertTypeText = map[AlertType]string{
 	RedisLow:   "Redis 连接数过低",
 	RedisErr:   "Redis 连接异常",
 	NetworkErr: "网络监控失败",
+	Info:       "系统提示信息",
 }
 
-// 是否需要“连续超标”才触发的类型（用于 shouldTriggerAlert）
+// AlertTypeRequiresConsecutive 是否需要“连续超标”才触发的类型（用于 shouldTriggerAlert）
 var AlertTypeRequiresConsecutive = map[AlertType]bool{
 	CPUHigh: true,
 	MemHigh: true,

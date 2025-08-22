@@ -1,4 +1,4 @@
-// internal/entity/config.go
+// Package entity internal/entity/config.go
 package entity
 
 import "time"
