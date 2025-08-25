@@ -50,3 +50,18 @@ func ExecuteJavaDumpScriptAsync(scriptPath string) {
 		log.Printf("脚本返回未知结果: %s", result)
 	}
 }
+
+// ExecuteJavaDumpScriptResult 同步执行 jmap 脚本（带超时），返回原始输出
+func ExecuteJavaDumpScriptResult(scriptPath string, timeout time.Duration) (string, error) {
+    if scriptPath == "" {
+        return "", nil
+    }
+    ctx, cancel := context.WithTimeout(context.Background(), timeout)
+    defer cancel()
+    cmd := exec.CommandContext(ctx, "/bin/bash", scriptPath)
+    output, err := cmd.CombinedOutput()
+    if ctx.Err() == context.DeadlineExceeded {
+        return "", context.DeadlineExceeded
+    }
+    return strings.TrimSpace(string(output)), err
+}

@@ -7,6 +7,7 @@ import (
 	"GWatch/internal/entity"
 	"GWatch/internal/utils"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -96,7 +97,7 @@ func (uc *MonitoringUseCase) EvaluateAndNotify(cfg *entity.Config, m *entity.Sys
 	}
 
 	var alerts []domainAlert.TriggeredAlert
-	dumpTriggered := false
+	dumpTriggeredAsync := false // 变量名改得更清晰
 
 	for _, t := range alertTypes {
 		msg := t.String()
@@ -118,17 +119,45 @@ func (uc *MonitoringUseCase) EvaluateAndNotify(cfg *entity.Config, m *entity.Sys
 					)
 				}
 			}
-			go utils.ExecuteJavaDumpScriptAsync(cfg.JavaAppDumpScript.Path)
-			dumpTriggered = true
+
+			// 执行脚本并等待最多 3 秒
+			done := make(chan struct{}, 1)
+			var result string
+			go func() {
+				r, err := utils.ExecuteJavaDumpScriptResult(cfg.JavaAppDumpScript.Path, 3*time.Second)
+				if err == nil {
+					result = r
+				}
+				done <- struct{}{}
+			}()
+
+			select {
+			case <-done:
+				// 同步执行完成，根据结果附加信息
+				if strings.Contains(result, "file_exist") {
+					msg = msg + "（提示：堆转储文件已存在，跳过生成）"
+				} else if strings.Contains(result, "failed") {
+					msg = msg + "（提示：Java堆转储生成失败）"
+				} else if strings.Contains(result, "success") {
+					msg = msg + "（提示：已生成 Java 堆转储）"
+				} else if result != "" {
+					msg = msg + "（提示：" + result + ")"
+				}
+			case <-time.After(3 * time.Second):
+				// 超时，转为异步执行
+				go utils.ExecuteJavaDumpScriptAsync(cfg.JavaAppDumpScript.Path)
+				dumpTriggeredAsync = true // <<-- **只在这里设置标志位**
+			}
 		}
 
 		alerts = append(alerts, domainAlert.TriggeredAlert{Type: t, Message: msg})
 	}
 
-	if dumpTriggered {
+	// 只有在真正超时后，才添加异步执行的提示
+	if dumpTriggeredAsync {
 		alerts = append(alerts, domainAlert.TriggeredAlert{
 			Type:    entity.Info,
-			Message: "检测到高负载，已自动触发 Java 堆转储生成（异步执行中）...",
+			Message: "检测到高负载，已自动触发 Java 堆转储生成（异步执行中）...", // <<-- 提示信息更准确
 		})
 	}
 
