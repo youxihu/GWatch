@@ -135,13 +135,13 @@ func (uc *MonitoringUseCase) EvaluateAndNotify(cfg *entity.Config, m *entity.Sys
 			case <-done:
 				// 同步执行完成，根据结果附加信息
 				if strings.Contains(result, "file_exist") {
-					msg = msg + "（提示：堆转储文件已存在，跳过生成）"
+					msg += "\n\n> 提示：堆转储文件已存在，跳过生成"
 				} else if strings.Contains(result, "failed") {
-					msg = msg + "（提示：Java堆转储生成失败）"
+					msg += "\n\n> 提示：Java堆转储生成失败"
 				} else if strings.Contains(result, "success") {
-					msg = msg + "（提示：已生成 Java 堆转储）"
+					msg += "\n\n> 提示：已生成 Java 堆转储"
 				} else if result != "" {
-					msg = msg + "（提示：" + result + ")"
+					msg += "\n\n> 提示：" + result + ""
 				}
 			case <-time.After(3 * time.Second):
 				// 超时，转为异步执行
