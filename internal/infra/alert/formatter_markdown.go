@@ -50,6 +50,23 @@ func (f *MarkdownFormatter) Build(title string, cfg *entity.Config, m *entity.Sy
 		text += fmt.Sprintf("**网络IO**: 下载 %.2f KB/s | 上传 %.2f KB/s\n\n", m.Network.DownloadKBps, m.Network.UploadKBps)
 	}
 	text += fmt.Sprintf("**磁盘IO**: 读 %.2f KB/s | 写 %.2f KB/s\n\n", m.Disk.ReadKBps, m.Disk.WriteKBps)
+	// 添加HTTP接口监控信息
+	if m.HTTP.Error != nil {
+		text += fmt.Sprintf("**HTTP接口**: 监控失败 - %v\n\n", m.HTTP.Error)
+	} else if len(m.HTTP.Interfaces) > 0 {
+		text += "**HTTP接口**:\n\n"
+		for _, httpInterface := range m.HTTP.Interfaces {
+			if httpInterface.IsAccessible {
+				text += fmt.Sprintf("- %s: 正常 (状态码: %d, 响应时间: %v)\n",
+					httpInterface.Name, httpInterface.StatusCode, httpInterface.ResponseTime)
+			} else {
+				text += fmt.Sprintf("- %s: 异常 (状态码: %d) - %v\n",
+					httpInterface.Name, httpInterface.StatusCode, httpInterface.Error)
+			}
+		}
+		text += "\n"
+	}
+
 	text += fmt.Sprintf("**监控时间**: %s\n\n", m.Timestamp.Format(time.DateTime))
 	return text
 }

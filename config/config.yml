@@ -21,6 +21,11 @@ monitor:
   redis_min_clients: 0
   redis_max_clients: 10
   alert_interval: 2m
+  http_error_threshold: 0  # HTTP接口异常数量阈值
+  http_interfaces:
+    - name: "VMS系统登录页验证码接口"
+      url: "https://vms.kumshingapps.com/prod-api/captchaImage"
+      timeout: 10s
 
 log:
   debug: true

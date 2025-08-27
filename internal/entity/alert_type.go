@@ -16,6 +16,7 @@ const (
 	RedisLow   AlertType = "redis_low"     // Redis连接数过低
 	RedisErr   AlertType = "redis_error"   // Redis连接异常
 	NetworkErr AlertType = "network_error" // 网络监控失败
+	HTTPErr    AlertType = "http_error"    // HTTP接口监控失败
 	Info       AlertType = "info"
 )
 
@@ -33,6 +34,7 @@ var AlertTypeText = map[AlertType]string{
 	RedisLow:   "Redis 连接数过低",
 	RedisErr:   "Redis 连接异常",
 	NetworkErr: "网络监控失败",
+	HTTPErr:    "HTTP接口监控失败",
 	Info:       "系统提示信息",
 }
 
@@ -51,6 +53,7 @@ var AlertTypeRequiresConsecutive = map[AlertType]bool{
 	RedisLow:   false,
 	RedisErr:   false,
 	NetworkErr: false,
+	HTTPErr:    false,
 }
 
 // 获取告警中文名

@@ -15,11 +15,13 @@ import (
 type MonitoringUseCase struct {
 	host        collector.HostCollector
 	redis       RedisClient
+	http        collector.HTTPCollector
 	evaluator   domainMonitor.Evaluator
 	policy      domainAlert.Policy
 	formatter   domainAlert.Formatter
 	notifier    Notifier
 	redisInited bool
+	httpInited  bool
 }
 
 // RedisClient 是 redis 操作接口
@@ -38,6 +40,7 @@ type Notifier interface {
 func NewMonitoringUseCase(
 	host collector.HostCollector,
 	redis RedisClient,
+	http collector.HTTPCollector,
 	evaluator domainMonitor.Evaluator,
 	policy domainAlert.Policy,
 	formatter domainAlert.Formatter,
@@ -46,6 +49,7 @@ func NewMonitoringUseCase(
 	return &MonitoringUseCase{
 		host:      host,
 		redis:     redis,
+		http:      http,
 		evaluator: evaluator,
 		policy:    policy,
 		formatter: formatter,
@@ -56,7 +60,7 @@ func NewMonitoringUseCase(
 // Run 执行一次完整的监控流程
 func (uc *MonitoringUseCase) Run(cfg *entity.Config) error {
 	// 1. 采集指标
-	metrics := uc.CollectOnce()
+	metrics := uc.CollectOnce(cfg)
 
 	// 2. 打印采集结果（可选，用于本地观察）
 	uc.PrintMetrics(metrics)
@@ -65,7 +69,7 @@ func (uc *MonitoringUseCase) Run(cfg *entity.Config) error {
 	return uc.EvaluateAndNotify(cfg, metrics)
 }
 
-func (uc *MonitoringUseCase) CollectOnce() *entity.SystemMetrics {
+func (uc *MonitoringUseCase) CollectOnce(cfg *entity.Config) *entity.SystemMetrics {
 	m := &entity.SystemMetrics{Timestamp: time.Now()}
 
 	m.CPU.Percent, m.CPU.Error = uc.host.GetCPUPercent()
@@ -85,6 +89,35 @@ func (uc *MonitoringUseCase) CollectOnce() *entity.SystemMetrics {
 	if uc.redisInited {
 		m.Redis.ClientCount, m.Redis.ConnectionError = uc.redis.GetClients()
 		m.Redis.ClientDetails, m.Redis.DetailError = uc.redis.GetClientsDetail()
+	}
+
+	// 收集HTTP接口监控指标
+	if !uc.httpInited {
+		if err := uc.http.Init(); err != nil {
+			m.HTTP.Error = err
+		} else {
+			uc.httpInited = true
+		}
+	}
+
+	if uc.httpInited {
+		// 从配置中获取HTTP接口列表进行监控
+		var httpInterfaces []entity.HTTPInterfaceMetrics
+		if cfg != nil && cfg.Monitor.HTTPInterfaces != nil {
+			for _, httpConfig := range cfg.Monitor.HTTPInterfaces {
+				isAccessible, responseTime, statusCode, err := uc.http.CheckInterface(httpConfig.URL, httpConfig.Timeout)
+
+				httpInterfaces = append(httpInterfaces, entity.HTTPInterfaceMetrics{
+					Name:         httpConfig.Name,
+					URL:          httpConfig.URL,
+					IsAccessible: isAccessible,
+					ResponseTime: responseTime,
+					StatusCode:   statusCode,
+					Error:        err,
+				})
+			}
+		}
+		m.HTTP.Interfaces = httpInterfaces
 	}
 
 	return m
@@ -197,6 +230,21 @@ func (uc *MonitoringUseCase) PrintMetrics(m *entity.SystemMetrics) {
 		fmt.Printf("网络: 下载 %.2f KB/s | 上传 %.2f KB/s\n", m.Network.DownloadKBps, m.Network.UploadKBps)
 	}
 	fmt.Printf("磁盘IO: 读 %.2f KB/s | 写 %.2f KB/s\n", m.Disk.ReadKBps, m.Disk.WriteKBps)
+
+	// 打印HTTP接口监控信息
+	if m.HTTP.Error != nil {
+		fmt.Println("HTTP接口监控失败:", m.HTTP.Error.Error())
+	} else {
+		for _, httpInterface := range m.HTTP.Interfaces {
+			if httpInterface.IsAccessible {
+				fmt.Printf("HTTP接口 %s: 正常 (状态码: %d, 响应时间: %v)\n",
+					httpInterface.Name, httpInterface.StatusCode, httpInterface.ResponseTime)
+			} else {
+				fmt.Printf("HTTP接口 %s: 异常 (状态码: %d) - %v\n",
+					httpInterface.Name, httpInterface.StatusCode, httpInterface.Error)
+			}
+		}
+	}
 
 	fmt.Printf("监控时间: %s\n", now.Format(time.DateTime))
 }

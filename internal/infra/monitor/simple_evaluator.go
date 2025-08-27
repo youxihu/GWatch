@@ -45,6 +45,24 @@ func (s *SimpleEvaluator) Evaluate(cfg *entity.Config, metrics *entity.SystemMet
         decisions = append(decisions, domainMonitor.Decision{Type: entity.NetworkErr})
     }
 
+	// 检查HTTP接口监控
+	if metrics.HTTP.Error != nil {
+		decisions = append(decisions, domainMonitor.Decision{Type: entity.HTTPErr})
+	} else {
+		// 统计异常接口数量
+		errorCount := 0
+		for _, httpInterface := range metrics.HTTP.Interfaces {
+			if !httpInterface.IsAccessible {
+				errorCount++
+			}
+		}
+		
+		// 如果异常数量超过配置阈值，触发告警
+		if errorCount > cfg.Monitor.HTTPErrorThreshold {
+			decisions = append(decisions, domainMonitor.Decision{Type: entity.HTTPErr})
+		}
+	}
+
     return decisions, nil
 }
 

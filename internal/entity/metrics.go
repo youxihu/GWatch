@@ -11,6 +11,7 @@ type SystemMetrics struct {
 	Disk      DiskMetrics
 	Network   NetworkMetrics
 	Redis     RedisMetrics
+	HTTP      HTTPMetrics
 }
 
 // CPUMetrics CPU指标
@@ -61,4 +62,20 @@ type ClientInfo struct {
 	Flags string
 	Db    string
 	Cmd   string
+}
+
+// HTTPMetrics HTTP接口监控指标
+type HTTPMetrics struct {
+	Interfaces []HTTPInterfaceMetrics
+	Error      error
+}
+
+// HTTPInterfaceMetrics 单个HTTP接口监控指标
+type HTTPInterfaceMetrics struct {
+	Name         string
+	URL          string
+	IsAccessible bool
+	ResponseTime time.Duration
+	StatusCode   int
+	Error        error
 }

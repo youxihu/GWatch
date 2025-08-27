@@ -1,6 +1,9 @@
 package collector
 
-import "GWatch/internal/entity"
+import (
+	"GWatch/internal/entity"
+	"time"
+)
 
 // HostCollector defines capabilities for collecting host-level metrics.
 type HostCollector interface {
@@ -21,6 +24,16 @@ type RedisCollector interface {
 	GetClients() (int, error)
 	// GetClientsDetail returns detailed client list (excluding self when possible).
 	GetClientsDetail() ([]entity.ClientInfo, error)
+	// Close releases resources.
+	Close()
+}
+
+// HTTPCollector defines capabilities for collecting HTTP interface monitoring metrics.
+type HTTPCollector interface {
+	// Init prepares underlying HTTP client according to global config.
+	Init() error
+	// CheckInterface checks if a specific HTTP interface is accessible and returns response time and status code.
+	CheckInterface(url string, timeout time.Duration) (bool, time.Duration, int, error)
 	// Close releases resources.
 	Close()
 }

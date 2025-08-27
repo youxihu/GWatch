@@ -40,6 +40,7 @@ func main() {
 	// 创建 infra 实现
 	hostInfo := hostCollector.New()
 	redisInfo := redisCollector.NewRedisCollector(provider)
+	httpInfo := redisCollector.NewHTTPCollector(provider)
 	evaluator := evaluatorImpl.NewSimpleEvaluator()
 	policy := policyImpl.NewStatefulPolicy()
 	formatter := formatterImpl.NewMarkdownFormatter()
@@ -49,6 +50,7 @@ func main() {
 	runner := usecase.NewMonitoringUseCase(
 		hostInfo,
 		redisInfo,
+		httpInfo,
 		evaluator,
 		policy,
 		formatter,
@@ -57,13 +59,17 @@ func main() {
 
 	log.Println("开始监控...")
 	log.Println("监控间隔:", interval)
-	log.Printf("报警阈值: CPU: %.1f%% | 内存: %.1f%% | 磁盘: %.1f%% | Redis连接数: %d-%d\n",
+		
+	log.Printf("报警阈值: CPU: %.1f%% | 内存: %.1f%% | 磁盘: %.1f%% | Redis连接数: %d-%d | HTTP接口异常阈值: %d\n",
 		cfg.Monitor.CPUThreshold, cfg.Monitor.MemoryThreshold, cfg.Monitor.DiskThreshold,
-		cfg.Monitor.RedisMinClients, cfg.Monitor.RedisMaxClients)
+		cfg.Monitor.RedisMinClients, cfg.Monitor.RedisMaxClients, cfg.Monitor.HTTPErrorThreshold)
 
 	// 立即执行一次
-	metrics := runner.CollectOnce()
+	metrics := runner.CollectOnce(cfg)
 	runner.PrintMetrics(metrics)
+	
+
+	
 	_ = runner.EvaluateAndNotify(cfg, metrics)
 
 	// 定时执行
@@ -73,7 +79,7 @@ func main() {
 	for {
 		select {
 		case <-ticker.C:
-			metrics := runner.CollectOnce()
+			metrics := runner.CollectOnce(cfg)
 			runner.PrintMetrics(metrics)
 			_ = runner.EvaluateAndNotify(cfg, metrics)
 		case <-c:
