@@ -29,10 +29,12 @@ type MemoryMetrics struct {
 
 // DiskMetrics 磁盘指标
 type DiskMetrics struct {
-	Percent float64
-	UsedGB  uint64
-	TotalGB uint64
-	Error   error
+	Percent     float64
+	UsedGB      uint64
+	TotalGB     uint64
+	ReadKBps    float64
+	WriteKBps   float64
+	Error       error
 }
 
 // NetworkMetrics 网络指标

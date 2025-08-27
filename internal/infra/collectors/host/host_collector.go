@@ -53,12 +53,36 @@ func (c *Collector) GetDiskUsage() (float64, uint64, uint64, error) {
 var lastNetIO *net.IOCountersStat
 var lastNetTime time.Time
 
+// 添加磁盘IO统计变量
+var lastDiskIO *disk.IOCountersStat
+var lastDiskTime time.Time
+
 func init() {
 	counters, err := net.IOCounters(false)
 	if err == nil && len(counters) > 0 {
 		lastNetIO = &counters[0]
 	}
 	lastNetTime = time.Now()
+	
+	// 初始化磁盘IO统计
+	diskCounters, err := disk.IOCounters()
+	if err == nil && len(diskCounters) > 0 {
+		// 获取第一个磁盘的统计信息（通常是系统盘）
+		for name, counter := range diskCounters {
+			if name == "sda" || name == "nvme0n1" || name == "vda" {
+				lastDiskIO = &counter
+				break
+			}
+		}
+		// 如果没有找到特定名称的磁盘，使用第一个
+		if lastDiskIO == nil {
+			for _, counter := range diskCounters {
+				lastDiskIO = &counter
+				break
+			}
+		}
+	}
+	lastDiskTime = time.Now()
 }
 
 func (c *Collector) GetNetworkRate() (float64, float64, error) {
@@ -137,4 +161,51 @@ func (c *Collector) GetTopProcesses(n int) ([]entity.ProcessInfo, []entity.Proce
 		memList = memList[:n]
 	}
 	return cpuList, memList, nil
+}
+
+// GetDiskIORate returns disk read/write rate in KB/s
+func (c *Collector) GetDiskIORate() (float64, float64, error) {
+	diskCounters, err := disk.IOCounters()
+	if err != nil || len(diskCounters) == 0 {
+		return 0, 0, err
+	}
+	
+	now := time.Now()
+	var curr disk.IOCountersStat
+	
+	// 尝试找到与上次相同的磁盘
+	if lastDiskIO != nil {
+		for _, counter := range diskCounters {
+			if counter.Name == lastDiskIO.Name {
+				curr = counter
+				break
+			}
+		}
+	}
+	
+	// 如果没找到，使用第一个磁盘
+	if curr.Name == "" {
+		for _, counter := range diskCounters {
+			curr = counter
+			break
+		}
+	}
+	
+	elapsed := now.Sub(lastDiskTime).Seconds()
+	if elapsed <= 0 || lastDiskIO == nil {
+		lastDiskIO = &curr
+		lastDiskTime = now
+		return 0, 0, nil
+	}
+	
+	bytesRead := float64(curr.ReadBytes - lastDiskIO.ReadBytes)
+	bytesWrite := float64(curr.WriteBytes - lastDiskIO.WriteBytes)
+	
+	readRate := bytesRead / elapsed / 1024  // KB/s
+	writeRate := bytesWrite / elapsed / 1024 // KB/s
+	
+	lastDiskIO = &curr
+	lastDiskTime = now
+	
+	return readRate, writeRate, nil
 }

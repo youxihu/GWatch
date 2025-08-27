@@ -37,31 +37,19 @@ func ExecuteJavaDumpScriptAsync(scriptPath string) {
 
 	result := strings.TrimSpace(string(output))
 	log.Printf("[INFO] jmap 脚本执行成功，返回: %s", result)
-
-	// 记录语义化日志
-	switch {
-	case strings.Contains(result, "result=success"):
-		log.Printf("Java堆转储已生成: %s", result)
-	case strings.Contains(result, "result=file_exist"):
-		log.Printf("堆转储文件已存在，跳过生成")
-	case strings.Contains(result, "result=failed"):
-		log.Printf("Java堆转储生成失败")
-	default:
-		log.Printf("脚本返回未知结果: %s", result)
-	}
 }
 
 // ExecuteJavaDumpScriptResult 同步执行 jmap 脚本（带超时），返回原始输出
 func ExecuteJavaDumpScriptResult(scriptPath string, timeout time.Duration) (string, error) {
-    if scriptPath == "" {
-        return "", nil
-    }
-    ctx, cancel := context.WithTimeout(context.Background(), timeout)
-    defer cancel()
-    cmd := exec.CommandContext(ctx, "/bin/bash", scriptPath)
-    output, err := cmd.CombinedOutput()
-    if ctx.Err() == context.DeadlineExceeded {
-        return "", context.DeadlineExceeded
-    }
-    return strings.TrimSpace(string(output)), err
+	if scriptPath == "" {
+		return "", nil
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "/bin/bash", scriptPath)
+	output, err := cmd.CombinedOutput()
+	if ctx.Err() == context.DeadlineExceeded {
+		return "", context.DeadlineExceeded
+	}
+	return strings.TrimSpace(string(output)), err
 }

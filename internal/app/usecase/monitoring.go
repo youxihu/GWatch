@@ -71,6 +71,7 @@ func (uc *MonitoringUseCase) CollectOnce() *entity.SystemMetrics {
 	m.CPU.Percent, m.CPU.Error = uc.host.GetCPUPercent()
 	m.Memory.Percent, m.Memory.UsedMB, m.Memory.TotalMB, m.Memory.Error = uc.host.GetMemoryUsage()
 	m.Disk.Percent, m.Disk.UsedGB, m.Disk.TotalGB, m.Disk.Error = uc.host.GetDiskUsage()
+	m.Disk.ReadKBps, m.Disk.WriteKBps, _ = uc.host.GetDiskIORate()
 	m.Network.DownloadKBps, m.Network.UploadKBps, m.Network.Error = uc.host.GetNetworkRate()
 
 	if !uc.redisInited {
@@ -167,6 +168,7 @@ func (uc *MonitoringUseCase) EvaluateAndNotify(cfg *entity.Config, m *entity.Sys
 
 // PrintMetrics 仅用于本地观察，不属于核心业务
 func (uc *MonitoringUseCase) PrintMetrics(m *entity.SystemMetrics) {
+	now := time.Now() // 获取当前时间
 	fmt.Println("===========采集数据============")
 	if m.CPU.Error != nil {
 		fmt.Println("CPU 监控失败:", m.CPU.Error.Error())
@@ -181,16 +183,20 @@ func (uc *MonitoringUseCase) PrintMetrics(m *entity.SystemMetrics) {
 	if m.Disk.Error != nil {
 		fmt.Println("磁盘监控失败:", m.Disk.Error.Error())
 	} else {
-		fmt.Printf("磁盘使用: %.2f%% (%d/%d GB)\n", m.Disk.Percent, m.Disk.UsedGB, m.Disk.TotalGB)
-	}
-	if m.Network.Error != nil {
-		fmt.Println("网络监控失败:", m.Network.Error.Error())
-	} else {
-		fmt.Printf("网络: 下载 %.2f KB/s | 上传 %.2f KB/s\n", m.Network.DownloadKBps, m.Network.UploadKBps)
+		fmt.Printf("磁盘使用: %.2f%% (%d/%d GB)\n",
+			m.Disk.Percent, m.Disk.UsedGB, m.Disk.TotalGB)
 	}
 	if m.Redis.ConnectionError != nil {
 		fmt.Println("Redis 连接失败:", m.Redis.ConnectionError.Error())
 	} else {
 		fmt.Printf("Redis 连接数: %d\n", m.Redis.ClientCount)
 	}
+	if m.Network.Error != nil {
+		fmt.Println("网络监控失败:", m.Network.Error.Error())
+	} else {
+		fmt.Printf("网络: 下载 %.2f KB/s | 上传 %.2f KB/s\n", m.Network.DownloadKBps, m.Network.UploadKBps)
+	}
+	fmt.Printf("磁盘IO: 读 %.2f KB/s | 写 %.2f KB/s\n", m.Disk.ReadKBps, m.Disk.WriteKBps)
+
+	fmt.Printf("监控时间: %s\n", now.Format(time.DateTime))
 }

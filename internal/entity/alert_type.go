@@ -1,4 +1,3 @@
-// Package entity internal/entity/alert_type.go
 package entity
 
 type AlertType string
@@ -11,6 +10,8 @@ const (
 	MemErr     AlertType = "mem_error"     // 内存监控失败
 	DiskHigh   AlertType = "disk_high"     // 磁盘过高
 	DiskErr    AlertType = "disk_error"    // 磁盘监控失败
+	DiskIOReadHigh  AlertType = "disk_io_read_high"   // 磁盘读IO过高
+	DiskIOWriteHigh AlertType = "disk_io_write_high"  // 磁盘写IO过高
 	RedisHigh  AlertType = "redis_high"    // Redis连接数过高
 	RedisLow   AlertType = "redis_low"     // Redis连接数过低
 	RedisErr   AlertType = "redis_error"   // Redis连接异常
@@ -26,6 +27,8 @@ var AlertTypeText = map[AlertType]string{
 	MemErr:     "内存监控失败",
 	DiskHigh:   "磁盘使用率过高",
 	DiskErr:    "磁盘监控失败",
+	DiskIOReadHigh:  "磁盘读IO过高",
+	DiskIOWriteHigh: "磁盘写IO过高",
 	RedisHigh:  "Redis 连接数过高",
 	RedisLow:   "Redis 连接数过低",
 	RedisErr:   "Redis 连接异常",
@@ -33,7 +36,7 @@ var AlertTypeText = map[AlertType]string{
 	Info:       "系统提示信息",
 }
 
-// AlertTypeRequiresConsecutive 是否需要“连续超标”才触发的类型（用于 shouldTriggerAlert）
+// AlertTypeRequiresConsecutive 是否需要"连续超标"才触发的类型（用于 shouldTriggerAlert）
 var AlertTypeRequiresConsecutive = map[AlertType]bool{
 	CPUHigh: true,
 	MemHigh: true,
@@ -42,6 +45,8 @@ var AlertTypeRequiresConsecutive = map[AlertType]bool{
 	MemErr:     false,
 	DiskHigh:   false,
 	DiskErr:    false,
+	DiskIOReadHigh:  false,
+	DiskIOWriteHigh: false,
 	RedisHigh:  false,
 	RedisLow:   false,
 	RedisErr:   false,

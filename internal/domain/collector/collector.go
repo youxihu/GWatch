@@ -7,6 +7,7 @@ type HostCollector interface {
 	GetCPUPercent() (float64, error)
 	GetMemoryUsage() (float64, uint64, uint64, error)
 	GetDiskUsage() (float64, uint64, uint64, error)
+	GetDiskIORate() (float64, float64, error)
 	GetNetworkRate() (float64, float64, error)
 	// GetTopProcesses returns top N processes by CPU and Memory
 	GetTopProcesses(n int) ([]entity.ProcessInfo, []entity.ProcessInfo, error)

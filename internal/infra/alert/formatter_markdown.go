@@ -45,10 +45,11 @@ func (f *MarkdownFormatter) Build(title string, cfg *entity.Config, m *entity.Sy
 		text += fmt.Sprintf("**Redis**: %d个连接 %s\n\n", m.Redis.ClientCount, redisStatus(m.Redis.ClientCount, cfg))
 	}
 	if m.Network.Error != nil {
-		text += fmt.Sprintf("**网络**: 监控失败 - %v\n\n", m.Network.Error)
+		text += fmt.Sprintf("**网络IO**: 监控失败 - %v\n\n", m.Network.Error)
 	} else {
-		text += fmt.Sprintf("**网络**: 下载 %.2f KB/s | 上传 %.2f KB/s\n\n", m.Network.DownloadKBps, m.Network.UploadKBps)
+		text += fmt.Sprintf("**网络IO**: 下载 %.2f KB/s | 上传 %.2f KB/s\n\n", m.Network.DownloadKBps, m.Network.UploadKBps)
 	}
+	text += fmt.Sprintf("**磁盘IO**: 读 %.2f KB/s | 写 %.2f KB/s\n\n", m.Disk.ReadKBps, m.Disk.WriteKBps)
 	text += fmt.Sprintf("**监控时间**: %s\n\n", m.Timestamp.Format(time.DateTime))
 	return text
 }
