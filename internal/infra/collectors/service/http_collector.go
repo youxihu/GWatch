@@ -21,11 +21,6 @@ func NewHTTPCollector(p domaincfg.Provider) *HTTPCollector {
 
 // Init 初始化HTTP客户端
 func (c *HTTPCollector) Init() error {
-	cfg := c.provider.GetConfig()
-	if cfg == nil {
-		return fmt.Errorf("配置未加载")
-	}
-
 	// 创建HTTP客户端，设置默认超时时间
 	c.client = &http.Client{
 		Timeout: 10 * time.Second,

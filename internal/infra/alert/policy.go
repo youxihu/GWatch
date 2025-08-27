@@ -28,7 +28,7 @@ func (p *StatefulPolicy) Apply(cfg *entity.Config, _ *entity.SystemMetrics, deci
 	defer p.mu.Unlock()
 
 	// 首先将未命中的连续型类型计数清零
-	consecutiveSet := map[entity.AlertType]bool{entity.CPUHigh: true, entity.MemHigh: true}
+	consecutiveSet := map[entity.AlertType]bool{entity.CPUHigh: true, entity.MemHigh: true, entity.HTTPErr: true}
 	hit := map[entity.AlertType]bool{}
 	for _, d := range decisions {
 		hit[d.Type] = true
