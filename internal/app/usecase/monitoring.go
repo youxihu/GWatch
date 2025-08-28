@@ -106,7 +106,7 @@ func (uc *MonitoringUseCase) CollectOnce(cfg *entity.Config) *entity.SystemMetri
 		if cfg != nil && cfg.Monitor.HTTPInterfaces != nil {
 			for _, httpConfig := range cfg.Monitor.HTTPInterfaces {
 				isAccessible, responseTime, statusCode, err := uc.http.CheckInterface(httpConfig.URL, httpConfig.Timeout)
-
+				
 				httpInterfaces = append(httpInterfaces, entity.HTTPInterfaceMetrics{
 					Name:         httpConfig.Name,
 					URL:          httpConfig.URL,
@@ -114,6 +114,8 @@ func (uc *MonitoringUseCase) CollectOnce(cfg *entity.Config) *entity.SystemMetri
 					ResponseTime: responseTime,
 					StatusCode:   statusCode,
 					Error:        err,
+					NeedAlert:    httpConfig.NeedAlert,
+					AllowedCodes: httpConfig.AllowedCodes,
 				})
 			}
 		}
@@ -195,8 +197,12 @@ func (uc *MonitoringUseCase) EvaluateAndNotify(cfg *entity.Config, m *entity.Sys
 		})
 	}
 
-	body := uc.formatter.Build("香港视频化服务器告警", cfg, m, alerts)
-	return uc.notifier.Send("香港视频化服务器告警", body)
+	bodyTitle := cfg.Monitor.AlertTitle
+	if bodyTitle == "" {
+		bodyTitle = "GWatch 服务器告警"
+	}
+	body := uc.formatter.Build(bodyTitle, cfg, m, alerts)
+	return uc.notifier.Send(bodyTitle, body)
 }
 
 // PrintMetrics 仅用于本地观察，不属于核心业务
@@ -236,12 +242,33 @@ func (uc *MonitoringUseCase) PrintMetrics(m *entity.SystemMetrics) {
 		fmt.Println("HTTP接口监控失败:", m.HTTP.Error.Error())
 	} else {
 		for _, httpInterface := range m.HTTP.Interfaces {
-			if httpInterface.IsAccessible {
-				fmt.Printf("HTTP接口 %s: 正常 (状态码: %d, 响应时间: %v)\n",
-					httpInterface.Name, httpInterface.StatusCode, httpInterface.ResponseTime)
+			alertMark := ""
+			if httpInterface.NeedAlert {
+				alertMark = " [需告警]"
 			} else {
-				fmt.Printf("HTTP接口 %s: 异常 (状态码: %d) - %v\n",
-					httpInterface.Name, httpInterface.StatusCode, httpInterface.Error)
+				alertMark = " [仅监控]"
+			}
+			
+			// 检查状态码是否在允许的范围内
+			isValidCode := false
+			if len(httpInterface.AllowedCodes) > 0 {
+				for _, allowedCode := range httpInterface.AllowedCodes {
+					if httpInterface.StatusCode == allowedCode {
+						isValidCode = true
+						break
+					}
+				}
+			} else {
+				// 如果没有配置allowed_codes，默认只允许200
+				isValidCode = (httpInterface.StatusCode == 200)
+			}
+			
+			if isValidCode {
+				fmt.Printf("HTTP接口 %s%s: 正常 (状态码: %d, 响应时间: %v)\n", 
+					httpInterface.Name, alertMark, httpInterface.StatusCode, httpInterface.ResponseTime)
+			} else {
+				fmt.Printf("HTTP接口 %s%s: 异常 (状态码: %d) - %v\n", 
+					httpInterface.Name, alertMark, httpInterface.StatusCode, httpInterface.Error)
 			}
 		}
 	}

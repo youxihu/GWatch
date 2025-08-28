@@ -22,10 +22,18 @@ monitor:
   redis_max_clients: 10
   alert_interval: 2m
   http_error_threshold: 0  # HTTP接口异常数量阈值
+  alert_title: "香港视频化服务器告警"
   http_interfaces:
-    - name: "VMS系统登录页验证码接口"
+    - name: "vms-public-captcha"
       url: "https://vms.kumshingapps.com/prod-api/captchaImage"
+      need_alert: true
       timeout: 10s
+      allowed_codes: [200, 201, 204]
+    - name: "vms-private-captcha"
+      url: "http://172.235.216.169:7080/captchaImage"
+      need_alert: false
+      timeout: 10s
+      allowed_codes: [200, 201, 204]
 
 log:
   debug: true

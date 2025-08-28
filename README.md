@@ -75,12 +75,21 @@ monitor:
   
   # HTTP接口监控配置
   http_interfaces:
-    - name: "XXX系统登录页验证码接口"
+    - name: "VMS系统登录页验证码接口"
       url: "https://vms.example.com/prod-api/captchaImage"
       timeout: 10s
+      need_alert: true
+      allowed_codes: [200, 201, 204]
     - name: "用户登录接口"
       url: "https://vms.example.com/prod-api/login"
       timeout: 15s
+      need_alert: true
+      allowed_codes: [200, 201]
+    - name: "健康检查接口"
+      url: "https://vms.example.com/prod-api/health"
+      timeout: 5s
+      need_alert: false
+      allowed_codes: [200, 201, 204, 401, 403]
 
 log:
   debug: true

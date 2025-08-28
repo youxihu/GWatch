@@ -78,4 +78,6 @@ type HTTPInterfaceMetrics struct {
 	ResponseTime time.Duration
 	StatusCode   int
 	Error        error
+	NeedAlert    bool
+	AllowedCodes []int
 }

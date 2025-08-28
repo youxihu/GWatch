@@ -56,12 +56,27 @@ func (f *MarkdownFormatter) Build(title string, cfg *entity.Config, m *entity.Sy
 	} else if len(m.HTTP.Interfaces) > 0 {
 		text += "**HTTP接口**:\n\n"
 		for _, httpInterface := range m.HTTP.Interfaces {
-			if httpInterface.IsAccessible {
-				text += fmt.Sprintf("- %s: 正常 (状态码: %d, 响应时间: %v)\n",
-					httpInterface.Name, httpInterface.StatusCode, httpInterface.ResponseTime)
+	
+			// 检查状态码是否在允许的范围内
+			isValidCode := false
+			if len(httpInterface.AllowedCodes) > 0 {
+				for _, allowedCode := range httpInterface.AllowedCodes {
+					if httpInterface.StatusCode == allowedCode {
+						isValidCode = true
+						break
+					}
+				}
 			} else {
-				text += fmt.Sprintf("- %s: 异常 (状态码: %d) - %v\n",
-					httpInterface.Name, httpInterface.StatusCode, httpInterface.Error)
+				// 如果没有配置allowed_codes，默认只允许200
+				isValidCode = (httpInterface.StatusCode == 200)
+			}
+			
+			if isValidCode {
+				text += fmt.Sprintf("- %s: 正常 (状态码: %d, 响应时间: %v)\n", 
+					httpInterface.Name,  httpInterface.StatusCode, httpInterface.ResponseTime)
+			} else {
+				text += fmt.Sprintf("- %s: 异常 (状态码: %d) - %v\n", 
+					httpInterface.Name,  httpInterface.StatusCode, httpInterface.Error)
 			}
 		}
 		text += "\n"

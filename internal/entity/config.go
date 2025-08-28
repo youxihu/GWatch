@@ -48,11 +48,14 @@ type MonitorConfig struct {
 	AlertInterval      time.Duration `yaml:"alert_interval"`
 	HTTPErrorThreshold int           `yaml:"http_error_threshold"`
 	HTTPInterfaces     []HTTPInterface `yaml:"http_interfaces"`
+	AlertTitle         string        `yaml:"alert_title"`
 }
 
 // HTTPInterface HTTP接口监控配置
 type HTTPInterface struct {
-	Name    string        `yaml:"name"`
-	URL     string        `yaml:"url"`
-	Timeout time.Duration `yaml:"timeout"`
+	Name        string        `yaml:"name"`
+	URL         string        `yaml:"url"`
+	Timeout     time.Duration `yaml:"timeout"`
+	NeedAlert   bool          `yaml:"need_alert"`
+	AllowedCodes []int         `yaml:"allowed_codes"`
 }

@@ -49,10 +49,25 @@ func (s *SimpleEvaluator) Evaluate(cfg *entity.Config, metrics *entity.SystemMet
 	if metrics.HTTP.Error != nil {
 		decisions = append(decisions, domainMonitor.Decision{Type: entity.HTTPErr})
 	} else {
-		// 统计异常接口数量
+		// 统计需要告警的异常接口数量
 		errorCount := 0
 		for _, httpInterface := range metrics.HTTP.Interfaces {
-			if !httpInterface.IsAccessible {
+			// 检查状态码是否在允许的范围内
+			isValidCode := false
+			if len(httpInterface.AllowedCodes) > 0 {
+				for _, allowedCode := range httpInterface.AllowedCodes {
+					if httpInterface.StatusCode == allowedCode {
+						isValidCode = true
+						break
+					}
+				}
+			} else {
+				// 如果没有配置allowed_codes，默认只允许200
+				isValidCode = (httpInterface.StatusCode == 200)
+			}
+			
+			// 如果状态码不在允许范围内且需要告警，则计数
+			if httpInterface.NeedAlert && !isValidCode {
 				errorCount++
 			}
 		}

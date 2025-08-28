@@ -3,10 +3,18 @@ package service
 import (
 	domaincfg "GWatch/internal/domain/config"
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 )
+
+// HTTPResponseBody HTTP响应体结构
+type HTTPResponseBody struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
+}
 
 // HTTPCollector HTTP接口监控收集器
 type HTTPCollector struct {
@@ -59,6 +67,7 @@ func (c *HTTPCollector) CheckInterface(url string, timeout time.Duration) (bool,
 	// 发送请求
 	resp, err := c.client.Do(req)
 	if err != nil {
+		// 网络错误、连接超时等，接口不可访问
 		return false, 0, 0, fmt.Errorf("HTTP请求失败: %v", err)
 	}
 	defer resp.Body.Close()
@@ -66,12 +75,43 @@ func (c *HTTPCollector) CheckInterface(url string, timeout time.Duration) (bool,
 	// 计算响应时间
 	responseTime := time.Since(start)
 
-	// 检查HTTP状态码
-	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		return true, responseTime, resp.StatusCode, nil
+	// 获取HTTP状态码
+	httpStatusCode := resp.StatusCode
+
+	// 尝试解析响应体，获取业务状态码
+	var businessStatusCode int
+	var businessError error
+
+	// 读取响应体
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err == nil && len(bodyBytes) > 0 {
+		var responseBody HTTPResponseBody
+		if json.Unmarshal(bodyBytes, &responseBody) == nil {
+			businessStatusCode = responseBody.Code
+			// 如果业务状态码不是0，说明有业务错误
+			if businessStatusCode != 0 {
+				businessError = fmt.Errorf("业务错误: %s (code: %d)", responseBody.Msg, businessStatusCode)
+			}
+		}
 	}
 
-	return false, responseTime, resp.StatusCode, fmt.Errorf("HTTP状态码异常: %d", resp.StatusCode)
+	// 优先使用业务状态码，如果没有则使用HTTP状态码
+	finalStatusCode := businessStatusCode
+	if finalStatusCode == 0 {
+		finalStatusCode = httpStatusCode
+	}
+
+	// 调试信息
+	// fmt.Printf("[DEBUG] HTTP请求: %s -> HTTP状态码: %d, 业务状态码: %d, 响应时间: %v\n",
+		// url, httpStatusCode, businessStatusCode, responseTime)
+
+	// 如果HTTP状态码是200但业务状态码表示错误，返回false
+	if httpStatusCode == 200 && businessError != nil {
+		return false, responseTime, finalStatusCode, businessError
+	}
+
+	// 只要能够收到HTTP响应，就认为接口是可访问的
+	return true, responseTime, finalStatusCode, nil
 }
 
 // Close 释放资源
