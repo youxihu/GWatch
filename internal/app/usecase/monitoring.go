@@ -7,6 +7,7 @@ import (
 	"GWatch/internal/entity"
 	"GWatch/internal/utils"
 	"fmt"
+	"sync"
 	"strings"
 	"time"
 )
@@ -205,6 +206,40 @@ func (uc *MonitoringUseCase) EvaluateAndNotify(cfg *entity.Config, m *entity.Sys
 	return uc.notifier.Send(bodyTitle, body)
 }
 
+// EvaluateAndNotifyBaseOnly 仅对基础类告警进行评估与发送（忽略 HTTP 决策）
+func (uc *MonitoringUseCase) EvaluateAndNotifyBaseOnly(cfg *entity.Config, m *entity.SystemMetrics) error {
+    decisions, _ := uc.evaluator.Evaluate(cfg, m)
+    // 过滤掉 HTTP 决策
+    filtered := make([]domainMonitor.Decision, 0, len(decisions))
+    for _, d := range decisions {
+        if d.Type != entity.HTTPErr {
+            filtered = append(filtered, d)
+        }
+    }
+    alertTypes := uc.policy.Apply(cfg, m, filtered)
+    if len(alertTypes) == 0 {
+        return nil
+    }
+    return uc.NotifyWithAlertTypes(cfg, m, alertTypes)
+}
+
+// EvaluateAndNotifyHTTPOnly 仅对 HTTP 告警进行评估与发送（忽略非 HTTP 决策）
+func (uc *MonitoringUseCase) EvaluateAndNotifyHTTPOnly(cfg *entity.Config, m *entity.SystemMetrics) error {
+    decisions, _ := uc.evaluator.Evaluate(cfg, m)
+    // 只保留 HTTP 决策
+    filtered := make([]domainMonitor.Decision, 0, len(decisions))
+    for _, d := range decisions {
+        if d.Type == entity.HTTPErr {
+            filtered = append(filtered, d)
+        }
+    }
+    alertTypes := uc.policy.Apply(cfg, m, filtered)
+    if len(alertTypes) == 0 {
+        return nil
+    }
+    return uc.NotifyWithAlertTypes(cfg, m, alertTypes)
+}
+
 // PrintMetrics 仅用于本地观察，不属于核心业务
 func (uc *MonitoringUseCase) PrintMetrics(m *entity.SystemMetrics) {
 	now := time.Now() // 获取当前时间
@@ -333,20 +368,30 @@ func (uc *MonitoringUseCase) CollectHTTPOnce(cfg *entity.Config) *entity.SystemM
     if uc.httpInited {
         var httpInterfaces []entity.HTTPInterfaceMetrics
         if cfg != nil && cfg.Monitor.HTTPInterfaces != nil {
-            for _, httpConfig := range cfg.Monitor.HTTPInterfaces {
-                isAccessible, responseTime, statusCode, err := uc.http.CheckInterface(httpConfig.URL, httpConfig.Timeout)
-
-                httpInterfaces = append(httpInterfaces, entity.HTTPInterfaceMetrics{
-                    Name:         httpConfig.Name,
-                    URL:          httpConfig.URL,
-                    IsAccessible: isAccessible,
-                    ResponseTime: responseTime,
-                    StatusCode:   statusCode,
-                    Error:        err,
-                    NeedAlert:    httpConfig.NeedAlert,
-                    AllowedCodes: httpConfig.AllowedCodes,
-                })
+            count := len(cfg.Monitor.HTTPInterfaces)
+            results := make([]entity.HTTPInterfaceMetrics, count)
+            var wg sync.WaitGroup
+            wg.Add(count)
+            for i := 0; i < count; i++ {
+                i := i
+                httpConfig := cfg.Monitor.HTTPInterfaces[i]
+                go func() {
+                    defer wg.Done()
+                    isAccessible, responseTime, statusCode, err := uc.http.CheckInterface(httpConfig.URL, httpConfig.Timeout)
+                    results[i] = entity.HTTPInterfaceMetrics{
+                        Name:         httpConfig.Name,
+                        URL:          httpConfig.URL,
+                        IsAccessible: isAccessible,
+                        ResponseTime: responseTime,
+                        StatusCode:   statusCode,
+                        Error:        err,
+                        NeedAlert:    httpConfig.NeedAlert,
+                        AllowedCodes: httpConfig.AllowedCodes,
+                    }
+                }()
             }
+            wg.Wait()
+            httpInterfaces = results
         }
         m.HTTP.Interfaces = httpInterfaces
     }

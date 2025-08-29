@@ -24,16 +24,21 @@ monitor:
   alert_interval: 2m  # 告警间隔
   alert_title: "香港视频化服务器告警"  # 告警标题 用于钉钉告警
   http_error_threshold: 0  # HTTP接口异常数量阈值
-  http_interval: 20s   #http接口检查间隔  
+  http_interval: 10s   #http接口检查间隔
   http_interfaces: #http接口检查配置
-    - name: "vms-public-captcha"
-      url: "https://vms.kumshingapps.com/prod-api/captchaImage"
+    # - name: "vms-public-captcha"
+    #   url: "https://vms.kumshingapps.com/prod-api/captchaImage"
+    #   need_alert: true
+    #   timeout: 3s
+    #   allowed_codes: [200, 201, 204]
+    # - name: "vms-private-captcha"
+    #   url: "http://172.235.216.169:7080/captchaImage"
+    #   need_alert: false
+    #   timeout: 3s
+    #   allowed_codes: [200, 201, 204]
+    - name: "example-captcha"
+      url: "http://172.25.216.169:7080/captchaImage"
       need_alert: true
-      timeout: 3s
-      allowed_codes: [200, 201, 204]
-    - name: "vms-private-captcha"
-      url: "http://172.235.216.169:7080/captchaImage"
-      need_alert: false
       timeout: 3s
       allowed_codes: [200, 201, 204]
 

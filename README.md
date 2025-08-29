@@ -11,11 +11,11 @@ GWatch 是一个基于 Go 语言开发的企业级服务器监控告警系统，
 ### 🎯 核心特性
 
 - **🔍 全方位监控**: CPU、内存、磁盘、网络、Redis、HTTP接口等
-- **⚡ 实时告警**: 智能阈值判断 + 防抖策略，避免误报
+- **⚡ 实时告警**: 智能阈值判断 + 防抖策略，避免误报（基础与 HTTP 各自独立的间隔与计数）
 - **📱 多渠道通知**: 支持钉钉机器人、邮件等多种告警方式
 - **🔄 自动恢复**: 高负载时自动触发Java堆转储，便于问题定位
 - **⚙️ 配置驱动**: 零代码修改，通过配置文件即可扩展监控范围
-- **🏗️ 架构清晰**: 分层设计，易于扩展和维护
+- **🏗️ 架构清晰**: 分层设计，易于扩展和维护（用例层 Coordinator 负责双周期调度）
 
 ## 🚀 快速开始
 
@@ -65,16 +65,18 @@ dingtalk:
   at_mobiles: ["13800138000"]
 
 monitor:
-  interval: 30s                    # 监控间隔
-  cpu_threshold: 80.0             # CPU告警阈值
+  interval: 30s                    # 基础指标监控间隔（CPU/内存/磁盘/网络/Redis）
+  consecutive_threshold: 3         # 连续触发次数阈值 
+  cpu_threshold: 80.0              # CPU告警阈值
   memory_threshold: 70.0           # 内存告警阈值
   disk_threshold: 80.0             # 磁盘告警阈值
   redis_min_clients: 0             # Redis最小连接数
   redis_max_clients: 100           # Redis最大连接数
   alert_interval: 2m               # 告警间隔（防抖）
+  http_interval: 20s               # HTTP 接口监控专用间隔
   
   # HTTP接口监控配置
-  http_interfaces:
+  http_interfaces:                 # 并发请求，逐项超时独立
     - name: "VMS系统登录页验证码接口"
       url: "https://vms.example.com/prod-api/captchaImage"
       timeout: 10s
@@ -98,7 +100,7 @@ javaAppDumpScript:
   path: "/path/to/java-dump-script.sh"
 ```
 
-### 监控指标说明
+### 监控指标说明（结合当前实现）
 
 | 指标类型 | 监控内容 | 告警条件 | 说明 |
 |---------|---------|---------|------|
@@ -107,7 +109,7 @@ javaAppDumpScript:
 | **磁盘** | 使用率、IO速率 | > 80% | 瞬时超阈值触发告警 |
 | **网络** | 上传/下载速率 | 监控失败 | 网络异常时触发告警 |
 | **Redis** | 连接数、连接详情 | < 0 或 > 100 | 连接数异常时触发告警 |
-| **HTTP接口** | 可用性、响应时间、状态码 | 非2xx状态码 | 接口异常时触发告警 |
+| **HTTP接口** | 可用性、响应时间、状态码 | 可配置允许状态码 | 连续型计数 + 防抖，独立间隔 |
 
 ## 🏗️ 系统架构
 
@@ -122,7 +124,9 @@ javaAppDumpScript:
 ┌─────────────────────────────────────────────────────────────┐
 │                    internal/app/usecase                     │
 │                应用层：监控流程编排                          │
-│           采集 → 判断 → 策略 → 格式化 → 发送                │
+│  MonitoringUseCase + Coordinator：                          │
+│  - UseCase：采集 → 判断 → 策略 → 格式化 → 发送              │
+│  - Coordinator：双周期调度（基础/HTTP），按需补采与合并通知   │
 └─────────────────────────────────────────────────────────────┘
                                 │
 ┌─────────────────────────────────────────────────────────────┐
@@ -143,7 +147,7 @@ javaAppDumpScript:
 #### 1. 数据采集器 (Collectors)
 - **HostCollector**: 系统资源监控（CPU、内存、磁盘、网络）
 - **RedisCollector**: Redis服务监控（连接数、客户端详情）
-- **HTTPCollector**: HTTP接口监控（可用性、响应时间、状态码）
+- **HTTPCollector**: HTTP接口监控（可用性、响应时间、状态码；接口并发检测）
 
 #### 2. 监控评估器 (Evaluator)
 - **SimpleEvaluator**: 阈值比较，输出监控决策
@@ -152,8 +156,8 @@ javaAppDumpScript:
 
 #### 3. 告警策略 (Policy)
 - **StatefulPolicy**: 智能告警策略
-- 防抖机制：避免频繁告警
-- 连续计数：CPU/内存需连续3次超阈值才触发
+- 防抖机制：避免频繁告警（HTTP 使用 `http_interval`，其他使用 `alert_interval`）
+- 连续计数：连续型（CPU/内存/HTTP）独立计数；非连续型为瞬时触发
 
 #### 4. 通知器 (Notifier)
 - **DingTalkNotifier**: 钉钉机器人通知
@@ -191,16 +195,16 @@ javaAppDumpScript:
 - 支持连接数上下限告警
 
 #### HTTP接口监控
-- 接口可用性检查
-- 响应时间统计
-- HTTP状态码监控
-- 支持批量配置，零代码扩展
+- 接口可用性检查（并发发起，独立超时）
+- 响应时间统计、允许状态码过滤（allowed_codes）
+- 独立监控间隔 `http_interval` 与独立连续计数
+- 触发时按需补采基础指标合并通知（反之亦然）
 
 ### 智能告警
 
 #### 告警策略
-- **防抖机制**: 同类告警间隔控制
-- **连续计数**: 避免瞬时尖峰误报
+- **防抖机制**: 同类告警间隔控制（HTTP 使用 `http_interval`）
+- **连续计数**: 避免瞬时尖峰误报（基础/HTTP 独立推进）
 - **分级告警**: 支持不同告警类型
 
 #### 告警内容

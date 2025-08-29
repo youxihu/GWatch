@@ -3,7 +3,6 @@ package main
 
 import (
 	"GWatch/internal/app/usecase"
-	"GWatch/internal/entity"
 
 	formatterImpl "GWatch/internal/infra/alert"
 	policyImpl "GWatch/internal/infra/alert"
@@ -18,7 +17,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 )
 
 func main() {
@@ -32,12 +30,9 @@ func main() {
 	}
 	cfg := provider.GetConfig()
 
-	interval := cfg.Monitor.Interval
-	httpInterval := cfg.Monitor.HTTPInterval
-
 	log.Println("开始监控...")
-	log.Println("监控间隔:", interval)
-	log.Println("HTTP监控间隔:", httpInterval)
+	log.Println("监控间隔:", cfg.Monitor.Interval)
+	log.Println("HTTP监控间隔:", cfg.Monitor.HTTPInterval)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
@@ -75,79 +70,15 @@ func main() {
 		notifier,
 	)
 
-	// 立即执行一次（基础与HTTP各一次）并缓存
-	latestBase := runnerBase.CollectBaseOnce(cfg)
-	latestHTTP := runnerHTTP.CollectHTTPOnce(cfg)
+	coord := usecase.NewCoordinator(runnerBase, runnerHTTP, policyBase.(*policyImpl.StatefulPolicy), policyHTTP.(*policyImpl.StatefulPolicy))
 
-	// 定时执行（基础 与 HTTP 分离，必要时补采另一侧并合并发送）
-	ticker := time.NewTicker(interval)
-	httpTicker := time.NewTicker(httpInterval)
-	defer ticker.Stop()
-	defer httpTicker.Stop()
+	stopCh := make(chan struct{})
+	go func() {
+		<-c
+		close(stopCh)
+	}()
 
-	for {
-		select {
-		case <-ticker.C:
-			// 基础侧采集
-			latestBase = runnerBase.CollectBaseOnce(cfg)
-			merged := usecase.CombineMetrics(latestBase, latestHTTP)
-			// 如果基础侧会告警，则立即刷新HTTP侧，合并后一次发送
-			if wouldTrigger(runnerBase, cfg, merged) {
-				latestHTTP = runnerHTTP.CollectHTTPOnce(cfg)
-				merged = usecase.CombineMetrics(latestBase, latestHTTP)
-				decisions, _ := evaluatorImpl.NewSimpleEvaluator().Evaluate(cfg, merged)
-				baseTypes := policyBase.Apply(cfg, merged, decisions)
-				httpTypes := policyHTTP.Apply(cfg, merged, decisions)
-				union := unionTypes(baseTypes, httpTypes)
-				_ = runnerBase.NotifyWithAlertTypes(cfg, merged, union)
-				continue
-			}
-			runnerBase.PrintMetrics(merged)
-			_ = runnerBase.EvaluateAndNotify(cfg, merged)
-		case <-httpTicker.C:
-			// HTTP 侧采集
-			latestHTTP = runnerHTTP.CollectHTTPOnce(cfg)
-			merged := usecase.CombineMetrics(latestBase, latestHTTP)
-			// 如果HTTP侧会告警，则立即刷新基础侧，合并后一次发送
-			if wouldTrigger(runnerHTTP, cfg, merged) {
-				latestBase = runnerBase.CollectBaseOnce(cfg)
-				merged = usecase.CombineMetrics(latestBase, latestHTTP)
-				decisions, _ := evaluatorImpl.NewSimpleEvaluator().Evaluate(cfg, merged)
-				baseTypes := policyBase.Apply(cfg, merged, decisions)
-				httpTypes := policyHTTP.Apply(cfg, merged, decisions)
-				union := unionTypes(baseTypes, httpTypes)
-				_ = runnerHTTP.NotifyWithAlertTypes(cfg, merged, union)
-				continue
-			}
-			runnerHTTP.PrintMetrics(merged)
-			_ = runnerHTTP.EvaluateAndNotify(cfg, merged)
-		case <-c:
-			log.Println("\nGWatch 正在退出...")
-			return
-		}
-	}
-}
+	coord.RunWithIntervals(cfg, stopCh)
 
-// wouldTrigger 使用新的策略实例进行一次干跑，判断是否会触发任意告警
-func wouldTrigger(r *usecase.MonitoringUseCase, cfg *entity.Config, m *entity.SystemMetrics) bool {
-	decisions, _ := evaluatorImpl.NewSimpleEvaluator().Evaluate(cfg, m)
-	peekPolicy := policyImpl.NewStatefulPolicy()
-	alerts := peekPolicy.Apply(cfg, m, decisions)
-	return len(alerts) > 0
-}
-
-// 合并两组告警类型去重
-func unionTypes(a, b []entity.AlertType) []entity.AlertType {
-	set := map[entity.AlertType]struct{}{}
-	for _, t := range a {
-		set[t] = struct{}{}
-	}
-	for _, t := range b {
-		set[t] = struct{}{}
-	}
-	res := make([]entity.AlertType, 0, len(set))
-	for t := range set {
-		res = append(res, t)
-	}
-	return res
+	log.Println("GWatch 正在退出...")
 }
