@@ -40,6 +40,7 @@ type DingTalkConfig struct {
 // MonitorConfig 监控配置
 type MonitorConfig struct {
 	Interval           time.Duration `yaml:"interval"`
+	ConsecutiveThreshold int           `yaml:"consecutive_threshold"`
 	CPUThreshold       float64       `yaml:"cpu_threshold"`
 	MemoryThreshold    float64       `yaml:"memory_threshold"`
 	DiskThreshold      float64       `yaml:"disk_threshold"`
@@ -47,6 +48,7 @@ type MonitorConfig struct {
 	RedisMaxClients    int           `yaml:"redis_max_clients"`
 	AlertInterval      time.Duration `yaml:"alert_interval"`
 	HTTPErrorThreshold int           `yaml:"http_error_threshold"`
+	HTTPInterval       time.Duration `yaml:"http_interval"`
 	HTTPInterfaces     []HTTPInterface `yaml:"http_interfaces"`
 	AlertTitle         string        `yaml:"alert_title"`
 }

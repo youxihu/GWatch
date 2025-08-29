@@ -14,25 +14,27 @@ dingtalk:
   at_mobiles: ["19******502"]
 
 monitor:
-  interval: 3s
-  cpu_threshold: 80.0
-  memory_threshold: 70.0
-  disk_threshold: 80.0
-  redis_min_clients: 0
-  redis_max_clients: 10
-  alert_interval: 2m
+  interval: 3s  # 监控间隔
+  consecutive_threshold: 3  # 连续触发次数阈值
+  cpu_threshold: 80.0  # CPU使用率阈值
+  memory_threshold: 70.0  # 内存使用率阈值
+  disk_threshold: 80.0  # 磁盘使用率阈值
+  redis_min_clients: 0  # Redis最小连接数
+  redis_max_clients: 10  # Redis最大连接数
+  alert_interval: 2m  # 告警间隔
+  alert_title: "香港视频化服务器告警"  # 告警标题 用于钉钉告警
   http_error_threshold: 0  # HTTP接口异常数量阈值
-  alert_title: "香港视频化服务器告警"
-  http_interfaces:
+  http_interval: 20s   #http接口检查间隔  
+  http_interfaces: #http接口检查配置
     - name: "vms-public-captcha"
       url: "https://vms.kumshingapps.com/prod-api/captchaImage"
       need_alert: true
-      timeout: 10s
+      timeout: 3s
       allowed_codes: [200, 201, 204]
     - name: "vms-private-captcha"
       url: "http://172.235.216.169:7080/captchaImage"
       need_alert: false
-      timeout: 10s
+      timeout: 3s
       allowed_codes: [200, 201, 204]
 
 log:

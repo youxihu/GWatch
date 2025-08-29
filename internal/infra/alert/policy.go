@@ -41,6 +41,9 @@ func (p *StatefulPolicy) Apply(cfg *entity.Config, _ *entity.SystemMetrics, deci
 
 	for _, d := range decisions {
 		t := d.Type
+		// 针对不同类型选择防抖间隔：HTTP使用专有 http_interval，其他使用通用 alert_interval
+		usedInterval := cfg.Monitor.AlertInterval
+
 		// 连续计数
 		if consecutiveSet[t] {
 			p.counters[t] = p.counters[t] + 1
@@ -49,12 +52,12 @@ func (p *StatefulPolicy) Apply(cfg *entity.Config, _ *entity.SystemMetrics, deci
 		}
 		// 防抖：间隔未到不触发
 		last, ok := p.lastTimes[t]
-		if ok && now.Sub(last) < cfg.Monitor.AlertInterval {
+		if ok && now.Sub(last) < usedInterval {
 			continue
 		}
-		// 连续型达到3次才触发
-		if consecutiveSet[t] && p.counters[t] < 3 {
-			log.Printf("[INFO] %s 连续第 %d/3 次超阈值，暂不告警", t.String(), p.counters[t])
+		// 连续型达到连续触发次数阈值才触发
+		if consecutiveSet[t] && p.counters[t] < cfg.Monitor.ConsecutiveThreshold {
+			log.Printf("[INFO] %s 连续第 %d/%d 次超阈值，暂不告警", t.String(), p.counters[t], cfg.Monitor.ConsecutiveThreshold)
 			continue
 		}
 		// 触发
@@ -67,4 +70,60 @@ func (p *StatefulPolicy) Apply(cfg *entity.Config, _ *entity.SystemMetrics, deci
 		result = append(result, t)
 	}
 	return result
+}
+
+// PeekApply 在不修改内部状态的前提下，根据当前 decisions 预判会触发的告警类型
+func (p *StatefulPolicy) PeekApply(cfg *entity.Config, _ *entity.SystemMetrics, decisions []domainMonitor.Decision) []entity.AlertType {
+    now := time.Now()
+    var result []entity.AlertType
+
+    consecutiveSet := map[entity.AlertType]bool{entity.CPUHigh: true, entity.MemHigh: true, entity.HTTPErr: true}
+
+    p.mu.RLock()
+    // 拷贝当前状态
+    countersCopy := make(map[entity.AlertType]int, len(p.counters))
+    for k, v := range p.counters {
+        countersCopy[k] = v
+    }
+    lastTimesCopy := make(map[entity.AlertType]time.Time, len(p.lastTimes))
+    for k, v := range p.lastTimes {
+        lastTimesCopy[k] = v
+    }
+    p.mu.RUnlock()
+
+    hit := map[entity.AlertType]bool{}
+    for _, d := range decisions {
+        hit[d.Type] = true
+    }
+    // 先清零未命中的连续型计数（模拟）
+    for t := range consecutiveSet {
+        if !hit[t] {
+            countersCopy[t] = 0
+        }
+    }
+
+    for _, d := range decisions {
+        t := d.Type
+        // 连续计数（模拟）
+        if consecutiveSet[t] {
+            countersCopy[t] = countersCopy[t] + 1
+        } else {
+            countersCopy[t] = 1
+        }
+        // 防抖：间隔未到则不会触发
+        last, ok := lastTimesCopy[t]
+        usedInterval := cfg.Monitor.AlertInterval
+        if t == entity.HTTPErr {
+            usedInterval = cfg.Monitor.HTTPInterval
+        }
+        if ok && now.Sub(last) < usedInterval {
+            continue
+        }
+        // 连续触发阈值判断
+        if consecutiveSet[t] && countersCopy[t] < cfg.Monitor.ConsecutiveThreshold {
+            continue
+        }
+        result = append(result, t)
+    }
+    return result
 }

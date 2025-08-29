@@ -34,7 +34,7 @@ git clone <repository-url>
 cd GWatch
 
 # 配置监控参数
-cp config/config.yml.example config/config.yml
+cp config/config_example.yml config/config.yml
 vim config/config.yml
 
 # 运行监控
@@ -255,13 +255,21 @@ type EmailNotifier struct {
 make run
 
 # 查看实时输出
+2025/08/29 16:16:03 GWatch 服务器监控工具启动
+2025/08/29 16:16:03 正在初始化...
+2025/08/29 16:16:03 开始监控...
+2025/08/29 16:16:03 监控间隔: 3s
+2025/08/29 16:16:03 HTTP监控间隔: 20s
 ===========采集数据============
-CPU 使用率: 25.00%
-内存使用: 17.80% (4314/24237 MB)
-磁盘使用: 19.28% (53/294 GB)
+CPU 使用率: 2.07%
+内存使用: 17.16% (4158/24237 MB)
+磁盘使用: 23.04% (64/294 GB)
 Redis 连接数: 3
-网络: 下载 5.73 KB/s | 上传 1.37 KB/s
-HTTP接口 VMS系统登录页验证码接口: 正常 (状态码: 200, 响应时间: 448ms)
+网络: 下载 5.43 KB/s | 上传 1.35 KB/s
+磁盘IO: 读 0.00 KB/s | 写 97.48 KB/s
+HTTP接口 vms-public-captcha [需告警]: 正常 (状态码: 200, 响应时间: 1.006623712s)
+HTTP接口 vms-private-captcha [仅监控]: 正常 (状态码: 200, 响应时间: 132.714494ms)
+监控时间: 2025-08-29 16:16:08
 ```
 
 ### 告警通知示例
