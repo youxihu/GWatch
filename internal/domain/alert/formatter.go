@@ -13,4 +13,9 @@ type Formatter interface {
     Build(title string, cfg *entity.Config, metrics *entity.SystemMetrics, alerts []TriggeredAlert) string
 }
 
+// TickerFormatter 格式化ticker报告内容
+type TickerFormatter interface {
+    BuildTickerReport(title string, cfg *entity.Config, tickerMetrics *entity.TickerMetrics, systemMetrics *entity.SystemMetrics) string
+}
+
 

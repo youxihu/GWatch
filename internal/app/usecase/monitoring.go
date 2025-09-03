@@ -7,8 +7,9 @@ import (
 	"GWatch/internal/entity"
 	"GWatch/internal/utils"
 	"fmt"
-	"sync"
+	"log"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -107,7 +108,7 @@ func (uc *MonitoringUseCase) CollectOnce(cfg *entity.Config) *entity.SystemMetri
 		if cfg != nil && cfg.Monitor.HTTPInterfaces != nil {
 			for _, httpConfig := range cfg.Monitor.HTTPInterfaces {
 				isAccessible, responseTime, statusCode, err := uc.http.CheckInterface(httpConfig.URL, httpConfig.Timeout)
-				
+
 				httpInterfaces = append(httpInterfaces, entity.HTTPInterfaceMetrics{
 					Name:         httpConfig.Name,
 					URL:          httpConfig.URL,
@@ -208,73 +209,73 @@ func (uc *MonitoringUseCase) EvaluateAndNotify(cfg *entity.Config, m *entity.Sys
 
 // EvaluateAndNotifyBaseOnly 仅对基础类告警进行评估与发送（忽略 HTTP 决策）
 func (uc *MonitoringUseCase) EvaluateAndNotifyBaseOnly(cfg *entity.Config, m *entity.SystemMetrics) error {
-    decisions, _ := uc.evaluator.Evaluate(cfg, m)
-    // 过滤掉 HTTP 决策
-    filtered := make([]domainMonitor.Decision, 0, len(decisions))
-    for _, d := range decisions {
-        if d.Type != entity.HTTPErr {
-            filtered = append(filtered, d)
-        }
-    }
-    alertTypes := uc.policy.Apply(cfg, m, filtered)
-    if len(alertTypes) == 0 {
-        return nil
-    }
-    return uc.NotifyWithAlertTypes(cfg, m, alertTypes)
+	decisions, _ := uc.evaluator.Evaluate(cfg, m)
+	// 过滤掉 HTTP 决策
+	filtered := make([]domainMonitor.Decision, 0, len(decisions))
+	for _, d := range decisions {
+		if d.Type != entity.HTTPErr {
+			filtered = append(filtered, d)
+		}
+	}
+	alertTypes := uc.policy.Apply(cfg, m, filtered)
+	if len(alertTypes) == 0 {
+		return nil
+	}
+	return uc.NotifyWithAlertTypes(cfg, m, alertTypes)
 }
 
 // EvaluateAndNotifyHTTPOnly 仅对 HTTP 告警进行评估与发送（忽略非 HTTP 决策）
 func (uc *MonitoringUseCase) EvaluateAndNotifyHTTPOnly(cfg *entity.Config, m *entity.SystemMetrics) error {
-    decisions, _ := uc.evaluator.Evaluate(cfg, m)
-    // 只保留 HTTP 决策
-    filtered := make([]domainMonitor.Decision, 0, len(decisions))
-    for _, d := range decisions {
-        if d.Type == entity.HTTPErr {
-            filtered = append(filtered, d)
-        }
-    }
-    alertTypes := uc.policy.Apply(cfg, m, filtered)
-    if len(alertTypes) == 0 {
-        return nil
-    }
-    return uc.NotifyWithAlertTypes(cfg, m, alertTypes)
+	decisions, _ := uc.evaluator.Evaluate(cfg, m)
+	// 只保留 HTTP 决策
+	filtered := make([]domainMonitor.Decision, 0, len(decisions))
+	for _, d := range decisions {
+		if d.Type == entity.HTTPErr {
+			filtered = append(filtered, d)
+		}
+	}
+	alertTypes := uc.policy.Apply(cfg, m, filtered)
+	if len(alertTypes) == 0 {
+		return nil
+	}
+	return uc.NotifyWithAlertTypes(cfg, m, alertTypes)
 }
 
 // PrintMetrics 仅用于本地观察，不属于核心业务
 func (uc *MonitoringUseCase) PrintMetrics(m *entity.SystemMetrics) {
 	now := time.Now() // 获取当前时间
-	fmt.Println("===========采集数据============")
+	log.Println("===========采集数据============")
 	if m.CPU.Error != nil {
-		fmt.Println("CPU 监控失败:", m.CPU.Error.Error())
+		log.Println("CPU 监控失败:", m.CPU.Error.Error())
 	} else {
-		fmt.Printf("CPU 使用率: %.2f%%\n", m.CPU.Percent)
+		log.Printf("CPU 使用率: %.2f%%\n", m.CPU.Percent)
 	}
 	if m.Memory.Error != nil {
-		fmt.Println("内存监控失败:", m.Memory.Error.Error())
+		log.Println("内存监控失败:", m.Memory.Error.Error())
 	} else {
-		fmt.Printf("内存使用: %.2f%% (%d/%d MB)\n", m.Memory.Percent, m.Memory.UsedMB, m.Memory.TotalMB)
+		log.Printf("内存使用: %.2f%% (%d/%d MB)\n", m.Memory.Percent, m.Memory.UsedMB, m.Memory.TotalMB)
 	}
 	if m.Disk.Error != nil {
-		fmt.Println("磁盘监控失败:", m.Disk.Error.Error())
+		log.Println("磁盘监控失败:", m.Disk.Error.Error())
 	} else {
-		fmt.Printf("磁盘使用: %.2f%% (%d/%d GB)\n",
+		log.Printf("磁盘使用: %.2f%% (%d/%d GB)\n",
 			m.Disk.Percent, m.Disk.UsedGB, m.Disk.TotalGB)
 	}
 	if m.Redis.ConnectionError != nil {
-		fmt.Println("Redis 连接失败:", m.Redis.ConnectionError.Error())
+		log.Println("Redis 连接失败:", m.Redis.ConnectionError.Error())
 	} else {
-		fmt.Printf("Redis 连接数: %d\n", m.Redis.ClientCount)
+		log.Printf("Redis 连接数: %d\n", m.Redis.ClientCount)
 	}
 	if m.Network.Error != nil {
-		fmt.Println("网络监控失败:", m.Network.Error.Error())
+		log.Println("网络监控失败:", m.Network.Error.Error())
 	} else {
-		fmt.Printf("网络: 下载 %.2f KB/s | 上传 %.2f KB/s\n", m.Network.DownloadKBps, m.Network.UploadKBps)
+		log.Printf("网络: 下载 %.2f KB/s | 上传 %.2f KB/s\n", m.Network.DownloadKBps, m.Network.UploadKBps)
 	}
-	fmt.Printf("磁盘IO: 读 %.2f KB/s | 写 %.2f KB/s\n", m.Disk.ReadKBps, m.Disk.WriteKBps)
+	log.Printf("磁盘IO: 读 %.2f KB/s | 写 %.2f KB/s\n", m.Disk.ReadKBps, m.Disk.WriteKBps)
 
 	// 打印HTTP接口监控信息
 	if m.HTTP.Error != nil {
-		fmt.Println("HTTP接口监控失败:", m.HTTP.Error.Error())
+		log.Println("HTTP接口监控失败:", m.HTTP.Error.Error())
 	} else {
 		for _, httpInterface := range m.HTTP.Interfaces {
 			alertMark := ""
@@ -283,7 +284,7 @@ func (uc *MonitoringUseCase) PrintMetrics(m *entity.SystemMetrics) {
 			} else {
 				alertMark = " [仅监控]"
 			}
-			
+
 			// 检查状态码是否在允许的范围内
 			isValidCode := false
 			if len(httpInterface.AllowedCodes) > 0 {
@@ -297,180 +298,180 @@ func (uc *MonitoringUseCase) PrintMetrics(m *entity.SystemMetrics) {
 				// 如果没有配置allowed_codes，默认只允许200
 				isValidCode = (httpInterface.StatusCode == 200)
 			}
-			
+
 			if isValidCode {
-				fmt.Printf("HTTP接口 %s%s: 正常 (状态码: %d, 响应时间: %v)\n", 
+				log.Printf("HTTP接口 %s%s: 正常 (状态码: %d, 响应时间: %v)\n",
 					httpInterface.Name, alertMark, httpInterface.StatusCode, httpInterface.ResponseTime)
 			} else {
-				fmt.Printf("HTTP接口 %s%s: 异常 (状态码: %d) - %v\n", 
+				log.Printf("HTTP接口 %s%s: 异常 (状态码: %d) - %v\n",
 					httpInterface.Name, alertMark, httpInterface.StatusCode, httpInterface.Error)
 			}
 		}
 	}
 
-	fmt.Printf("监控时间: %s\n", now.Format(time.DateTime))
+	log.Printf("监控时间: %s\n", now.Format(time.DateTime))
 }
 
 // CombineMetrics 将基础指标与 HTTP 指标合并为一个整体快照
 func CombineMetrics(base, http *entity.SystemMetrics) *entity.SystemMetrics {
-    merged := &entity.SystemMetrics{Timestamp: time.Now()}
-    if base != nil {
-        merged.CPU = base.CPU
-        merged.Memory = base.Memory
-        merged.Disk = base.Disk
-        merged.Network = base.Network
-        merged.Redis = base.Redis
-    }
-    if http != nil {
-        merged.HTTP = http.HTTP
-    }
-    return merged
+	merged := &entity.SystemMetrics{Timestamp: time.Now()}
+	if base != nil {
+		merged.CPU = base.CPU
+		merged.Memory = base.Memory
+		merged.Disk = base.Disk
+		merged.Network = base.Network
+		merged.Redis = base.Redis
+	}
+	if http != nil {
+		merged.HTTP = http.HTTP
+	}
+	return merged
 }
 
 // CollectBaseOnce 仅采集基础主机/Redis/网络等指标（不采集 HTTP）
 func (uc *MonitoringUseCase) CollectBaseOnce(cfg *entity.Config) *entity.SystemMetrics {
-    m := &entity.SystemMetrics{Timestamp: time.Now()}
+	m := &entity.SystemMetrics{Timestamp: time.Now()}
 
-    m.CPU.Percent, m.CPU.Error = uc.host.GetCPUPercent()
-    m.Memory.Percent, m.Memory.UsedMB, m.Memory.TotalMB, m.Memory.Error = uc.host.GetMemoryUsage()
-    m.Disk.Percent, m.Disk.UsedGB, m.Disk.TotalGB, m.Disk.Error = uc.host.GetDiskUsage()
-    m.Disk.ReadKBps, m.Disk.WriteKBps, _ = uc.host.GetDiskIORate()
-    m.Network.DownloadKBps, m.Network.UploadKBps, m.Network.Error = uc.host.GetNetworkRate()
+	m.CPU.Percent, m.CPU.Error = uc.host.GetCPUPercent()
+	m.Memory.Percent, m.Memory.UsedMB, m.Memory.TotalMB, m.Memory.Error = uc.host.GetMemoryUsage()
+	m.Disk.Percent, m.Disk.UsedGB, m.Disk.TotalGB, m.Disk.Error = uc.host.GetDiskUsage()
+	m.Disk.ReadKBps, m.Disk.WriteKBps, _ = uc.host.GetDiskIORate()
+	m.Network.DownloadKBps, m.Network.UploadKBps, m.Network.Error = uc.host.GetNetworkRate()
 
-    if !uc.redisInited {
-        if err := uc.redis.Init(); err != nil {
-            m.Redis.ConnectionError = err
-        } else {
-            uc.redisInited = true
-        }
-    }
+	if !uc.redisInited {
+		if err := uc.redis.Init(); err != nil {
+			m.Redis.ConnectionError = err
+		} else {
+			uc.redisInited = true
+		}
+	}
 
-    if uc.redisInited {
-        m.Redis.ClientCount, m.Redis.ConnectionError = uc.redis.GetClients()
-        m.Redis.ClientDetails, m.Redis.DetailError = uc.redis.GetClientsDetail()
-    }
+	if uc.redisInited {
+		m.Redis.ClientCount, m.Redis.ConnectionError = uc.redis.GetClients()
+		m.Redis.ClientDetails, m.Redis.DetailError = uc.redis.GetClientsDetail()
+	}
 
-    return m
+	return m
 }
 
 // CollectHTTPOnce 仅采集 HTTP 接口指标
 func (uc *MonitoringUseCase) CollectHTTPOnce(cfg *entity.Config) *entity.SystemMetrics {
-    m := &entity.SystemMetrics{Timestamp: time.Now()}
+	m := &entity.SystemMetrics{Timestamp: time.Now()}
 
-    if !uc.httpInited {
-        if err := uc.http.Init(); err != nil {
-            m.HTTP.Error = err
-            return m
-        }
-        uc.httpInited = true
-    }
+	if !uc.httpInited {
+		if err := uc.http.Init(); err != nil {
+			m.HTTP.Error = err
+			return m
+		}
+		uc.httpInited = true
+	}
 
-    if uc.httpInited {
-        var httpInterfaces []entity.HTTPInterfaceMetrics
-        if cfg != nil && cfg.Monitor.HTTPInterfaces != nil {
-            count := len(cfg.Monitor.HTTPInterfaces)
-            results := make([]entity.HTTPInterfaceMetrics, count)
-            var wg sync.WaitGroup
-            wg.Add(count)
-            for i := 0; i < count; i++ {
-                i := i
-                httpConfig := cfg.Monitor.HTTPInterfaces[i]
-                go func() {
-                    defer wg.Done()
-                    isAccessible, responseTime, statusCode, err := uc.http.CheckInterface(httpConfig.URL, httpConfig.Timeout)
-                    results[i] = entity.HTTPInterfaceMetrics{
-                        Name:         httpConfig.Name,
-                        URL:          httpConfig.URL,
-                        IsAccessible: isAccessible,
-                        ResponseTime: responseTime,
-                        StatusCode:   statusCode,
-                        Error:        err,
-                        NeedAlert:    httpConfig.NeedAlert,
-                        AllowedCodes: httpConfig.AllowedCodes,
-                    }
-                }()
-            }
-            wg.Wait()
-            httpInterfaces = results
-        }
-        m.HTTP.Interfaces = httpInterfaces
-    }
+	if uc.httpInited {
+		var httpInterfaces []entity.HTTPInterfaceMetrics
+		if cfg != nil && cfg.Monitor.HTTPInterfaces != nil {
+			count := len(cfg.Monitor.HTTPInterfaces)
+			results := make([]entity.HTTPInterfaceMetrics, count)
+			var wg sync.WaitGroup
+			wg.Add(count)
+			for i := 0; i < count; i++ {
+				i := i
+				httpConfig := cfg.Monitor.HTTPInterfaces[i]
+				go func() {
+					defer wg.Done()
+					isAccessible, responseTime, statusCode, err := uc.http.CheckInterface(httpConfig.URL, httpConfig.Timeout)
+					results[i] = entity.HTTPInterfaceMetrics{
+						Name:         httpConfig.Name,
+						URL:          httpConfig.URL,
+						IsAccessible: isAccessible,
+						ResponseTime: responseTime,
+						StatusCode:   statusCode,
+						Error:        err,
+						NeedAlert:    httpConfig.NeedAlert,
+						AllowedCodes: httpConfig.AllowedCodes,
+					}
+				}()
+			}
+			wg.Wait()
+			httpInterfaces = results
+		}
+		m.HTTP.Interfaces = httpInterfaces
+	}
 
-    return m
+	return m
 }
 
 // NotifyWithAlertTypes 按给定的告警类型集合直接构建并发送通知（用于“同时告警”合并场景）
 func (uc *MonitoringUseCase) NotifyWithAlertTypes(cfg *entity.Config, m *entity.SystemMetrics, alertTypes []entity.AlertType) error {
-    if len(alertTypes) == 0 {
-        return nil
-    }
+	if len(alertTypes) == 0 {
+		return nil
+	}
 
-    var alerts []domainAlert.TriggeredAlert
-    dumpTriggeredAsync := false
+	var alerts []domainAlert.TriggeredAlert
+	dumpTriggeredAsync := false
 
-    for _, t := range alertTypes {
-        msg := t.String()
+	for _, t := range alertTypes {
+		msg := t.String()
 
-        if t == entity.CPUHigh || t == entity.MemHigh {
-            if topCPU, topMem, err := uc.host.GetTopProcesses(5); err == nil {
-                if t == entity.CPUHigh && len(topCPU) > 0 {
-                    culprit := topCPU[0]
-                    msg = fmt.Sprintf(
-                        "CPU 使用率过高: %.2f%%（元凶: %s PID=%d %.2f%% CPU）",
-                        m.CPU.Percent, culprit.Name, culprit.PID, culprit.CPUPercent,
-                    )
-                }
-                if t == entity.MemHigh && len(topMem) > 0 {
-                    culprit := topMem[0]
-                    msg = fmt.Sprintf(
-                        "内存使用率过高: %.2f%%（元凶: %s PID=%d %.1f%% MEM, %dMB）",
-                        m.Memory.Percent, culprit.Name, culprit.PID, culprit.MemPercent, culprit.MemRSS,
-                    )
-                }
-            }
+		if t == entity.CPUHigh || t == entity.MemHigh {
+			if topCPU, topMem, err := uc.host.GetTopProcesses(5); err == nil {
+				if t == entity.CPUHigh && len(topCPU) > 0 {
+					culprit := topCPU[0]
+					msg = fmt.Sprintf(
+						"CPU 使用率过高: %.2f%%（元凶: %s PID=%d %.2f%% CPU）",
+						m.CPU.Percent, culprit.Name, culprit.PID, culprit.CPUPercent,
+					)
+				}
+				if t == entity.MemHigh && len(topMem) > 0 {
+					culprit := topMem[0]
+					msg = fmt.Sprintf(
+						"内存使用率过高: %.2f%%（元凶: %s PID=%d %.1f%% MEM, %dMB）",
+						m.Memory.Percent, culprit.Name, culprit.PID, culprit.MemPercent, culprit.MemRSS,
+					)
+				}
+			}
 
-            // 执行脚本并等待最多 3 秒
-            done := make(chan struct{}, 1)
-            var result string
-            go func() {
-                r, err := utils.ExecuteJavaDumpScriptResult(cfg.JavaAppDumpScript.Path, 3*time.Second)
-                if err == nil {
-                    result = r
-                }
-                done <- struct{}{}
-            }()
+			// 执行脚本并等待最多 3 秒
+			done := make(chan struct{}, 1)
+			var result string
+			go func() {
+				r, err := utils.ExecuteJavaDumpScriptResult(cfg.JavaAppDumpScript.Path, 3*time.Second)
+				if err == nil {
+					result = r
+				}
+				done <- struct{}{}
+			}()
 
-            select {
-            case <-done:
-                if strings.Contains(result, "file_exist") {
-                    msg += "\n\n> 提示：堆转储文件已存在，跳过生成"
-                } else if strings.Contains(result, "failed") {
-                    msg += "\n\n> 提示：Java堆转储生成失败"
-                } else if strings.Contains(result, "success") {
-                    msg += "\n\n> 提示：已生成 Java 堆转储"
-                } else if result != "" {
-                    msg += "\n\n> 提示：" + result + ""
-                }
-            case <-time.After(3 * time.Second):
-                go utils.ExecuteJavaDumpScriptAsync(cfg.JavaAppDumpScript.Path)
-                dumpTriggeredAsync = true
-            }
-        }
+			select {
+			case <-done:
+				if strings.Contains(result, "file_exist") {
+					msg += "\n\n> 提示：堆转储文件已存在，跳过生成"
+				} else if strings.Contains(result, "failed") {
+					msg += "\n\n> 提示：Java堆转储生成失败"
+				} else if strings.Contains(result, "success") {
+					msg += "\n\n> 提示：已生成 Java 堆转储"
+				} else if result != "" {
+					msg += "\n\n> 提示：" + result + ""
+				}
+			case <-time.After(3 * time.Second):
+				go utils.ExecuteJavaDumpScriptAsync(cfg.JavaAppDumpScript.Path)
+				dumpTriggeredAsync = true
+			}
+		}
 
-        alerts = append(alerts, domainAlert.TriggeredAlert{Type: t, Message: msg})
-    }
+		alerts = append(alerts, domainAlert.TriggeredAlert{Type: t, Message: msg})
+	}
 
-    if dumpTriggeredAsync {
-        alerts = append(alerts, domainAlert.TriggeredAlert{
-            Type:    entity.Info,
-            Message: "检测到高负载，已自动触发 Java 堆转储生成（异步执行中）...",
-        })
-    }
+	if dumpTriggeredAsync {
+		alerts = append(alerts, domainAlert.TriggeredAlert{
+			Type:    entity.Info,
+			Message: "检测到高负载，已自动触发 Java 堆转储生成（异步执行中）...",
+		})
+	}
 
-    bodyTitle := cfg.Monitor.AlertTitle
-    if bodyTitle == "" {
-        bodyTitle = "GWatch 服务器告警"
-    }
-    body := uc.formatter.Build(bodyTitle, cfg, m, alerts)
-    return uc.notifier.Send(bodyTitle, body)
+	bodyTitle := cfg.Monitor.AlertTitle
+	if bodyTitle == "" {
+		bodyTitle = "GWatch 服务器告警"
+	}
+	body := uc.formatter.Build(bodyTitle, cfg, m, alerts)
+	return uc.notifier.Send(bodyTitle, body)
 }
