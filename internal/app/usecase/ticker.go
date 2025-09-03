@@ -3,7 +3,6 @@ package usecase
 
 import (
 	"GWatch/internal/domain/alert"
-	"GWatch/internal/domain/collector"
 	"GWatch/internal/domain/monitor"
 	"GWatch/internal/domain/ticker"
 	"GWatch/internal/entity"
@@ -15,36 +14,30 @@ import (
 
 // TickerUseCaseImpl 定时器用例实现
 type TickerUseCaseImpl struct {
-	tickerCollector ticker.TickerCollector
-	hostCollector   collector.HostCollector
-	redisClient     RedisClient
-	httpCollector   collector.HTTPCollector
-	evaluator       monitor.Evaluator
-	formatter       alert.Formatter
-	tickerFormatter alert.TickerFormatter
-	notifier        Notifier
+	tickerCollector     ticker.TickerCollector
+	systemMetricsService *SystemMetricsService
+	evaluator           monitor.Evaluator
+	formatter           alert.Formatter
+	tickerFormatter     alert.TickerFormatter
+	notifier            Notifier
 }
 
 // NewTickerUseCase 创建定时器用例
 func NewTickerUseCase(
 	tickerCollector ticker.TickerCollector,
-	hostCollector collector.HostCollector,
-	redisClient RedisClient,
-	httpCollector collector.HTTPCollector,
+	systemMetricsService *SystemMetricsService,
 	evaluator monitor.Evaluator,
 	formatter alert.Formatter,
 	tickerFormatter alert.TickerFormatter,
 	notifier Notifier,
 ) ticker.TickerUseCase {
 	return &TickerUseCaseImpl{
-		tickerCollector: tickerCollector,
-		hostCollector:   hostCollector,
-		redisClient:     redisClient,
-		httpCollector:   httpCollector,
-		evaluator:       evaluator,
-		formatter:       formatter,
-		tickerFormatter: tickerFormatter,
-		notifier:        notifier,
+		tickerCollector:     tickerCollector,
+		systemMetricsService: systemMetricsService,
+		evaluator:           evaluator,
+		formatter:           formatter,
+		tickerFormatter:     tickerFormatter,
+		notifier:            notifier,
 	}
 }
 
@@ -111,46 +104,28 @@ func (tu *TickerUseCaseImpl) RunTickerReport(config *entity.Config) error {
 	}
 
 	// 收集当前系统监控指标
-	systemMetrics := tu.collectSystemMetrics(config)
+	systemMetrics := tu.systemMetricsService.CollectBasicMetrics()
 
 	// 构建报告内容
-	report := tu.buildTickerReport(config, tickerMetrics, systemMetrics)
+	title := tu.getTickerTitle(config)
+	report := tu.buildTickerReport(config, tickerMetrics, systemMetrics, title)
 
 	// 发送到钉钉
-	title := "设备状态定时报告"
-	if config.Tickers.AlertTitle != "" {
-		title = config.Tickers.AlertTitle
-	}
-
 	return tu.notifier.Send(title, report)
 }
 
-// collectSystemMetrics 收集系统监控指标
-func (tu *TickerUseCaseImpl) collectSystemMetrics(config *entity.Config) *entity.SystemMetrics {
-	m := &entity.SystemMetrics{Timestamp: time.Now()}
 
-	// 收集基础指标
-	m.CPU.Percent, m.CPU.Error = tu.hostCollector.GetCPUPercent()
-	m.Memory.Percent, m.Memory.UsedMB, m.Memory.TotalMB, m.Memory.Error = tu.hostCollector.GetMemoryUsage()
-	m.Disk.Percent, m.Disk.UsedGB, m.Disk.TotalGB, m.Disk.Error = tu.hostCollector.GetDiskUsage()
-	m.Network.DownloadKBps, m.Network.UploadKBps, m.Network.Error = tu.hostCollector.GetNetworkRate()
 
-	// 收集Redis信息
-	if clientCount, err := tu.redisClient.GetClients(); err == nil {
-		m.Redis.ClientCount = clientCount
+// getTickerTitle 获取定时器报告标题
+func (tu *TickerUseCaseImpl) getTickerTitle(config *entity.Config) string {
+	if config.Tickers.AlertTitle != "" {
+		return config.Tickers.AlertTitle
 	}
-
-	return m
+	return "设备状态定时报告"
 }
 
 // buildTickerReport 构建定时器报告
-func (tu *TickerUseCaseImpl) buildTickerReport(config *entity.Config, tickerMetrics *entity.TickerMetrics, systemMetrics *entity.SystemMetrics) string {
-	// 使用配置文件中的标题，如果没有配置则使用默认标题
-	title := config.Tickers.AlertTitle
-	if title == "" {
-		title = "设备状态定时报告"
-	}
-	
+func (tu *TickerUseCaseImpl) buildTickerReport(config *entity.Config, tickerMetrics *entity.TickerMetrics, systemMetrics *entity.SystemMetrics, title string) string {
 	// 使用ticker格式化器构建报告
 	if tu.tickerFormatter != nil {
 		return tu.tickerFormatter.BuildTickerReport(title, config, tickerMetrics, systemMetrics)
@@ -190,33 +165,13 @@ func (ts *TickerSchedulerImpl) Start(config *entity.Config, stopCh <-chan struct
 		
 		// 启动时立即检查一次，避免错过启动时间
 		log.Println("启动时检查告警时间...")
-		for _, tickerConfig := range config.Tickers.HTTPInterfaces {
-			if ts.IsTimeToAlert(tickerConfig.AlertTime) {
-				log.Printf("启动时匹配到告警时间，立即执行设备状态报告 (接口: %s)", tickerConfig.Name)
-				if err := ts.tickerUseCase.RunTickerReport(config); err != nil {
-					log.Printf("执行定时器报告失败: %v", err)
-				} else {
-					log.Println("定时器报告发送成功")
-				}
-				break // 只执行一次报告
-			}
-		}
+		ts.executeTickerReportIfNeeded(config, "启动时匹配到告警时间，立即执行设备状态报告")
 		
 		for {
 			select {
 			case <-ts.ticker.C:
 				// 检查所有ticker接口的告警时间
-				for _, tickerConfig := range config.Tickers.HTTPInterfaces {
-					if ts.IsTimeToAlert(tickerConfig.AlertTime) {
-						log.Printf("定时器触发：开始执行设备状态报告 (接口: %s)", tickerConfig.Name)
-						if err := ts.tickerUseCase.RunTickerReport(config); err != nil {
-							log.Printf("执行定时器报告失败: %v", err)
-						} else {
-							log.Println("定时器报告发送成功")
-						}
-						break // 只执行一次报告
-					}
-				}
+				ts.executeTickerReportIfNeeded(config, "定时器触发：开始执行设备状态报告")
 			case <-stopCh:
 				log.Println("定时器调度器收到停止信号")
 				return
@@ -228,6 +183,21 @@ func (ts *TickerSchedulerImpl) Start(config *entity.Config, stopCh <-chan struct
 	}()
 	
 	return nil
+}
+
+// executeTickerReportIfNeeded 如果需要则执行定时器报告
+func (ts *TickerSchedulerImpl) executeTickerReportIfNeeded(config *entity.Config, logPrefix string) {
+	for _, tickerConfig := range config.Tickers.HTTPInterfaces {
+		if ts.IsTimeToAlert(tickerConfig.AlertTime) {
+			log.Printf("%s (接口: %s)", logPrefix, tickerConfig.Name)
+			if err := ts.tickerUseCase.RunTickerReport(config); err != nil {
+				log.Printf("执行定时器报告失败: %v", err)
+			} else {
+				log.Println("定时器报告发送成功")
+			}
+			break // 只执行一次报告
+		}
+	}
 }
 
 // Stop 停止定时器调度

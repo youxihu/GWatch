@@ -1,12 +1,13 @@
-.PHONY: run build
+.PHONY: run wire build deploy
 #run
 run:
-	go run cmd/main.go
-
+	go run ./cmd
+wire:
+	wire ./cmd
 # build
 build:
 	rm -rf ./bin
-	mkdir -p bin/ && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  -o ./bin/Gwatch ./cmd/main.go
+	mkdir -p bin/ && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  -o ./bin/Gwatch ./cmd
 	upx  ./bin/*
 
 deploy:

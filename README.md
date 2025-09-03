@@ -132,15 +132,16 @@ javaAppDumpScript:
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                        cmd/main.go                          │
-│                    程序入口，依赖注入                        │
+│                    程序入口，Wire依赖注入                    │
 └─────────────────────────────────────────────────────────────┘
                                 │
 ┌─────────────────────────────────────────────────────────────┐
 │                    internal/app/usecase                     │
 │                应用层：监控流程编排                          │
-│  MonitoringUseCase + Coordinator：                          │
+│  MonitoringUseCase + Coordinator + SystemMetricsService：   │
 │  - UseCase：采集 → 判断 → 策略 → 格式化 → 发送              │
 │  - Coordinator：双周期调度（基础/HTTP），按需补采与合并通知   │
+│  - SystemMetricsService：统一系统指标收集服务               │
 └─────────────────────────────────────────────────────────────┘
                                 │
 ┌─────────────────────────────────────────────────────────────┐
@@ -154,6 +155,47 @@ javaAppDumpScript:
 │                基础设施层：具体实现                          │
 │    collectors, monitor, alert, config, notifier           │
 └─────────────────────────────────────────────────────────────┘
+```
+
+### 🔧 依赖注入架构
+
+项目采用 **Google Wire** 进行依赖注入管理，实现了：
+
+- **编译时依赖注入**：零运行时开销，类型安全
+- **清晰的依赖关系**：所有依赖在 `cmd/wire.go` 中统一管理
+- **易于测试**：可以轻松注入 mock 对象
+- **代码简洁**：main.go 从 140+ 行减少到 60+ 行
+
+#### Wire 配置文件结构
+
+```
+cmd/
+├── main.go          # 程序入口，使用 InitializeApp()
+├── wire.go          # Wire 配置文件，定义依赖提供者
+└── wire_gen.go      # Wire 自动生成的依赖注入代码
+```
+
+#### 依赖注入流程
+
+```go
+// 1. 定义提供者函数
+func NewSystemMetricsService(...) *SystemMetricsService
+
+// 2. 配置依赖图
+var ProviderSet = wire.NewSet(
+    NewConfigProvider,
+    NewSystemMetricsService,
+    // ...
+)
+
+// 3. 生成注入器
+func InitializeApp() (*App, error) {
+    wire.Build(ProviderSet, NewApp)
+    return &App{}, nil
+}
+
+// 4. 在 main.go 中使用
+app, err := InitializeApp()
 ```
 
 ### 核心组件
@@ -498,6 +540,53 @@ tail -f /var/log/gwatch.log
 - 内存占用：约 50-100MB
 - CPU占用：监控间隔内 < 1%
 - 网络IO：最小化，仅告警时发送
+
+## 📝 更新日志
+
+### v2.0.0 - Wire 依赖注入重构 (2025-09-03)
+
+#### 🎉 重大更新
+
+**依赖注入架构升级**
+- ✅ 引入 Google Wire 进行依赖注入管理
+- ✅ 实现编译时依赖注入，零运行时开销
+- ✅ main.go 代码从 140+ 行精简到 60+ 行
+- ✅ 所有依赖关系在 `cmd/wire.go` 中统一管理
+
+**代码重构优化**
+- ✅ 创建 `SystemMetricsService` 统一系统指标收集
+- ✅ 消除重复代码，提高代码复用性
+- ✅ 优化命名规范，提升代码可读性
+- ✅ 重构目录结构，提升扩展性
+
+**架构改进**
+- ✅ 重命名 `service/` 目录为 `external/`，避免与 DDD Service 混淆
+- ✅ 重命名 `dumpscript_result.go` 为 `java_dump_result.go`
+- ✅ 重命名 `dump_script.go` 为 `java_dump_script.go`
+- ✅ 提取公共方法，消除代码重复
+
+#### 🔧 技术改进
+
+**依赖注入**
+- 使用 Wire 自动生成依赖注入代码
+- 类型安全的依赖关系管理
+- 易于单元测试和集成测试
+
+**代码质量**
+- 消除约 40+ 行重复代码
+- 提升代码可维护性
+- 改善分层架构清晰度
+
+**扩展性**
+- `external/` 目录可轻松扩展 MySQL、PostgreSQL 等收集器
+- 统一的系统指标收集服务
+- 清晰的职责分离
+
+#### 📊 性能提升
+
+- 编译时依赖注入，零运行时开销
+- 减少内存占用和初始化时间
+- 提升代码执行效率
 
 ---
 
