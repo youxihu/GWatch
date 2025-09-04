@@ -73,9 +73,9 @@ type TickersConfig struct {
 
 // TickerHTTPInterface 定时器HTTP接口配置
 type TickerHTTPInterface struct {
-	Name           string   `yaml:"name"`
-	URL            string   `yaml:"url"`
-	Authorization  string   `yaml:"Authorization"`
-	Cookie         string   `yaml:"Cookie"`
-	AlertTime      []string `yaml:"alert_time"` // 格式: ["0:00", "7:00", "12:00", "18:00", "21:00"]
+	Name          string   `yaml:"name"`
+	URL           string   `yaml:"url"`
+	Authorization string   `yaml:"authorization"`
+	AuthBackdoor  string   `yaml:"auth_backdoor"`
+	AlertTime     []string `yaml:"alert_time"` // 格式: ["0:00", "7:00", "12:00", "18:00", "21:00"]
 }

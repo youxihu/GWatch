@@ -42,9 +42,7 @@ func (tc *TickerCollectorImpl) CollectDeviceStatus(config entity.TickerHTTPInter
 	if config.Authorization != "" {
 		req.Header.Set("Authorization", config.Authorization)
 	}
-	if config.Cookie != "" {
-		req.Header.Set("Cookie", config.Cookie)
-	}
+
 	req.Header.Set("Content-Type", "application/json")
 
 	// 发送请求
@@ -103,9 +101,7 @@ func (tc *TickerCollectorImpl) CheckInterface(config entity.TickerHTTPInterface)
 	if config.Authorization != "" {
 		req.Header.Set("Authorization", config.Authorization)
 	}
-	if config.Cookie != "" {
-		req.Header.Set("Cookie", config.Cookie)
-	}
+
 	req.Header.Set("Content-Type", "application/json")
 
 	// 发送请求

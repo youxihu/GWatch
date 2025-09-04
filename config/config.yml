@@ -47,9 +47,9 @@ tickers:
   http_interfaces:
     - name: "number of monitoring devices"
       url: "https://vms.kumshingapps.com/prod-api/api/device/query/getDDCTree"
-      Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJsb2dpbl91c2VyX2tleSI6ImJkMjhmNjkzLWUxZWEtNDRlNS1iNDkwLWQwNGQ2ZmNkNjRiMSJ9.1LOo5Hr4YOlcnFBybGHSsoPqr3M86FRQs2g85RGkRbwEef-6nQMm1YSow2Obxl4PHHVRuxznFJdii-odmST5Cw
-      Cookie: Admin-Token=eyJhbGciOiJIUzUxMiJ9.eyJsb2dpbl91c2VyX2tleSI6ImJkMjhmNjkzLWUxZWEtNDRlNS1iNDkwLWQwNGQ2ZmNkNjRiMSJ9.1LOo5Hr4YOlcnFBybGHSsoPqr3M86FRQs2g85RGkRbwEef-6nQMm1YSow2Obxl4PHHVRuxznFJdii-odmST5Cw; sidebarStatus=0
-      alert_time: ["8:00", "10:00", "13:00", "16:00"]
+      auth_backdoor: "123456"
+      authorization: "Bearer eyJhbGciOiJIUzUxMiJ9.eyJsb2dpbl91c2VyX2tleSI6IjQ3MWVmYmQwLWY4NmUtNGQ3Yi04MTZhLTljY2E5ZDg5Zjk4YyJ9.-OtqDUDW5kE7dXRp4v6Pc5W87EhwRrApCL0tDL6AQCXrfUteWqXg-gf5qx17bdKO34f2KI17sJ16viatzxkEMA"
+      alert_time: ["8:00", "10:00", "13:00", "13:00"]
 log:
   mode: zap
   level: info
