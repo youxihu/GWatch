@@ -1,0 +1,71 @@
+# GWatch 监控工具配置文件
+redis:
+  addr: "127.0.0.0:6379"
+  password: "123456"
+  db: 0
+  timeout: 5s
+  pool_size: 5
+  min_idle_conns: 1
+  max_idle_conns: 3
+
+dingtalk:
+  webhook_url: "https://oapi.dingtalk.com/robot/send?access_token=bfd9***************************************b06ebad"
+  secret: "SEC0b0f0a3d4*************************************12fe97b22fa"
+  at_mobiles: ["19******502"]
+
+monitor:
+  interval: 5s  # 监控间隔
+  consecutive_threshold: 3  # 连续触发次数阈值
+  cpu_threshold: 80.0  # CPU使用率阈值
+  memory_threshold: 70.0  # 内存使用率阈值
+  disk_threshold: 80.0  # 磁盘使用率阈值
+  redis_min_clients: 0  # Redis最小连接数
+  redis_max_clients: 10  # Redis最大连接数
+  alert_interval: 2m  # 告警间隔
+  alert_title: "xxx告警"  # 告警标题 用于钉钉告警
+  http_error_threshold: 0  # HTTP接口异常数量阈值
+  http_interval: 10s   #http接口检查间隔
+  http_interfaces: #http接口检查配置
+    - name: "example1"
+      url: "https://example1.captcha.com/prod-api/captchaImage"
+      need_alert: true
+      timeout: 3s
+      allowed_codes: [200, 201, 204]
+    - name: "example2"
+      url: "http://172.25.216.169:7080/login"
+      need_alert: false
+      timeout: 3s
+      allowed_codes: [200, 201, 204]
+    - name: "example3"
+      url: "http://172.25.216.169:7080/captchaImage"
+      need_alert: false
+      timeout: 3s
+      allowed_codes: [200, 201, 204]
+
+tickers:
+  ticker_title: "xxx定时报告"  # 报告标题 用于钉钉报告
+  ticker_interfaces: # 定时器接口配置
+    - name: "number of monitoring devices" # 设备数量接口名称
+      device_url: "https://example.monitoring.com/api/device/query/getDDCTree" # 设备数量接口
+      alert_time: ["8:00", "10:00", "13:00", "16:00"] # 定时报告时间点
+
+      # 认证配置 - 当前使用静态token模式
+      auth:
+        mode: "static" # 当前模式: static
+        static_token: "Bearer eyJhbGciOiJIUzUxMiJ9.eyJsb2dpbl91c2VyX2tleSI6IjQ3MWVmYmQwLWY4NmUtNGQ3Yi04MTZhLTljY2E5ZDg5Zjk4YyJ9.-OtqDUDW5kE7dXRp4v6Pc5W87EhwRrApCL0tDL6AQCXrfUteWqXg-gf5qx17bdKO34f2KI17sJ16viatzxkEMA"
+
+        # 未来切换到动态登录模式时，取消注释以下配置并注释上面的static_token
+        # mode: "dynamic"
+        # login_url: "https://example1.captcha.com/login"
+        # username: "gwatch"
+        # password: "gwatch@vms2025"
+        # backdoor_code: "123456" # 万能验证码
+        # token_cache_duration: "1h" # token缓存1小时
+log:
+  mode: zap
+  level: info
+  output: logs/gwatch.log
+
+
+javaAppDumpScript:
+  path: /home/youxihu/hk_video/createJavaMapDump.sh

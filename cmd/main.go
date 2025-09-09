@@ -40,7 +40,7 @@ func main() {
 	// 3. 启动监控和定时器
 	// ========================================
 	// 启动Ticker调度器
-	if len(cfg.Tickers.HTTPInterfaces) > 0 {
+	if len(cfg.Tickers.TickerInterfaces) > 0 {
 		log.Println("启动定时器调度器...")
 		if err := app.TickerScheduler.Start(cfg, stopCh); err != nil {
 			log.Printf("启动定时器调度器失败: %v", err)

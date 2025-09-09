@@ -11,6 +11,9 @@ type TickerCollector interface {
 	// CollectDeviceStatus 收集设备状态信息
 	CollectDeviceStatus(config entity.TickerHTTPInterface) (*entity.DeviceStatus, error)
 	
+	// CollectDeviceStatusWithToken 使用指定token收集设备状态信息
+	CollectDeviceStatusWithToken(config entity.TickerHTTPInterface, token string) (*entity.DeviceStatus, error)
+	
 	// CheckInterface 检查接口可用性
 	CheckInterface(config entity.TickerHTTPInterface) (bool, error)
 }

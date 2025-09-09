@@ -15,6 +15,7 @@ import (
 // TickerUseCaseImpl 定时器用例实现
 type TickerUseCaseImpl struct {
 	tickerCollector     ticker.TickerCollector
+	tokenProvider       ticker.TokenProvider
 	systemMetricsService *SystemMetricsService
 	evaluator           monitor.Evaluator
 	formatter           alert.Formatter
@@ -25,6 +26,7 @@ type TickerUseCaseImpl struct {
 // NewTickerUseCase 创建定时器用例
 func NewTickerUseCase(
 	tickerCollector ticker.TickerCollector,
+	tokenProvider ticker.TokenProvider,
 	systemMetricsService *SystemMetricsService,
 	evaluator monitor.Evaluator,
 	formatter alert.Formatter,
@@ -33,6 +35,7 @@ func NewTickerUseCase(
 ) ticker.TickerUseCase {
 	return &TickerUseCaseImpl{
 		tickerCollector:     tickerCollector,
+		tokenProvider:       tokenProvider,
 		systemMetricsService: systemMetricsService,
 		evaluator:           evaluator,
 		formatter:           formatter,
@@ -48,24 +51,40 @@ func (tu *TickerUseCaseImpl) CollectTickerMetrics(config *entity.Config) (*entit
 	}
 
 	// 收集设备状态信息
-	if len(config.Tickers.HTTPInterfaces) > 0 {
+	if len(config.Tickers.TickerInterfaces) > 0 {
 		var wg sync.WaitGroup
-		interfaces := make([]entity.TickerInterfaceMetrics, len(config.Tickers.HTTPInterfaces))
+		interfaces := make([]entity.TickerInterfaceMetrics, len(config.Tickers.TickerInterfaces))
 		
-		for i, tickerConfig := range config.Tickers.HTTPInterfaces {
+		for i, tickerConfig := range config.Tickers.TickerInterfaces {
 			wg.Add(1)
 			go func(index int, cfg entity.TickerHTTPInterface) {
 				defer wg.Done()
 				
+				// 获取认证token
+				token, tokenErr := tu.tokenProvider.GetToken(cfg.Auth)
+				if tokenErr != nil {
+					interfaces[index] = entity.TickerInterfaceMetrics{
+						Name:         cfg.Name,
+						URL:          cfg.DeviceURL,
+						IsAccessible: false,
+						Error:        tokenErr,
+						ChannelOffLineNumber: 0,
+						ChannelOnLineNumber:  0,
+						TotalDevices:         0,
+						OnlineRate:           0,
+					}
+					return
+				}
+
 				// 收集设备状态
-				deviceStatus, deviceErr := tu.tickerCollector.CollectDeviceStatus(cfg)
+				deviceStatus, deviceErr := tu.tickerCollector.CollectDeviceStatusWithToken(cfg, token)
 				
 				// 接口可用性基于设备状态收集是否成功
 				isAccessible := deviceErr == nil && deviceStatus != nil
 				
 				interfaces[index] = entity.TickerInterfaceMetrics{
 					Name:                 cfg.Name,
-					URL:                  cfg.URL,
+					URL:                  cfg.DeviceURL,
 					IsAccessible:         isAccessible,
 					Error:                deviceErr,
 					ChannelOffLineNumber: 0,
@@ -187,7 +206,7 @@ func (ts *TickerSchedulerImpl) Start(config *entity.Config, stopCh <-chan struct
 
 // executeTickerReportIfNeeded 如果需要则执行定时器报告
 func (ts *TickerSchedulerImpl) executeTickerReportIfNeeded(config *entity.Config, logPrefix string) {
-	for _, tickerConfig := range config.Tickers.HTTPInterfaces {
+	for _, tickerConfig := range config.Tickers.TickerInterfaces {
 		if ts.IsTimeToAlert(tickerConfig.AlertTime) {
 			log.Printf("%s (接口: %s)", logPrefix, tickerConfig.Name)
 			if err := ts.tickerUseCase.RunTickerReport(config); err != nil {

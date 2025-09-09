@@ -19,6 +19,7 @@ import (
 	"GWatch/internal/infra/collectors/external"
 	"GWatch/internal/infra/collectors/host"
 	ticker2 "GWatch/internal/infra/collectors/ticker"
+	"GWatch/internal/infra/collectors/ticker/auth"
 	"GWatch/internal/infra/config"
 	"GWatch/internal/infra/monitor"
 	"GWatch/internal/infra/notifier"
@@ -45,10 +46,11 @@ func InitializeApp() (*App, error) {
 	httpPolicy := NewHTTPPolicy()
 	httpMonitoringUseCase := NewHTTPMonitoringUseCase(hostCollector, redisClient, httpCollector, evaluator, httpPolicy, formatter, notifier)
 	coordinator := NewCoordinator(baseMonitoringUseCase, httpMonitoringUseCase, basePolicy, httpPolicy)
-	tickerCollector := NewTickerCollector()
+	tokenProvider := NewTokenProvider()
+	tickerCollector := NewTickerCollector(tokenProvider)
 	systemMetricsService := NewSystemMetricsService(hostCollector, redisClient, httpCollector)
 	tickerFormatter := NewTickerMarkdownFormatter()
-	tickerUseCase := NewTickerUseCase(tickerCollector, systemMetricsService, evaluator, formatter, tickerFormatter, notifier)
+	tickerUseCase := NewTickerUseCase(tickerCollector, tokenProvider, systemMetricsService, evaluator, formatter, tickerFormatter, notifier)
 	tickerScheduler := NewTickerScheduler(tickerUseCase)
 	app := NewApp(config, coordinator, tickerScheduler)
 	return app, nil
@@ -79,6 +81,8 @@ var ProviderSet = wire.NewSet(
 	NewHTTPCollector,
 	NewTickerCollector,
 
+	NewTokenProvider,
+
 	NewEvaluator,
 	NewMarkdownFormatter,
 	NewTickerMarkdownFormatter,
@@ -96,7 +100,7 @@ var ProviderSet = wire.NewSet(
 
 // NewConfigProvider 创建配置提供者
 func NewConfigProvider() (config.Provider, error) {
-	return configimpl.NewYAMLProvider("config/config.yml")
+	return configimpl.NewYAMLProvider("config/config_test.yml")
 }
 
 // NewHostCollector 创建主机信息收集器
@@ -115,8 +119,13 @@ func NewHTTPCollector(provider config.Provider) collector.HTTPCollector {
 }
 
 // NewTickerCollector 创建 Ticker 收集器
-func NewTickerCollector() ticker.TickerCollector {
-	return ticker2.NewTickerCollector()
+func NewTickerCollector(tokenProvider ticker.TokenProvider) ticker.TickerCollector {
+	return ticker2.NewTickerCollector(tokenProvider)
+}
+
+// NewTokenProvider 创建 Token 提供者
+func NewTokenProvider() ticker.TokenProvider {
+	return auth.NewTokenProvider()
 }
 
 // NewEvaluator 创建评估器
@@ -201,6 +210,7 @@ func NewSystemMetricsService(
 // NewTickerUseCase 创建 Ticker 用例
 func NewTickerUseCase(
 	tickerInfo ticker.TickerCollector,
+	tokenProvider ticker.TokenProvider,
 	systemMetricsService *usecase.SystemMetricsService,
 	evaluator monitor.Evaluator,
 	formatter alert.Formatter,
@@ -209,6 +219,7 @@ func NewTickerUseCase(
 ) ticker.TickerUseCase {
 	return usecase.NewTickerUseCase(
 		tickerInfo,
+		tokenProvider,
 		systemMetricsService,
 		evaluator,
 		formatter,

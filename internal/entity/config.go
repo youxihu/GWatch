@@ -67,15 +67,34 @@ type HTTPInterface struct {
 
 // TickersConfig 定时器配置
 type TickersConfig struct {
-	AlertTitle     string                `yaml:"alert_title"`
-	HTTPInterfaces []TickerHTTPInterface `yaml:"http_interfaces"`
+	AlertTitle       string                `yaml:"alert_title"`
+	TickerInterfaces []TickerHTTPInterface `yaml:"ticker_interfaces"`
 }
 
 // TickerHTTPInterface 定时器HTTP接口配置
 type TickerHTTPInterface struct {
-	Name          string   `yaml:"name"`
-	URL           string   `yaml:"url"`
-	Authorization string   `yaml:"authorization"`
-	AuthBackdoor  string   `yaml:"auth_backdoor"`
-	AlertTime     []string `yaml:"alert_time"` // 格式: ["0:00", "7:00", "12:00", "18:00", "21:00"]
+	Name      string   `yaml:"name"`
+	DeviceURL string   `yaml:"device_url"` // 设备数据接口
+	AlertTime []string `yaml:"alert_time"` // 格式: ["0:00", "7:00", "12:00", "18:00", "21:00"]
+
+	// 认证配置 - 支持两种模式
+	Auth AuthConfig `yaml:"auth"`
+}
+
+// AuthConfig 认证配置
+type AuthConfig struct {
+	// 模式: "static" 使用静态token, "dynamic" 使用动态登录
+	Mode string `yaml:"mode"`
+
+	// 静态token模式 (当前使用)
+	StaticToken string `yaml:"static_token,omitempty"`
+
+	// 动态登录模式 (未来使用)
+	LoginURL     string `yaml:"login_url,omitempty"`
+	Username     string `yaml:"username,omitempty"`
+	Password     string `yaml:"password,omitempty"`
+	BackdoorCode string `yaml:"backdoor_code,omitempty"` // 万能验证码
+
+	// Token缓存配置
+	TokenCacheDuration string `yaml:"token_cache_duration,omitempty"` // 如: "1h", "30m"
 }
