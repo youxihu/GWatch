@@ -19,6 +19,7 @@ const (
 	// MySQL监控告警类型
 	MySQLConnHigh   AlertType = "mysql_conn_high"    // MySQL连接数过高
 	MySQLConnErr    AlertType = "mysql_conn_error"   // MySQL连接异常
+	MySQLThreadsHigh AlertType = "mysql_threads_high" // MySQL活跃线程数过高
 	MySQLQPSHigh    AlertType = "mysql_qps_high"      // MySQL QPS过高
 	MySQLSlowQuery  AlertType = "mysql_slow_query"   // MySQL慢查询过多
 	MySQLBufferLow  AlertType = "mysql_buffer_low"    // MySQL Buffer Pool命中率过低
@@ -47,6 +48,7 @@ var AlertTypeText = map[AlertType]string{
 	RedisErr:        "Redis连接异常",
 	MySQLConnHigh:   "MySQL连接数过高",
 	MySQLConnErr:    "MySQL连接异常",
+	MySQLThreadsHigh: "MySQL活跃线程数过高",
 	MySQLQPSHigh:    "MySQL QPS过高",
 	MySQLSlowQuery:  "MySQL慢查询过多",
 	MySQLBufferLow:  "MySQL Buffer Pool命中率过低",

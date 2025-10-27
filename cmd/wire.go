@@ -12,6 +12,10 @@ import (
 	"GWatch/internal/domain/scheduled_push"
 	"GWatch/internal/domain/ticker"
 	"GWatch/internal/entity"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
 	// infra 实现
 	monitoringImpl "GWatch/internal/infra/monitoring"
@@ -322,6 +326,101 @@ type App struct {
 	TickerScheduler       ticker.TickerScheduler
 	ScheduledPushScheduler scheduled_push.ScheduledPushScheduler
 	LoggerService         *usecase.LoggerService
+}
+
+// Start 启动应用程序
+func (app *App) Start() error {
+	log.Println("开始监控...")
+	
+	// 打印监控状态
+	app.printMonitoringStatus()
+	
+	// 设置信号监听
+	stopCh := make(chan struct{})
+	go app.handleSignals(stopCh)
+	
+	// 启动调度器
+	if err := app.startSchedulers(stopCh); err != nil {
+		return err
+	}
+	
+	// 启动监控协调器（阻塞运行）
+	app.Coordinator.RunWithIntervals(app.Config, stopCh)
+	
+	log.Println("GWatch 正在退出...")
+	return nil
+}
+
+// printMonitoringStatus 打印监控状态
+func (app *App) printMonitoringStatus() {
+	cfg := app.Config
+	
+	if cfg.HostMonitoring != nil && cfg.HostMonitoring.Enabled {
+		log.Println("主机监控已启用，监控间隔:", cfg.HostMonitoring.Interval)
+	} else if cfg.HostMonitoring != nil && !cfg.HostMonitoring.Enabled {
+		log.Println("主机监控已禁用")
+	}
+	
+	// 应用层监控状态
+	if cfg.AppMonitoring != nil && cfg.AppMonitoring.Enabled {
+		log.Println("应用层监控已启用")
+		if cfg.AppMonitoring.Redis != nil && cfg.AppMonitoring.Redis.Enabled {
+			log.Println("  - Redis监控已启用")
+		} else if cfg.AppMonitoring.Redis != nil && !cfg.AppMonitoring.Redis.Enabled {
+			log.Println("  - Redis监控已禁用")
+		}
+		if cfg.AppMonitoring.MySQL != nil && cfg.AppMonitoring.MySQL.Enabled {
+			log.Println("  - MySQL监控已启用")
+		} else if cfg.AppMonitoring.MySQL != nil && !cfg.AppMonitoring.MySQL.Enabled {
+			log.Println("  - MySQL监控已禁用")
+		}
+		if cfg.AppMonitoring.HTTP != nil && cfg.AppMonitoring.HTTP.Enabled {
+			log.Println("  - HTTP监控已启用，监控间隔:", cfg.AppMonitoring.HTTP.Interval)
+		} else if cfg.AppMonitoring.HTTP != nil && !cfg.AppMonitoring.HTTP.Enabled {
+			log.Println("  - HTTP监控已禁用")
+		}
+		if cfg.AppMonitoring.Tickers != nil && cfg.AppMonitoring.Tickers.Enabled {
+			log.Println("  - Tickers监控已启用")
+		} else if cfg.AppMonitoring.Tickers != nil && !cfg.AppMonitoring.Tickers.Enabled {
+			log.Println("  - Tickers监控已禁用")
+		}
+	} else if cfg.AppMonitoring != nil && !cfg.AppMonitoring.Enabled {
+		log.Println("应用层监控已禁用")
+	}
+}
+
+// handleSignals 处理系统信号
+func (app *App) handleSignals(stopCh chan struct{}) {
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	sig := <-c
+	log.Printf("接收到信号 %v，正在优雅退出...\n", sig)
+	close(stopCh)
+}
+
+// startSchedulers 启动所有调度器
+func (app *App) startSchedulers(stopCh <-chan struct{}) error {
+	cfg := app.Config
+	
+	// 启动Ticker调度器
+	if cfg.AppMonitoring != nil && cfg.AppMonitoring.Enabled && cfg.AppMonitoring.Tickers != nil && cfg.AppMonitoring.Tickers.Enabled && len(cfg.AppMonitoring.Tickers.TickerInterfaces) > 0 {
+		log.Println("启动定时器调度器...")
+		if err := app.TickerScheduler.Start(cfg, stopCh); err != nil {
+			log.Printf("启动定时器调度器失败: %v", err)
+			return err
+		}
+	}
+	
+	// 启动全局定时推送调度器
+	if cfg.ScheduledPush != nil && cfg.ScheduledPush.Enabled {
+		log.Println("启动全局定时推送调度器...")
+		if err := app.ScheduledPushScheduler.Start(cfg, stopCh); err != nil {
+			log.Printf("启动全局定时推送调度器失败: %v", err)
+			return err
+		}
+	}
+	
+	return nil
 }
 
 // NewApp 创建应用程序实例

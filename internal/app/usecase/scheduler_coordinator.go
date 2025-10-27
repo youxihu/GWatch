@@ -28,13 +28,13 @@ func NewCoordinator(runnerBase, runnerHTTP *MonitoringUseCase, policyBase, polic
 func (c *Coordinator) RunWithIntervals(cfg *entity.Config, stopCh <-chan struct{}) {
 	// 获取监控间隔配置
 	var baseInterval, httpInterval time.Duration
-	if cfg.HostMonitoring != nil {
+	if cfg.HostMonitoring != nil && cfg.HostMonitoring.Enabled {
 		baseInterval = cfg.HostMonitoring.Interval
 	} else {
 		baseInterval = 5 * time.Second // 默认间隔
 	}
 	
-	if cfg.AppMonitoring != nil && cfg.AppMonitoring.HTTP != nil {
+	if cfg.AppMonitoring != nil && cfg.AppMonitoring.Enabled && cfg.AppMonitoring.HTTP != nil && cfg.AppMonitoring.HTTP.Enabled {
 		httpInterval = cfg.AppMonitoring.HTTP.Interval
 	} else {
 		httpInterval = 10 * time.Second // 默认间隔

@@ -13,8 +13,8 @@ func NewSimpleEvaluator() *SimpleEvaluator { return &SimpleEvaluator{} }
 func (s *SimpleEvaluator) Evaluate(cfg *entity.Config, metrics *entity.SystemMetrics) ([]domainMonitor.Decision, error) {
     var decisions []domainMonitor.Decision
 
-    // 主机类监控评估：只有当host_monitoring配置存在时才评估
-    if cfg != nil && cfg.HostMonitoring != nil {
+    // 主机类监控评估：只有当host_monitoring配置存在且启用时才评估
+    if cfg != nil && cfg.HostMonitoring != nil && cfg.HostMonitoring.Enabled {
         if metrics.CPU.Error != nil {
             decisions = append(decisions, domainMonitor.Decision{Type: entity.CPUErr})
         } else if metrics.CPU.Percent > cfg.HostMonitoring.CPUThreshold {
@@ -38,10 +38,10 @@ func (s *SimpleEvaluator) Evaluate(cfg *entity.Config, metrics *entity.SystemMet
         }
     }
 
-    // 应用层类监控评估：只有当app_monitoring配置存在时才评估
-    if cfg != nil && cfg.AppMonitoring != nil {
-        // Redis监控评估：只有当Redis配置存在时才评估
-        if cfg.AppMonitoring.Redis != nil {
+    // 应用层类监控评估：只有当app_monitoring配置存在且启用时才评估
+    if cfg != nil && cfg.AppMonitoring != nil && cfg.AppMonitoring.Enabled {
+        // Redis监控评估：只有当Redis配置存在且启用时才评估
+        if cfg.AppMonitoring.Redis != nil && cfg.AppMonitoring.Redis.Enabled {
             if metrics.Redis.ConnectionError != nil {
                 decisions = append(decisions, domainMonitor.Decision{Type: entity.RedisErr})
             } else {
@@ -54,64 +54,52 @@ func (s *SimpleEvaluator) Evaluate(cfg *entity.Config, metrics *entity.SystemMet
         }
 
 		// MySQL监控评估：只有当MySQL配置存在且启用时才评估
-		if cfg.AppMonitoring != nil && cfg.AppMonitoring.MySQL != nil {
+		if cfg.AppMonitoring != nil && cfg.AppMonitoring.MySQL != nil && cfg.AppMonitoring.MySQL.Enabled {
 			if metrics.MySQL.Error != nil {
 				decisions = append(decisions, domainMonitor.Decision{Type: entity.MySQLConnErr})
 			} else {
 				// 连接数评估 - 只有当连接数大于0时才评估
 				if metrics.MySQL.Connections.ThreadsConnected > 0 && 
-					metrics.MySQL.Connections.ConnectionUsage > float64(cfg.AppMonitoring.MySQL.ConnectionThresholds.MaxConnectionsWarning) {
+					metrics.MySQL.Connections.ConnectionUsage > cfg.AppMonitoring.MySQL.Thresholds.MaxConnectionsUsageWarning {
 					decisions = append(decisions, domainMonitor.Decision{Type: entity.MySQLConnHigh})
 				}
 
-				// QPS评估 - 只有当QPS大于0时才评估
-				if metrics.MySQL.QueryPerformance.QPS > 0 && 
-					metrics.MySQL.QueryPerformance.QPS > cfg.AppMonitoring.MySQL.QueryThresholds.QPSWarning {
-					decisions = append(decisions, domainMonitor.Decision{Type: entity.MySQLQPSHigh})
+				// 活跃线程数评估 - 只有当活跃线程数大于0时才评估
+				if metrics.MySQL.Connections.ThreadsRunning > cfg.AppMonitoring.MySQL.Thresholds.ThreadsRunningWarning {
+					decisions = append(decisions, domainMonitor.Decision{Type: entity.MySQLThreadsHigh})
 				}
 
 				// 慢查询评估 - 只有当慢查询数大于0时才评估
 				if metrics.MySQL.QueryPerformance.SlowQueries > 0 && 
-					metrics.MySQL.QueryPerformance.SlowQueries > cfg.AppMonitoring.MySQL.QueryThresholds.SlowQueriesWarning {
+					metrics.MySQL.QueryPerformance.SlowQueries > cfg.AppMonitoring.MySQL.Thresholds.SlowQueriesRateWarning {
 					decisions = append(decisions, domainMonitor.Decision{Type: entity.MySQLSlowQuery})
 				}
 
 				// Buffer Pool命中率评估 - 只有当命中率数据有效时才评估
 				if metrics.MySQL.BufferPool.HitRate > 0 && 
-					metrics.MySQL.BufferPool.HitRate < cfg.AppMonitoring.MySQL.BufferPoolThresholds.HitRateWarning {
+					metrics.MySQL.BufferPool.HitRate < cfg.AppMonitoring.MySQL.Thresholds.BufferPoolHitRateWarning {
 					decisions = append(decisions, domainMonitor.Decision{Type: entity.MySQLBufferLow})
 				}
 
 				// 复制延迟评估 - 只有当复制配置启用且延迟大于0时才评估
 				if cfg.AppMonitoring.MySQL.Replication != nil && 
+					cfg.AppMonitoring.MySQL.Replication.Enabled &&
 					metrics.MySQL.Replication != nil && 
 					metrics.MySQL.Replication.SecondsBehindMaster > 0 &&
-					metrics.MySQL.Replication.SecondsBehindMaster > cfg.AppMonitoring.MySQL.Replication.DelayWarningSeconds {
+					metrics.MySQL.Replication.SecondsBehindMaster > cfg.AppMonitoring.MySQL.Thresholds.ReplicationDelayWarningSeconds {
 					decisions = append(decisions, domainMonitor.Decision{Type: entity.MySQLReplDelay})
-				}
-
-				// 锁等待评估 - 只有当锁等待数大于0时才评估
-				if metrics.MySQL.Locks.RowLockWaits > 0 && 
-					metrics.MySQL.Locks.RowLockWaits > cfg.AppMonitoring.MySQL.LockThresholds.RowLockWaitsWarning {
-					decisions = append(decisions, domainMonitor.Decision{Type: entity.MySQLLockWait})
 				}
 
 				// 死锁评估 - 只有当死锁数大于0时才评估
 				if metrics.MySQL.Locks.Deadlocks > 0 && 
-					metrics.MySQL.Locks.Deadlocks > cfg.AppMonitoring.MySQL.LockThresholds.DeadlocksWarning {
+					metrics.MySQL.Locks.Deadlocks > cfg.AppMonitoring.MySQL.Thresholds.DeadlocksPerHourWarning {
 					decisions = append(decisions, domainMonitor.Decision{Type: entity.MySQLDeadlock})
-				}
-
-				// 长时间未提交事务评估 - 只有当未提交事务数大于0时才评估
-				if metrics.MySQL.Transactions.UncommittedTransactions > 0 && 
-					metrics.MySQL.Transactions.UncommittedTransactions > cfg.AppMonitoring.MySQL.TransactionThresholds.UncommittedTransactionsWarning {
-					decisions = append(decisions, domainMonitor.Decision{Type: entity.MySQLTransLong})
 				}
 			}
 		}
 
-		// HTTP接口监控评估：只有当HTTP配置存在时才评估
-		if cfg.AppMonitoring.HTTP != nil {
+		// HTTP接口监控评估：只有当HTTP配置存在且启用时才评估
+		if cfg.AppMonitoring.HTTP != nil && cfg.AppMonitoring.HTTP.Enabled {
 			if metrics.HTTP.Error != nil {
 				decisions = append(decisions, domainMonitor.Decision{Type: entity.HTTPErr})
 			} else {

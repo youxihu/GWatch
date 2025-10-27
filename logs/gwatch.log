@@ -5482,3 +5482,1621 @@
 
 [INFO] 2025/10/27 10:20:05 file_logger.go:64: GWatch 正在退出...
 
+[INFO] 2025/10/27 11:47:21 file_logger.go:64: 开始监控...
+
+[INFO] 2025/10/27 11:47:21 file_logger.go:64: 主机监控已启用，监控间隔: 5s
+
+[INFO] 2025/10/27 11:47:21 file_logger.go:64: HTTP监控已启用，监控间隔: 10s
+
+[INFO] 2025/10/27 11:47:21 file_logger.go:64: 启动全局定时推送调度器...
+
+[INFO] 2025/10/27 11:47:21 file_logger.go:64: 启动时检查全局定时推送时间...
+
+[INFO] 2025/10/27 11:47:21 file_logger.go:64: 检查全局推送时间: 当前时间=11:47, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:47:31 file_logger.go:64: 检查全局推送时间: 当前时间=11:47, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:47:36 file_logger.go:64: [WARN] Redis连接数过高 告警触发
+
+[INFO] 2025/10/27 11:47:41 file_logger.go:64: 检查全局推送时间: 当前时间=11:47, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:47:46 file_logger.go:64: [WARN] Redis连接数过高 告警触发
+
+[INFO] 2025/10/27 11:47:47 file_logger.go:64: [WARN] Redis连接数过高 告警触发
+
+[INFO] 2025/10/27 11:47:51 file_logger.go:64: 检查全局推送时间: 当前时间=11:47, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:47:51 file_logger.go:64: [INFO] HTTP接口监控失败 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:47:51 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:47:51 file_logger.go:64: CPU 使用率: 34.77%
+
+[INFO] 2025/10/27 11:47:51 file_logger.go:64: 内存使用: 19.26% (6172/32049 MB)
+
+[INFO] 2025/10/27 11:47:51 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:47:51 file_logger.go:64: 网络: 下载 7.10 KB/s | 上传 3.42 KB/s
+
+[INFO] 2025/10/27 11:47:51 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 73.30 KB/s
+
+[INFO] 2025/10/27 11:47:51 file_logger.go:64: Redis 连接数: 16
+
+[INFO] 2025/10/27 11:47:51 file_logger.go:64: HTTP接口 example-public-captcha [需告警]: 异常 (状态码: 0) - HTTP请求失败: Get "https://example.example.com/prod-api/captchaImage": dial tcp: lookup example.example.com on 127.0.0.53:53: no such host
+
+[INFO] 2025/10/27 11:47:51 file_logger.go:64: HTTP接口 example-example-captcha [仅监控]: 异常 (状态码: 0) - HTTP请求失败: Get "http://172.25.216.169:7080/captchaImage": context deadline exceeded
+
+[INFO] 2025/10/27 11:47:51 file_logger.go:64: 监控时间: 2025-10-27 11:47:51
+
+[INFO] 2025/10/27 11:47:51 file_logger.go:64: [INFO] HTTP接口监控失败 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:47:57 file_logger.go:64: [WARN] Redis连接数过高 告警触发
+
+[INFO] 2025/10/27 11:48:01 file_logger.go:64: 检查全局推送时间: 当前时间=11:48, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:48:01 file_logger.go:64: [INFO] HTTP接口监控失败 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:48:01 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:48:01 file_logger.go:64: CPU 使用率: 34.82%
+
+[INFO] 2025/10/27 11:48:01 file_logger.go:64: 内存使用: 19.27% (6175/32049 MB)
+
+[INFO] 2025/10/27 11:48:01 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:48:01 file_logger.go:64: 网络: 下载 6.15 KB/s | 上传 3.27 KB/s
+
+[INFO] 2025/10/27 11:48:01 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 362.47 KB/s
+
+[INFO] 2025/10/27 11:48:01 file_logger.go:64: Redis 连接数: 16
+
+[INFO] 2025/10/27 11:48:01 file_logger.go:64: HTTP接口 example-public-captcha [需告警]: 异常 (状态码: 0) - HTTP请求失败: Get "https://example.example.com/prod-api/captchaImage": dial tcp: lookup example.example.com on 127.0.0.53:53: no such host
+
+[INFO] 2025/10/27 11:48:01 file_logger.go:64: HTTP接口 example-example-captcha [仅监控]: 异常 (状态码: 0) - HTTP请求失败: Get "http://172.25.216.169:7080/captchaImage": context deadline exceeded
+
+[INFO] 2025/10/27 11:48:01 file_logger.go:64: 监控时间: 2025-10-27 11:48:01
+
+[INFO] 2025/10/27 11:48:01 file_logger.go:64: [INFO] HTTP接口监控失败 连续第 2/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:48:07 file_logger.go:64: [WARN] Redis连接数过高 告警触发
+
+[INFO] 2025/10/27 11:48:11 file_logger.go:64: 检查全局推送时间: 当前时间=11:48, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:48:11 file_logger.go:64: [INFO] HTTP接口监控失败 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:48:11 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:48:11 file_logger.go:64: CPU 使用率: 33.51%
+
+[INFO] 2025/10/27 11:48:11 file_logger.go:64: 内存使用: 19.35% (6200/32049 MB)
+
+[INFO] 2025/10/27 11:48:11 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:48:11 file_logger.go:64: 网络: 下载 5.74 KB/s | 上传 3.29 KB/s
+
+[INFO] 2025/10/27 11:48:11 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 22.58 KB/s
+
+[INFO] 2025/10/27 11:48:11 file_logger.go:64: Redis 连接数: 16
+
+[INFO] 2025/10/27 11:48:11 file_logger.go:64: HTTP接口 example-public-captcha [需告警]: 异常 (状态码: 0) - HTTP请求失败: Get "https://example.example.com/prod-api/captchaImage": dial tcp: lookup example.example.com on 127.0.0.53:53: no such host
+
+[INFO] 2025/10/27 11:48:11 file_logger.go:64: HTTP接口 example-example-captcha [仅监控]: 异常 (状态码: 0) - HTTP请求失败: Get "http://172.25.216.169:7080/captchaImage": context deadline exceeded
+
+[INFO] 2025/10/27 11:48:11 file_logger.go:64: 监控时间: 2025-10-27 11:48:11
+
+[INFO] 2025/10/27 11:48:11 file_logger.go:64: [WARN] HTTP接口监控失败 连续第 3 次超阈值，告警已触发
+
+[INFO] 2025/10/27 11:48:15 file_logger.go:64: 接收到信号 interrupt，正在优雅退出...
+
+[INFO] 2025/10/27 11:48:15 file_logger.go:64: 全局定时推送调度器收到停止信号
+
+[INFO] 2025/10/27 11:48:21 file_logger.go:64: [INFO] HTTP接口监控失败 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:48:21 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:48:21 file_logger.go:64: CPU 使用率: 33.51%
+
+[INFO] 2025/10/27 11:48:21 file_logger.go:64: 内存使用: 19.35% (6200/32049 MB)
+
+[INFO] 2025/10/27 11:48:21 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:48:21 file_logger.go:64: 网络: 下载 5.74 KB/s | 上传 3.29 KB/s
+
+[INFO] 2025/10/27 11:48:21 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 22.58 KB/s
+
+[INFO] 2025/10/27 11:48:21 file_logger.go:64: Redis 连接数: 16
+
+[INFO] 2025/10/27 11:48:21 file_logger.go:64: HTTP接口 example-public-captcha [需告警]: 异常 (状态码: 0) - HTTP请求失败: Get "https://example.example.com/prod-api/captchaImage": dial tcp: lookup example.example.com on 127.0.0.53:53: no such host
+
+[INFO] 2025/10/27 11:48:21 file_logger.go:64: HTTP接口 example-example-captcha [仅监控]: 异常 (状态码: 0) - HTTP请求失败: Get "http://172.25.216.169:7080/captchaImage": context deadline exceeded
+
+[INFO] 2025/10/27 11:48:21 file_logger.go:64: 监控时间: 2025-10-27 11:48:21
+
+[INFO] 2025/10/27 11:48:21 file_logger.go:64: [WARN] HTTP接口监控失败 连续第 4 次超阈值，告警已触发
+
+[INFO] 2025/10/27 11:48:31 file_logger.go:64: [INFO] HTTP接口监控失败 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:48:31 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:48:31 file_logger.go:64: CPU 使用率: 33.51%
+
+[INFO] 2025/10/27 11:48:31 file_logger.go:64: 内存使用: 19.35% (6200/32049 MB)
+
+[INFO] 2025/10/27 11:48:31 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:48:31 file_logger.go:64: 网络: 下载 5.74 KB/s | 上传 3.29 KB/s
+
+[INFO] 2025/10/27 11:48:31 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 22.58 KB/s
+
+[INFO] 2025/10/27 11:48:31 file_logger.go:64: Redis 连接数: 16
+
+[INFO] 2025/10/27 11:48:31 file_logger.go:64: HTTP接口 example-public-captcha [需告警]: 异常 (状态码: 0) - HTTP请求失败: Get "https://example.example.com/prod-api/captchaImage": dial tcp: lookup example.example.com on 127.0.0.53:53: no such host
+
+[INFO] 2025/10/27 11:48:31 file_logger.go:64: HTTP接口 example-example-captcha [仅监控]: 异常 (状态码: 0) - HTTP请求失败: Get "http://172.25.216.169:7080/captchaImage": context deadline exceeded
+
+[INFO] 2025/10/27 11:48:31 file_logger.go:64: 监控时间: 2025-10-27 11:48:31
+
+[INFO] 2025/10/27 11:48:31 file_logger.go:64: [WARN] HTTP接口监控失败 连续第 5 次超阈值，告警已触发
+
+[INFO] 2025/10/27 11:48:41 file_logger.go:64: [INFO] HTTP接口监控失败 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:48:41 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:48:41 file_logger.go:64: CPU 使用率: 33.51%
+
+[INFO] 2025/10/27 11:48:41 file_logger.go:64: 内存使用: 19.35% (6200/32049 MB)
+
+[INFO] 2025/10/27 11:48:41 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:48:41 file_logger.go:64: 网络: 下载 5.74 KB/s | 上传 3.29 KB/s
+
+[INFO] 2025/10/27 11:48:41 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 22.58 KB/s
+
+[INFO] 2025/10/27 11:48:41 file_logger.go:64: Redis 连接数: 16
+
+[INFO] 2025/10/27 11:48:41 file_logger.go:64: HTTP接口 example-public-captcha [需告警]: 异常 (状态码: 0) - HTTP请求失败: Get "https://example.example.com/prod-api/captchaImage": dial tcp: lookup example.example.com on 127.0.0.53:53: no such host
+
+[INFO] 2025/10/27 11:48:41 file_logger.go:64: HTTP接口 example-example-captcha [仅监控]: 异常 (状态码: 0) - HTTP请求失败: Get "http://172.25.216.169:7080/captchaImage": context deadline exceeded
+
+[INFO] 2025/10/27 11:48:41 file_logger.go:64: 监控时间: 2025-10-27 11:48:41
+
+[INFO] 2025/10/27 11:48:41 file_logger.go:64: [WARN] HTTP接口监控失败 连续第 6 次超阈值，告警已触发
+
+[INFO] 2025/10/27 11:48:51 file_logger.go:64: [INFO] HTTP接口监控失败 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:48:51 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:48:51 file_logger.go:64: CPU 使用率: 33.51%
+
+[INFO] 2025/10/27 11:48:51 file_logger.go:64: 内存使用: 19.35% (6200/32049 MB)
+
+[INFO] 2025/10/27 11:48:51 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:48:51 file_logger.go:64: 网络: 下载 5.74 KB/s | 上传 3.29 KB/s
+
+[INFO] 2025/10/27 11:48:51 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 22.58 KB/s
+
+[INFO] 2025/10/27 11:48:51 file_logger.go:64: Redis 连接数: 16
+
+[INFO] 2025/10/27 11:48:51 file_logger.go:64: HTTP接口 example-public-captcha [需告警]: 异常 (状态码: 0) - HTTP请求失败: Get "https://example.example.com/prod-api/captchaImage": dial tcp: lookup example.example.com on 127.0.0.53:53: no such host
+
+[INFO] 2025/10/27 11:48:51 file_logger.go:64: HTTP接口 example-example-captcha [仅监控]: 异常 (状态码: 0) - HTTP请求失败: Get "http://172.25.216.169:7080/captchaImage": context deadline exceeded
+
+[INFO] 2025/10/27 11:48:51 file_logger.go:64: 监控时间: 2025-10-27 11:48:51
+
+[INFO] 2025/10/27 11:48:51 file_logger.go:64: [WARN] HTTP接口监控失败 连续第 7 次超阈值，告警已触发
+
+[INFO] 2025/10/27 11:48:52 file_logger.go:64: GWatch 正在退出...
+
+[INFO] 2025/10/27 11:48:56 file_logger.go:64: 开始监控...
+
+[INFO] 2025/10/27 11:48:56 file_logger.go:64: 主机监控已启用，监控间隔: 5s
+
+[INFO] 2025/10/27 11:48:56 file_logger.go:64: HTTP监控已启用，监控间隔: 10s
+
+[INFO] 2025/10/27 11:48:56 file_logger.go:64: 启动全局定时推送调度器...
+
+[INFO] 2025/10/27 11:48:56 file_logger.go:64: 启动时检查全局定时推送时间...
+
+[INFO] 2025/10/27 11:48:56 file_logger.go:64: 检查全局推送时间: 当前时间=11:48, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:49:06 file_logger.go:64: 检查全局推送时间: 当前时间=11:49, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:49:11 file_logger.go:64: [WARN] Redis连接数过高 告警触发
+
+[INFO] 2025/10/27 11:49:16 file_logger.go:64: 检查全局推送时间: 当前时间=11:49, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:49:21 file_logger.go:64: [WARN] Redis连接数过高 告警触发
+
+[INFO] 2025/10/27 11:49:21 file_logger.go:64: [WARN] Redis连接数过高 告警触发
+
+[INFO] 2025/10/27 11:49:22 file_logger.go:64: 接收到信号 interrupt，正在优雅退出...
+
+[INFO] 2025/10/27 11:49:22 file_logger.go:64: 全局定时推送调度器收到停止信号
+
+[INFO] 2025/10/27 11:49:26 file_logger.go:64: [INFO] HTTP接口监控失败 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:49:26 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:49:26 file_logger.go:64: CPU 使用率: 5.70%
+
+[INFO] 2025/10/27 11:49:26 file_logger.go:64: 内存使用: 19.44% (6231/32049 MB)
+
+[INFO] 2025/10/27 11:49:26 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:49:26 file_logger.go:64: 网络: 下载 8.02 KB/s | 上传 4.36 KB/s
+
+[INFO] 2025/10/27 11:49:26 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 1706.48 KB/s
+
+[INFO] 2025/10/27 11:49:26 file_logger.go:64: Redis 连接数: 16
+
+[INFO] 2025/10/27 11:49:26 file_logger.go:64: HTTP接口 example-public-captcha [需告警]: 异常 (状态码: 0) - HTTP请求失败: Get "https://example.example.com/prod-api/captchaImage": dial tcp: lookup example.example.com on 127.0.0.53:53: no such host
+
+[INFO] 2025/10/27 11:49:26 file_logger.go:64: HTTP接口 example-example-captcha [仅监控]: 异常 (状态码: 0) - HTTP请求失败: Get "http://172.25.216.169:7080/captchaImage": context deadline exceeded
+
+[INFO] 2025/10/27 11:49:26 file_logger.go:64: 监控时间: 2025-10-27 11:49:26
+
+[INFO] 2025/10/27 11:49:26 file_logger.go:64: [INFO] HTTP接口监控失败 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:49:31 file_logger.go:64: GWatch 正在退出...
+
+[INFO] 2025/10/27 11:49:46 file_logger.go:64: 开始监控...
+
+[INFO] 2025/10/27 11:49:46 file_logger.go:64: 主机监控已启用，监控间隔: 5s
+
+[INFO] 2025/10/27 11:49:46 file_logger.go:64: HTTP监控已启用，监控间隔: 10s
+
+[INFO] 2025/10/27 11:49:46 file_logger.go:64: 启动全局定时推送调度器...
+
+[INFO] 2025/10/27 11:49:46 file_logger.go:64: 启动时检查全局定时推送时间...
+
+[INFO] 2025/10/27 11:49:46 file_logger.go:64: 检查全局推送时间: 当前时间=11:49, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:49:49 file_logger.go:64: 接收到信号 interrupt，正在优雅退出...
+
+[INFO] 2025/10/27 11:49:49 file_logger.go:64: 全局定时推送调度器收到停止信号
+
+[INFO] 2025/10/27 11:49:56 file_logger.go:64: GWatch 正在退出...
+
+[INFO] 2025/10/27 11:49:57 file_logger.go:64: 开始监控...
+
+[INFO] 2025/10/27 11:49:57 file_logger.go:64: 主机监控已禁用
+
+[INFO] 2025/10/27 11:49:57 file_logger.go:64: HTTP监控已启用，监控间隔: 10s
+
+[INFO] 2025/10/27 11:49:57 file_logger.go:64: 启动全局定时推送调度器...
+
+[INFO] 2025/10/27 11:49:57 file_logger.go:64: 启动时检查全局定时推送时间...
+
+[INFO] 2025/10/27 11:49:57 file_logger.go:64: 检查全局推送时间: 当前时间=11:49, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:50:07 file_logger.go:64: 检查全局推送时间: 当前时间=11:50, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:50:11 file_logger.go:64: 接收到信号 interrupt，正在优雅退出...
+
+[INFO] 2025/10/27 11:50:11 file_logger.go:64: 全局定时推送调度器收到停止信号
+
+[INFO] 2025/10/27 11:50:11 file_logger.go:64: GWatch 正在退出...
+
+[INFO] 2025/10/27 11:50:21 file_logger.go:64: 开始监控...
+
+[INFO] 2025/10/27 11:50:21 file_logger.go:64: 主机监控已禁用
+
+[INFO] 2025/10/27 11:50:21 file_logger.go:64: HTTP监控已禁用
+
+[INFO] 2025/10/27 11:50:21 file_logger.go:64: 启动全局定时推送调度器...
+
+[INFO] 2025/10/27 11:50:21 file_logger.go:64: 启动时检查全局定时推送时间...
+
+[INFO] 2025/10/27 11:50:21 file_logger.go:64: 检查全局推送时间: 当前时间=11:50, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:50:26 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:50:26 file_logger.go:64: 监控时间: 2025-10-27 11:50:26
+
+[INFO] 2025/10/27 11:50:31 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:50:31 file_logger.go:64: 检查全局推送时间: 当前时间=11:50, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:50:31 file_logger.go:64: 监控时间: 2025-10-27 11:50:31
+
+[INFO] 2025/10/27 11:50:31 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:50:31 file_logger.go:64: 监控时间: 2025-10-27 11:50:31
+
+[INFO] 2025/10/27 11:50:36 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:50:36 file_logger.go:64: 监控时间: 2025-10-27 11:50:36
+
+[INFO] 2025/10/27 11:50:39 file_logger.go:64: 接收到信号 interrupt，正在优雅退出...
+
+[INFO] 2025/10/27 11:50:39 file_logger.go:64: GWatch 正在退出...
+
+[INFO] 2025/10/27 11:51:03 file_logger.go:64: 开始监控...
+
+[INFO] 2025/10/27 11:51:03 file_logger.go:64: 主机监控已禁用
+
+[INFO] 2025/10/27 11:51:03 file_logger.go:64: HTTP监控已禁用
+
+[INFO] 2025/10/27 11:51:03 file_logger.go:64: 启动全局定时推送调度器...
+
+[INFO] 2025/10/27 11:51:03 file_logger.go:64: 启动时检查全局定时推送时间...
+
+[INFO] 2025/10/27 11:51:03 file_logger.go:64: 检查全局推送时间: 当前时间=11:51, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:51:08 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:51:08 file_logger.go:64: 监控时间: 2025-10-27 11:51:08
+
+[INFO] 2025/10/27 11:51:13 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:51:13 file_logger.go:64: 监控时间: 2025-10-27 11:51:13
+
+[INFO] 2025/10/27 11:51:13 file_logger.go:64: 检查全局推送时间: 当前时间=11:51, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:51:13 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:51:13 file_logger.go:64: 监控时间: 2025-10-27 11:51:13
+
+[INFO] 2025/10/27 11:51:15 file_logger.go:64: 接收到信号 interrupt，正在优雅退出...
+
+[INFO] 2025/10/27 11:51:15 file_logger.go:64: GWatch 正在退出...
+
+[INFO] 2025/10/27 11:52:04 file_logger.go:64: 开始监控...
+
+[INFO] 2025/10/27 11:52:04 file_logger.go:64: 主机监控已禁用
+
+[INFO] 2025/10/27 11:52:04 file_logger.go:64: 应用层监控已禁用
+
+[INFO] 2025/10/27 11:52:04 file_logger.go:64: 启动全局定时推送调度器...
+
+[INFO] 2025/10/27 11:52:04 file_logger.go:64: 启动时检查全局定时推送时间...
+
+[INFO] 2025/10/27 11:52:04 file_logger.go:64: 检查全局推送时间: 当前时间=11:52, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:52:09 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:52:09 file_logger.go:64: 监控时间: 2025-10-27 11:52:09
+
+[INFO] 2025/10/27 11:52:12 file_logger.go:64: 接收到信号 interrupt，正在优雅退出...
+
+[INFO] 2025/10/27 11:52:23 file_logger.go:64: 开始监控...
+
+[INFO] 2025/10/27 11:52:23 file_logger.go:64: 主机监控已禁用
+
+[INFO] 2025/10/27 11:52:23 file_logger.go:64: 应用层监控已启用
+
+[INFO] 2025/10/27 11:52:23 file_logger.go:64:   - Redis监控已启用
+
+[INFO] 2025/10/27 11:52:23 file_logger.go:64:   - MySQL监控已禁用
+
+[INFO] 2025/10/27 11:52:23 file_logger.go:64:   - HTTP监控已禁用
+
+[INFO] 2025/10/27 11:52:23 file_logger.go:64:   - Tickers监控已禁用
+
+[INFO] 2025/10/27 11:52:23 file_logger.go:64: 启动全局定时推送调度器...
+
+[INFO] 2025/10/27 11:52:23 file_logger.go:64: 启动时检查全局定时推送时间...
+
+[INFO] 2025/10/27 11:52:23 file_logger.go:64: 检查全局推送时间: 当前时间=11:52, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:52:28 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:52:28 file_logger.go:64: Redis 连接数: 16
+
+[INFO] 2025/10/27 11:52:28 file_logger.go:64: 监控时间: 2025-10-27 11:52:28
+
+[INFO] 2025/10/27 11:52:29 file_logger.go:64: 接收到信号 interrupt，正在优雅退出...
+
+[INFO] 2025/10/27 11:52:29 file_logger.go:64: 全局定时推送调度器收到停止信号
+
+[INFO] 2025/10/27 11:52:29 file_logger.go:64: GWatch 正在退出...
+
+[INFO] 2025/10/27 11:54:52 file_logger.go:64: 开始监控...
+
+[INFO] 2025/10/27 11:54:52 file_logger.go:64: 主机监控已启用，监控间隔: 5s
+
+[INFO] 2025/10/27 11:54:52 file_logger.go:64: 应用层监控已禁用
+
+[INFO] 2025/10/27 11:54:52 file_logger.go:64: 启动全局定时推送调度器...
+
+[INFO] 2025/10/27 11:54:52 file_logger.go:64: 启动时检查全局定时推送时间...
+
+[INFO] 2025/10/27 11:54:52 file_logger.go:64: 检查全局推送时间: 当前时间=11:54, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:54:57 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:54:57 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:54:57 file_logger.go:64: CPU 使用率: 35.46%
+
+[INFO] 2025/10/27 11:54:57 file_logger.go:64: 内存使用: 19.45% (6233/32049 MB)
+
+[INFO] 2025/10/27 11:54:57 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:54:57 file_logger.go:64: 网络: 下载 4.06 KB/s | 上传 3.14 KB/s
+
+[INFO] 2025/10/27 11:54:57 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 43.15 KB/s
+
+[INFO] 2025/10/27 11:54:57 file_logger.go:64: 监控时间: 2025-10-27 11:54:57
+
+[INFO] 2025/10/27 11:54:57 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:55:02 file_logger.go:64: 检查全局推送时间: 当前时间=11:55, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:55:02 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:55:02 file_logger.go:64: CPU 使用率: 35.46%
+
+[INFO] 2025/10/27 11:55:02 file_logger.go:64: 内存使用: 19.45% (6233/32049 MB)
+
+[INFO] 2025/10/27 11:55:02 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:55:02 file_logger.go:64: 网络: 下载 4.06 KB/s | 上传 3.14 KB/s
+
+[INFO] 2025/10/27 11:55:02 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 43.15 KB/s
+
+[INFO] 2025/10/27 11:55:02 file_logger.go:64: 监控时间: 2025-10-27 11:55:02
+
+[INFO] 2025/10/27 11:55:02 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:55:02 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:55:02 file_logger.go:64: CPU 使用率: 34.06%
+
+[INFO] 2025/10/27 11:55:02 file_logger.go:64: 内存使用: 19.56% (6268/32049 MB)
+
+[INFO] 2025/10/27 11:55:02 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:55:02 file_logger.go:64: 网络: 下载 4.25 KB/s | 上传 2.65 KB/s
+
+[INFO] 2025/10/27 11:55:02 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 23.20 KB/s
+
+[INFO] 2025/10/27 11:55:02 file_logger.go:64: 监控时间: 2025-10-27 11:55:02
+
+[INFO] 2025/10/27 11:55:02 file_logger.go:64: [INFO] CPU使用率过高 连续第 2/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:55:07 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:55:07 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:55:07 file_logger.go:64: CPU 使用率: 34.53%
+
+[INFO] 2025/10/27 11:55:07 file_logger.go:64: 内存使用: 19.60% (6281/32049 MB)
+
+[INFO] 2025/10/27 11:55:07 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:55:07 file_logger.go:64: 网络: 下载 4.71 KB/s | 上传 3.23 KB/s
+
+[INFO] 2025/10/27 11:55:07 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 1014.87 KB/s
+
+[INFO] 2025/10/27 11:55:07 file_logger.go:64: 监控时间: 2025-10-27 11:55:07
+
+[INFO] 2025/10/27 11:55:07 file_logger.go:64: [WARN] CPU使用率过高 连续第 3 次超阈值，告警已触发
+
+[INFO] 2025/10/27 11:55:12 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:55:12 file_logger.go:64: CPU 使用率: 34.53%
+
+[INFO] 2025/10/27 11:55:12 file_logger.go:64: 内存使用: 19.60% (6281/32049 MB)
+
+[INFO] 2025/10/27 11:55:12 file_logger.go:64: 检查全局推送时间: 当前时间=11:55, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:55:12 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:55:12 file_logger.go:64: 网络: 下载 4.71 KB/s | 上传 3.23 KB/s
+
+[INFO] 2025/10/27 11:55:12 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 1014.87 KB/s
+
+[INFO] 2025/10/27 11:55:12 file_logger.go:64: 监控时间: 2025-10-27 11:55:12
+
+[INFO] 2025/10/27 11:55:12 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:55:12 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:55:12 file_logger.go:64: CPU 使用率: 33.39%
+
+[INFO] 2025/10/27 11:55:12 file_logger.go:64: 内存使用: 19.60% (6280/32049 MB)
+
+[INFO] 2025/10/27 11:55:12 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:55:12 file_logger.go:64: 网络: 下载 5.16 KB/s | 上传 3.51 KB/s
+
+[INFO] 2025/10/27 11:55:12 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 585.31 KB/s
+
+[INFO] 2025/10/27 11:55:12 file_logger.go:64: 监控时间: 2025-10-27 11:55:12
+
+[INFO] 2025/10/27 11:55:17 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:55:17 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:55:17 file_logger.go:64: CPU 使用率: 31.62%
+
+[INFO] 2025/10/27 11:55:17 file_logger.go:64: 内存使用: 19.52% (6257/32049 MB)
+
+[INFO] 2025/10/27 11:55:17 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:55:17 file_logger.go:64: 网络: 下载 10.73 KB/s | 上传 6.52 KB/s
+
+[INFO] 2025/10/27 11:55:17 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 88.79 KB/s
+
+[INFO] 2025/10/27 11:55:17 file_logger.go:64: 监控时间: 2025-10-27 11:55:17
+
+[INFO] 2025/10/27 11:55:22 file_logger.go:64: 接收到信号 terminated，正在优雅退出...
+
+[INFO] 2025/10/27 11:55:26 file_logger.go:64: 开始监控...
+
+[INFO] 2025/10/27 11:55:26 file_logger.go:64: 主机监控已启用，监控间隔: 5s
+
+[INFO] 2025/10/27 11:55:26 file_logger.go:64: 应用层监控已禁用
+
+[INFO] 2025/10/27 11:55:26 file_logger.go:64: 启动全局定时推送调度器...
+
+[INFO] 2025/10/27 11:55:26 file_logger.go:64: 启动时检查全局定时推送时间...
+
+[INFO] 2025/10/27 11:55:26 file_logger.go:64: 检查全局推送时间: 当前时间=11:55, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:55:32 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:55:32 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:55:32 file_logger.go:64: CPU 使用率: 33.45%
+
+[INFO] 2025/10/27 11:55:32 file_logger.go:64: 内存使用: 19.57% (6272/32049 MB)
+
+[INFO] 2025/10/27 11:55:32 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:55:32 file_logger.go:64: 网络: 下载 3.97 KB/s | 上传 2.69 KB/s
+
+[INFO] 2025/10/27 11:55:32 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 6.39 KB/s
+
+[INFO] 2025/10/27 11:55:32 file_logger.go:64: 监控时间: 2025-10-27 11:55:32
+
+[INFO] 2025/10/27 11:55:32 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:55:37 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:55:37 file_logger.go:64: CPU 使用率: 33.45%
+
+[INFO] 2025/10/27 11:55:37 file_logger.go:64: 内存使用: 19.57% (6272/32049 MB)
+
+[INFO] 2025/10/27 11:55:37 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:55:37 file_logger.go:64: 网络: 下载 3.97 KB/s | 上传 2.69 KB/s
+
+[INFO] 2025/10/27 11:55:37 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 6.39 KB/s
+
+[INFO] 2025/10/27 11:55:37 file_logger.go:64: 监控时间: 2025-10-27 11:55:37
+
+[INFO] 2025/10/27 11:55:37 file_logger.go:64: 检查全局推送时间: 当前时间=11:55, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:55:37 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:55:37 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:55:37 file_logger.go:64: CPU 使用率: 33.89%
+
+[INFO] 2025/10/27 11:55:37 file_logger.go:64: 内存使用: 19.54% (6264/32049 MB)
+
+[INFO] 2025/10/27 11:55:37 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:55:37 file_logger.go:64: 网络: 下载 5.20 KB/s | 上传 3.15 KB/s
+
+[INFO] 2025/10/27 11:55:37 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 16.00 KB/s
+
+[INFO] 2025/10/27 11:55:37 file_logger.go:64: 监控时间: 2025-10-27 11:55:37
+
+[INFO] 2025/10/27 11:55:37 file_logger.go:64: [INFO] CPU使用率过高 连续第 2/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:55:42 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:55:42 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:55:42 file_logger.go:64: CPU 使用率: 37.54%
+
+[INFO] 2025/10/27 11:55:42 file_logger.go:64: 内存使用: 19.61% (6286/32049 MB)
+
+[INFO] 2025/10/27 11:55:42 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:55:42 file_logger.go:64: 网络: 下载 14.54 KB/s | 上传 51.32 KB/s
+
+[INFO] 2025/10/27 11:55:42 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 1617.08 KB/s
+
+[INFO] 2025/10/27 11:55:42 file_logger.go:64: 监控时间: 2025-10-27 11:55:42
+
+[INFO] 2025/10/27 11:55:42 file_logger.go:64: [WARN] CPU使用率过高 连续第 3 次超阈值，告警已触发
+
+[INFO] 2025/10/27 11:55:47 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:55:47 file_logger.go:64: CPU 使用率: 37.54%
+
+[INFO] 2025/10/27 11:55:47 file_logger.go:64: 内存使用: 19.61% (6286/32049 MB)
+
+[INFO] 2025/10/27 11:55:47 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:55:47 file_logger.go:64: 网络: 下载 14.54 KB/s | 上传 51.32 KB/s
+
+[INFO] 2025/10/27 11:55:47 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 1617.08 KB/s
+
+[INFO] 2025/10/27 11:55:47 file_logger.go:64: 监控时间: 2025-10-27 11:55:47
+
+[INFO] 2025/10/27 11:55:47 file_logger.go:64: 检查全局推送时间: 当前时间=11:55, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:55:47 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:55:47 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:55:47 file_logger.go:64: CPU 使用率: 33.96%
+
+[INFO] 2025/10/27 11:55:47 file_logger.go:64: 内存使用: 19.61% (6283/32049 MB)
+
+[INFO] 2025/10/27 11:55:47 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:55:47 file_logger.go:64: 网络: 下载 9.46 KB/s | 上传 7.26 KB/s
+
+[INFO] 2025/10/27 11:55:47 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 34.42 KB/s
+
+[INFO] 2025/10/27 11:55:47 file_logger.go:64: 监控时间: 2025-10-27 11:55:47
+
+[INFO] 2025/10/27 11:55:52 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:55:52 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:55:52 file_logger.go:64: CPU 使用率: 32.56%
+
+[INFO] 2025/10/27 11:55:52 file_logger.go:64: 内存使用: 19.59% (6278/32049 MB)
+
+[INFO] 2025/10/27 11:55:52 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:55:52 file_logger.go:64: 网络: 下载 4.17 KB/s | 上传 2.71 KB/s
+
+[INFO] 2025/10/27 11:55:52 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 253.46 KB/s
+
+[INFO] 2025/10/27 11:55:52 file_logger.go:64: 监控时间: 2025-10-27 11:55:52
+
+[INFO] 2025/10/27 11:55:57 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:55:57 file_logger.go:64: 检查全局推送时间: 当前时间=11:55, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:55:57 file_logger.go:64: CPU 使用率: 32.56%
+
+[INFO] 2025/10/27 11:55:57 file_logger.go:64: 内存使用: 19.59% (6278/32049 MB)
+
+[INFO] 2025/10/27 11:55:57 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:55:57 file_logger.go:64: 网络: 下载 4.17 KB/s | 上传 2.71 KB/s
+
+[INFO] 2025/10/27 11:55:57 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 253.46 KB/s
+
+[INFO] 2025/10/27 11:55:57 file_logger.go:64: 监控时间: 2025-10-27 11:55:57
+
+[INFO] 2025/10/27 11:55:57 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:55:57 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:55:57 file_logger.go:64: CPU 使用率: 35.70%
+
+[INFO] 2025/10/27 11:55:57 file_logger.go:64: 内存使用: 19.57% (6270/32049 MB)
+
+[INFO] 2025/10/27 11:55:57 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:55:57 file_logger.go:64: 网络: 下载 4.62 KB/s | 上传 3.18 KB/s
+
+[INFO] 2025/10/27 11:55:57 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 22.40 KB/s
+
+[INFO] 2025/10/27 11:55:57 file_logger.go:64: 监控时间: 2025-10-27 11:55:57
+
+[INFO] 2025/10/27 11:56:01 file_logger.go:64: 接收到信号 terminated，正在优雅退出...
+
+[INFO] 2025/10/27 11:56:01 file_logger.go:64: GWatch 正在退出...
+
+[INFO] 2025/10/27 11:56:24 file_logger.go:64: 开始监控...
+
+[INFO] 2025/10/27 11:56:24 file_logger.go:64: 主机监控已启用，监控间隔: 5s
+
+[INFO] 2025/10/27 11:56:24 file_logger.go:64: 应用层监控已禁用
+
+[INFO] 2025/10/27 11:56:24 file_logger.go:64: 启动全局定时推送调度器...
+
+[INFO] 2025/10/27 11:56:24 file_logger.go:64: 启动时检查全局定时推送时间...
+
+[INFO] 2025/10/27 11:56:24 file_logger.go:64: 检查全局推送时间: 当前时间=11:56, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:56:29 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:56:29 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:56:29 file_logger.go:64: CPU 使用率: 34.83%
+
+[INFO] 2025/10/27 11:56:29 file_logger.go:64: 内存使用: 19.61% (6285/32049 MB)
+
+[INFO] 2025/10/27 11:56:29 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:56:29 file_logger.go:64: 网络: 下载 5.51 KB/s | 上传 2.81 KB/s
+
+[INFO] 2025/10/27 11:56:29 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 105.47 KB/s
+
+[INFO] 2025/10/27 11:56:29 file_logger.go:64: 监控时间: 2025-10-27 11:56:29
+
+[INFO] 2025/10/27 11:56:29 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:56:34 file_logger.go:64: 检查全局推送时间: 当前时间=11:56, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:56:34 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:56:34 file_logger.go:64: CPU 使用率: 34.83%
+
+[INFO] 2025/10/27 11:56:34 file_logger.go:64: 内存使用: 19.61% (6285/32049 MB)
+
+[INFO] 2025/10/27 11:56:34 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:56:34 file_logger.go:64: 网络: 下载 5.51 KB/s | 上传 2.81 KB/s
+
+[INFO] 2025/10/27 11:56:34 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 105.47 KB/s
+
+[INFO] 2025/10/27 11:56:34 file_logger.go:64: 监控时间: 2025-10-27 11:56:34
+
+[INFO] 2025/10/27 11:56:34 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:56:34 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:56:34 file_logger.go:64: CPU 使用率: 39.97%
+
+[INFO] 2025/10/27 11:56:34 file_logger.go:64: 内存使用: 19.62% (6287/32049 MB)
+
+[INFO] 2025/10/27 11:56:34 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:56:34 file_logger.go:64: 网络: 下载 9.18 KB/s | 上传 52.54 KB/s
+
+[INFO] 2025/10/27 11:56:34 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 110.46 KB/s
+
+[INFO] 2025/10/27 11:56:34 file_logger.go:64: 监控时间: 2025-10-27 11:56:34
+
+[INFO] 2025/10/27 11:56:34 file_logger.go:64: [INFO] CPU使用率过高 连续第 2/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:56:39 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:56:39 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:56:39 file_logger.go:64: CPU 使用率: 36.28%
+
+[INFO] 2025/10/27 11:56:39 file_logger.go:64: 内存使用: 19.54% (6261/32049 MB)
+
+[INFO] 2025/10/27 11:56:39 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:56:39 file_logger.go:64: 网络: 下载 4.67 KB/s | 上传 3.29 KB/s
+
+[INFO] 2025/10/27 11:56:39 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 63.94 KB/s
+
+[INFO] 2025/10/27 11:56:39 file_logger.go:64: 监控时间: 2025-10-27 11:56:39
+
+[INFO] 2025/10/27 11:56:39 file_logger.go:64: [WARN] CPU使用率过高 连续第 3 次超阈值，告警已触发
+
+[INFO] 2025/10/27 11:56:44 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:56:44 file_logger.go:64: CPU 使用率: 36.28%
+
+[INFO] 2025/10/27 11:56:44 file_logger.go:64: 内存使用: 19.54% (6261/32049 MB)
+
+[INFO] 2025/10/27 11:56:44 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:56:44 file_logger.go:64: 网络: 下载 4.67 KB/s | 上传 3.29 KB/s
+
+[INFO] 2025/10/27 11:56:44 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 63.94 KB/s
+
+[INFO] 2025/10/27 11:56:44 file_logger.go:64: 监控时间: 2025-10-27 11:56:44
+
+[INFO] 2025/10/27 11:56:44 file_logger.go:64: 检查全局推送时间: 当前时间=11:56, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:56:44 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:56:44 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:56:44 file_logger.go:64: CPU 使用率: 33.13%
+
+[INFO] 2025/10/27 11:56:44 file_logger.go:64: 内存使用: 19.56% (6267/32049 MB)
+
+[INFO] 2025/10/27 11:56:44 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:56:44 file_logger.go:64: 网络: 下载 5.47 KB/s | 上传 3.87 KB/s
+
+[INFO] 2025/10/27 11:56:44 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 103.27 KB/s
+
+[INFO] 2025/10/27 11:56:44 file_logger.go:64: 监控时间: 2025-10-27 11:56:44
+
+[INFO] 2025/10/27 11:56:49 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:56:49 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:56:49 file_logger.go:64: CPU 使用率: 33.81%
+
+[INFO] 2025/10/27 11:56:49 file_logger.go:64: 内存使用: 19.54% (6261/32049 MB)
+
+[INFO] 2025/10/27 11:56:49 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:56:49 file_logger.go:64: 网络: 下载 4.46 KB/s | 上传 2.80 KB/s
+
+[INFO] 2025/10/27 11:56:49 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 71.17 KB/s
+
+[INFO] 2025/10/27 11:56:49 file_logger.go:64: 监控时间: 2025-10-27 11:56:49
+
+[INFO] 2025/10/27 11:56:54 file_logger.go:64: 检查全局推送时间: 当前时间=11:56, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:56:54 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:56:54 file_logger.go:64: CPU 使用率: 33.81%
+
+[INFO] 2025/10/27 11:56:54 file_logger.go:64: 内存使用: 19.54% (6261/32049 MB)
+
+[INFO] 2025/10/27 11:56:54 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:56:54 file_logger.go:64: 网络: 下载 4.46 KB/s | 上传 2.80 KB/s
+
+[INFO] 2025/10/27 11:56:54 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 71.17 KB/s
+
+[INFO] 2025/10/27 11:56:54 file_logger.go:64: 监控时间: 2025-10-27 11:56:54
+
+[INFO] 2025/10/27 11:56:54 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:56:54 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:56:54 file_logger.go:64: CPU 使用率: 31.60%
+
+[INFO] 2025/10/27 11:56:54 file_logger.go:64: 内存使用: 19.61% (6286/32049 MB)
+
+[INFO] 2025/10/27 11:56:54 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:56:54 file_logger.go:64: 网络: 下载 4.22 KB/s | 上传 3.01 KB/s
+
+[INFO] 2025/10/27 11:56:54 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 45.62 KB/s
+
+[INFO] 2025/10/27 11:56:54 file_logger.go:64: 监控时间: 2025-10-27 11:56:54
+
+[INFO] 2025/10/27 11:56:59 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:56:59 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:56:59 file_logger.go:64: CPU 使用率: 31.88%
+
+[INFO] 2025/10/27 11:56:59 file_logger.go:64: 内存使用: 19.60% (6281/32049 MB)
+
+[INFO] 2025/10/27 11:56:59 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:56:59 file_logger.go:64: 网络: 下载 4.86 KB/s | 上传 2.82 KB/s
+
+[INFO] 2025/10/27 11:56:59 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 19.20 KB/s
+
+[INFO] 2025/10/27 11:56:59 file_logger.go:64: 监控时间: 2025-10-27 11:56:59
+
+[INFO] 2025/10/27 11:57:04 file_logger.go:64: 接收到信号 terminated，正在优雅退出...
+
+[INFO] 2025/10/27 11:57:15 file_logger.go:64: 开始监控...
+
+[INFO] 2025/10/27 11:57:15 file_logger.go:64: 主机监控已启用，监控间隔: 5s
+
+[INFO] 2025/10/27 11:57:15 file_logger.go:64: 应用层监控已禁用
+
+[INFO] 2025/10/27 11:57:15 file_logger.go:64: 启动全局定时推送调度器...
+
+[INFO] 2025/10/27 11:57:15 file_logger.go:64: 启动时检查全局定时推送时间...
+
+[INFO] 2025/10/27 11:57:15 file_logger.go:64: 检查全局推送时间: 当前时间=11:57, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:57:20 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:57:20 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:57:20 file_logger.go:64: CPU 使用率: 35.91%
+
+[INFO] 2025/10/27 11:57:20 file_logger.go:64: 内存使用: 19.83% (6354/32049 MB)
+
+[INFO] 2025/10/27 11:57:20 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:57:20 file_logger.go:64: 网络: 下载 4.99 KB/s | 上传 3.39 KB/s
+
+[INFO] 2025/10/27 11:57:20 file_logger.go:64: 磁盘IO: 读 25.59 KB/s | 写 67.17 KB/s
+
+[INFO] 2025/10/27 11:57:20 file_logger.go:64: 监控时间: 2025-10-27 11:57:20
+
+[INFO] 2025/10/27 11:57:20 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:57:25 file_logger.go:64: 检查全局推送时间: 当前时间=11:57, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:57:25 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:57:25 file_logger.go:64: CPU 使用率: 35.91%
+
+[INFO] 2025/10/27 11:57:25 file_logger.go:64: 内存使用: 19.83% (6354/32049 MB)
+
+[INFO] 2025/10/27 11:57:25 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:57:25 file_logger.go:64: 网络: 下载 4.99 KB/s | 上传 3.39 KB/s
+
+[INFO] 2025/10/27 11:57:25 file_logger.go:64: 磁盘IO: 读 25.59 KB/s | 写 67.17 KB/s
+
+[INFO] 2025/10/27 11:57:25 file_logger.go:64: 监控时间: 2025-10-27 11:57:25
+
+[INFO] 2025/10/27 11:57:25 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:57:25 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:57:25 file_logger.go:64: CPU 使用率: 33.61%
+
+[INFO] 2025/10/27 11:57:25 file_logger.go:64: 内存使用: 19.64% (6295/32049 MB)
+
+[INFO] 2025/10/27 11:57:25 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:57:25 file_logger.go:64: 网络: 下载 4.62 KB/s | 上传 3.18 KB/s
+
+[INFO] 2025/10/27 11:57:25 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 4933.56 KB/s
+
+[INFO] 2025/10/27 11:57:25 file_logger.go:64: 监控时间: 2025-10-27 11:57:25
+
+[INFO] 2025/10/27 11:57:25 file_logger.go:64: [INFO] CPU使用率过高 连续第 2/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:57:30 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:57:30 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:57:30 file_logger.go:64: CPU 使用率: 31.75%
+
+[INFO] 2025/10/27 11:57:30 file_logger.go:64: 内存使用: 19.63% (6291/32049 MB)
+
+[INFO] 2025/10/27 11:57:30 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:57:30 file_logger.go:64: 网络: 下载 4.16 KB/s | 上传 2.46 KB/s
+
+[INFO] 2025/10/27 11:57:30 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 99.21 KB/s
+
+[INFO] 2025/10/27 11:57:30 file_logger.go:64: 监控时间: 2025-10-27 11:57:30
+
+[INFO] 2025/10/27 11:57:30 file_logger.go:64: [WARN] CPU使用率过高 连续第 3 次超阈值，告警已触发
+
+[INFO] 2025/10/27 11:57:35 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:57:35 file_logger.go:64: CPU 使用率: 31.75%
+
+[INFO] 2025/10/27 11:57:35 file_logger.go:64: 内存使用: 19.63% (6291/32049 MB)
+
+[INFO] 2025/10/27 11:57:35 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:57:35 file_logger.go:64: 网络: 下载 4.16 KB/s | 上传 2.46 KB/s
+
+[INFO] 2025/10/27 11:57:35 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 99.21 KB/s
+
+[INFO] 2025/10/27 11:57:35 file_logger.go:64: 监控时间: 2025-10-27 11:57:35
+
+[INFO] 2025/10/27 11:57:35 file_logger.go:64: 检查全局推送时间: 当前时间=11:57, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:57:35 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:57:35 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:57:35 file_logger.go:64: CPU 使用率: 32.90%
+
+[INFO] 2025/10/27 11:57:35 file_logger.go:64: 内存使用: 19.66% (6299/32049 MB)
+
+[INFO] 2025/10/27 11:57:35 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:57:35 file_logger.go:64: 网络: 下载 6.37 KB/s | 上传 4.11 KB/s
+
+[INFO] 2025/10/27 11:57:35 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 19.20 KB/s
+
+[INFO] 2025/10/27 11:57:35 file_logger.go:64: 监控时间: 2025-10-27 11:57:35
+
+[INFO] 2025/10/27 11:57:40 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:57:40 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:57:40 file_logger.go:64: CPU 使用率: 31.68%
+
+[INFO] 2025/10/27 11:57:40 file_logger.go:64: 内存使用: 19.68% (6306/32049 MB)
+
+[INFO] 2025/10/27 11:57:40 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:57:40 file_logger.go:64: 网络: 下载 4.35 KB/s | 上传 2.65 KB/s
+
+[INFO] 2025/10/27 11:57:40 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 160.69 KB/s
+
+[INFO] 2025/10/27 11:57:40 file_logger.go:64: 监控时间: 2025-10-27 11:57:40
+
+[INFO] 2025/10/27 11:57:45 file_logger.go:64: 检查全局推送时间: 当前时间=11:57, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:57:45 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:57:45 file_logger.go:64: CPU 使用率: 31.68%
+
+[INFO] 2025/10/27 11:57:45 file_logger.go:64: 内存使用: 19.68% (6306/32049 MB)
+
+[INFO] 2025/10/27 11:57:45 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:57:45 file_logger.go:64: 网络: 下载 4.35 KB/s | 上传 2.65 KB/s
+
+[INFO] 2025/10/27 11:57:45 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 160.69 KB/s
+
+[INFO] 2025/10/27 11:57:45 file_logger.go:64: 监控时间: 2025-10-27 11:57:45
+
+[INFO] 2025/10/27 11:57:45 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:57:45 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:57:45 file_logger.go:64: CPU 使用率: 32.48%
+
+[INFO] 2025/10/27 11:57:45 file_logger.go:64: 内存使用: 19.66% (6301/32049 MB)
+
+[INFO] 2025/10/27 11:57:45 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:57:45 file_logger.go:64: 网络: 下载 6.13 KB/s | 上传 3.75 KB/s
+
+[INFO] 2025/10/27 11:57:45 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 84.81 KB/s
+
+[INFO] 2025/10/27 11:57:45 file_logger.go:64: 监控时间: 2025-10-27 11:57:45
+
+[INFO] 2025/10/27 11:57:48 file_logger.go:64: 接收到信号 interrupt，正在优雅退出...
+
+[INFO] 2025/10/27 11:57:57 file_logger.go:64: 开始监控...
+
+[INFO] 2025/10/27 11:57:57 file_logger.go:64: 主机监控已启用，监控间隔: 5s
+
+[INFO] 2025/10/27 11:57:57 file_logger.go:64: 应用层监控已禁用
+
+[INFO] 2025/10/27 11:57:57 file_logger.go:64: 启动全局定时推送调度器...
+
+[INFO] 2025/10/27 11:57:57 file_logger.go:64: 启动时检查全局定时推送时间...
+
+[INFO] 2025/10/27 11:57:57 file_logger.go:64: 检查全局推送时间: 当前时间=11:57, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:58:02 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:58:02 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:58:02 file_logger.go:64: CPU 使用率: 31.98%
+
+[INFO] 2025/10/27 11:58:02 file_logger.go:64: 内存使用: 19.67% (6305/32049 MB)
+
+[INFO] 2025/10/27 11:58:02 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:58:02 file_logger.go:64: 网络: 下载 5.82 KB/s | 上传 2.61 KB/s
+
+[INFO] 2025/10/27 11:58:02 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 16.79 KB/s
+
+[INFO] 2025/10/27 11:58:02 file_logger.go:64: 监控时间: 2025-10-27 11:58:02
+
+[INFO] 2025/10/27 11:58:02 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:58:07 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:58:07 file_logger.go:64: CPU 使用率: 31.98%
+
+[INFO] 2025/10/27 11:58:07 file_logger.go:64: 内存使用: 19.67% (6305/32049 MB)
+
+[INFO] 2025/10/27 11:58:07 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:58:07 file_logger.go:64: 网络: 下载 5.82 KB/s | 上传 2.61 KB/s
+
+[INFO] 2025/10/27 11:58:07 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 16.79 KB/s
+
+[INFO] 2025/10/27 11:58:07 file_logger.go:64: 监控时间: 2025-10-27 11:58:07
+
+[INFO] 2025/10/27 11:58:07 file_logger.go:64: 检查全局推送时间: 当前时间=11:58, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:58:07 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:58:07 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:58:07 file_logger.go:64: CPU 使用率: 33.04%
+
+[INFO] 2025/10/27 11:58:07 file_logger.go:64: 内存使用: 19.63% (6290/32049 MB)
+
+[INFO] 2025/10/27 11:58:07 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:58:07 file_logger.go:64: 网络: 下载 5.10 KB/s | 上传 3.22 KB/s
+
+[INFO] 2025/10/27 11:58:07 file_logger.go:64: 磁盘IO: 读 25.59 KB/s | 写 21.59 KB/s
+
+[INFO] 2025/10/27 11:58:07 file_logger.go:64: 监控时间: 2025-10-27 11:58:07
+
+[INFO] 2025/10/27 11:58:07 file_logger.go:64: [INFO] CPU使用率过高 连续第 2/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:58:12 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:58:12 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:58:12 file_logger.go:64: CPU 使用率: 33.66%
+
+[INFO] 2025/10/27 11:58:12 file_logger.go:64: 内存使用: 19.63% (6292/32049 MB)
+
+[INFO] 2025/10/27 11:58:12 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:58:12 file_logger.go:64: 网络: 下载 4.69 KB/s | 上传 2.66 KB/s
+
+[INFO] 2025/10/27 11:58:12 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 92.78 KB/s
+
+[INFO] 2025/10/27 11:58:12 file_logger.go:64: 监控时间: 2025-10-27 11:58:12
+
+[INFO] 2025/10/27 11:58:12 file_logger.go:64: [WARN] CPU使用率过高 连续第 3 次超阈值，告警已触发
+
+[INFO] 2025/10/27 11:58:17 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:58:17 file_logger.go:64: CPU 使用率: 33.66%
+
+[INFO] 2025/10/27 11:58:17 file_logger.go:64: 内存使用: 19.63% (6292/32049 MB)
+
+[INFO] 2025/10/27 11:58:17 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:58:17 file_logger.go:64: 检查全局推送时间: 当前时间=11:58, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:58:17 file_logger.go:64: 网络: 下载 4.69 KB/s | 上传 2.66 KB/s
+
+[INFO] 2025/10/27 11:58:17 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 92.78 KB/s
+
+[INFO] 2025/10/27 11:58:17 file_logger.go:64: 监控时间: 2025-10-27 11:58:17
+
+[INFO] 2025/10/27 11:58:17 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:58:17 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:58:17 file_logger.go:64: CPU 使用率: 34.20%
+
+[INFO] 2025/10/27 11:58:17 file_logger.go:64: 内存使用: 19.66% (6300/32049 MB)
+
+[INFO] 2025/10/27 11:58:17 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:58:17 file_logger.go:64: 网络: 下载 8.32 KB/s | 上传 4.94 KB/s
+
+[INFO] 2025/10/27 11:58:17 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 41.61 KB/s
+
+[INFO] 2025/10/27 11:58:17 file_logger.go:64: 监控时间: 2025-10-27 11:58:17
+
+[INFO] 2025/10/27 11:58:22 file_logger.go:64: 接收到信号 terminated，正在优雅退出...
+
+[INFO] 2025/10/27 11:59:01 file_logger.go:64: 开始监控...
+
+[INFO] 2025/10/27 11:59:01 file_logger.go:64: 主机监控已启用，监控间隔: 5s
+
+[INFO] 2025/10/27 11:59:01 file_logger.go:64: 应用层监控已禁用
+
+[INFO] 2025/10/27 11:59:01 file_logger.go:64: 启动全局定时推送调度器...
+
+[INFO] 2025/10/27 11:59:01 file_logger.go:64: 启动时检查全局定时推送时间...
+
+[INFO] 2025/10/27 11:59:01 file_logger.go:64: 检查全局推送时间: 当前时间=11:59, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:59:06 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:59:06 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:59:06 file_logger.go:64: CPU 使用率: 35.68%
+
+[INFO] 2025/10/27 11:59:06 file_logger.go:64: 内存使用: 19.77% (6337/32049 MB)
+
+[INFO] 2025/10/27 11:59:06 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:59:06 file_logger.go:64: 网络: 下载 5.23 KB/s | 上传 2.86 KB/s
+
+[INFO] 2025/10/27 11:59:06 file_logger.go:64: 磁盘IO: 读 25.56 KB/s | 写 76.69 KB/s
+
+[INFO] 2025/10/27 11:59:06 file_logger.go:64: 监控时间: 2025-10-27 11:59:06
+
+[INFO] 2025/10/27 11:59:06 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:59:11 file_logger.go:64: 检查全局推送时间: 当前时间=11:59, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:59:11 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:59:11 file_logger.go:64: CPU 使用率: 35.68%
+
+[INFO] 2025/10/27 11:59:11 file_logger.go:64: 内存使用: 19.77% (6337/32049 MB)
+
+[INFO] 2025/10/27 11:59:11 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:59:11 file_logger.go:64: 网络: 下载 5.23 KB/s | 上传 2.86 KB/s
+
+[INFO] 2025/10/27 11:59:11 file_logger.go:64: 磁盘IO: 读 25.56 KB/s | 写 76.69 KB/s
+
+[INFO] 2025/10/27 11:59:11 file_logger.go:64: 监控时间: 2025-10-27 11:59:11
+
+[INFO] 2025/10/27 11:59:11 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:59:11 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:59:11 file_logger.go:64: CPU 使用率: 32.70%
+
+[INFO] 2025/10/27 11:59:11 file_logger.go:64: 内存使用: 19.67% (6303/32049 MB)
+
+[INFO] 2025/10/27 11:59:11 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:59:11 file_logger.go:64: 网络: 下载 4.16 KB/s | 上传 3.01 KB/s
+
+[INFO] 2025/10/27 11:59:11 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 76.04 KB/s
+
+[INFO] 2025/10/27 11:59:11 file_logger.go:64: 监控时间: 2025-10-27 11:59:11
+
+[INFO] 2025/10/27 11:59:11 file_logger.go:64: [INFO] CPU使用率过高 连续第 2/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:59:16 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:59:16 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:59:16 file_logger.go:64: CPU 使用率: 30.92%
+
+[INFO] 2025/10/27 11:59:16 file_logger.go:64: 内存使用: 19.66% (6300/32049 MB)
+
+[INFO] 2025/10/27 11:59:16 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:59:16 file_logger.go:64: 网络: 下载 4.13 KB/s | 上传 2.75 KB/s
+
+[INFO] 2025/10/27 11:59:16 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 13.59 KB/s
+
+[INFO] 2025/10/27 11:59:16 file_logger.go:64: 监控时间: 2025-10-27 11:59:16
+
+[INFO] 2025/10/27 11:59:16 file_logger.go:64: [WARN] CPU使用率过高 连续第 3 次超阈值，告警已触发
+
+[INFO] 2025/10/27 11:59:16 file_logger.go:64: [DEBUG] buildAlertMessageAndMaybeDump 被调用，告警类型: CPU使用率过高
+
+[INFO] 2025/10/27 11:59:16 file_logger.go:64: [DEBUG] CPU/Memory 告警触发，准备检查脚本
+
+[INFO] 2025/10/27 11:59:16 file_logger.go:64: [DEBUG] 准备执行Java堆转储脚本: ./test_java_dump.sh
+
+[INFO] 2025/10/27 11:59:16 file_logger.go:64: [DEBUG] 脚本执行完成，结果: success
+
+[INFO] 2025/10/27 11:59:21 file_logger.go:64: 检查全局推送时间: 当前时间=11:59, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 11:59:21 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:59:21 file_logger.go:64: CPU 使用率: 30.92%
+
+[INFO] 2025/10/27 11:59:21 file_logger.go:64: 内存使用: 19.66% (6300/32049 MB)
+
+[INFO] 2025/10/27 11:59:21 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:59:21 file_logger.go:64: 网络: 下载 4.13 KB/s | 上传 2.75 KB/s
+
+[INFO] 2025/10/27 11:59:21 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 13.59 KB/s
+
+[INFO] 2025/10/27 11:59:21 file_logger.go:64: 监控时间: 2025-10-27 11:59:21
+
+[INFO] 2025/10/27 11:59:21 file_logger.go:64: [INFO] CPU使用率过高 连续第 1/3 次超阈值，暂不告警
+
+[INFO] 2025/10/27 11:59:21 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 11:59:21 file_logger.go:64: CPU 使用率: 36.07%
+
+[INFO] 2025/10/27 11:59:21 file_logger.go:64: 内存使用: 19.65% (6298/32049 MB)
+
+[INFO] 2025/10/27 11:59:21 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 11:59:21 file_logger.go:64: 网络: 下载 7.26 KB/s | 上传 4.56 KB/s
+
+[INFO] 2025/10/27 11:59:21 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 91.28 KB/s
+
+[INFO] 2025/10/27 11:59:21 file_logger.go:64: 监控时间: 2025-10-27 11:59:21
+
+[INFO] 2025/10/27 11:59:23 file_logger.go:64: 接收到信号 interrupt，正在优雅退出...
+
+[INFO] 2025/10/27 13:05:27 file_logger.go:64: 开始监控...
+
+[INFO] 2025/10/27 13:05:27 file_logger.go:64: 主机监控已启用，监控间隔: 5s
+
+[INFO] 2025/10/27 13:05:27 file_logger.go:64: 应用层监控已禁用
+
+[INFO] 2025/10/27 13:05:27 file_logger.go:64: 启动全局定时推送调度器...
+
+[INFO] 2025/10/27 13:05:27 file_logger.go:64: 启动时检查全局定时推送时间...
+
+[INFO] 2025/10/27 13:05:27 file_logger.go:64: 检查全局推送时间: 当前时间=13:05, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 13:05:32 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 13:05:32 file_logger.go:64: CPU 使用率: 34.74%
+
+[INFO] 2025/10/27 13:05:32 file_logger.go:64: 内存使用: 20.32% (6512/32049 MB)
+
+[INFO] 2025/10/27 13:05:32 file_logger.go:64: 磁盘使用: 39.89% (111/294 GB)
+
+[INFO] 2025/10/27 13:05:32 file_logger.go:64: 网络: 下载 4.97 KB/s | 上传 3.45 KB/s
+
+[INFO] 2025/10/27 13:05:32 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 6870.63 KB/s
+
+[INFO] 2025/10/27 13:05:32 file_logger.go:64: 监控时间: 2025-10-27 13:05:32
+
+[INFO] 2025/10/27 13:05:37 file_logger.go:64: 检查全局推送时间: 当前时间=13:05, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 13:06:51 file_logger.go:64: 开始监控...
+
+[INFO] 2025/10/27 13:06:51 file_logger.go:64: 主机监控已启用，监控间隔: 5s
+
+[INFO] 2025/10/27 13:06:51 file_logger.go:64: 应用层监控已禁用
+
+[INFO] 2025/10/27 13:06:51 file_logger.go:64: 启动全局定时推送调度器...
+
+[INFO] 2025/10/27 13:06:51 file_logger.go:64: 启动时检查全局定时推送时间...
+
+[INFO] 2025/10/27 13:06:51 file_logger.go:64: 检查全局推送时间: 当前时间=13:06, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00]
+
+[INFO] 2025/10/27 13:06:55 file_logger.go:64: 接收到信号 interrupt，正在优雅退出...
+
+[INFO] 2025/10/27 13:06:55 file_logger.go:64: 全局定时推送调度器收到停止信号
+
+[INFO] 2025/10/27 13:06:55 file_logger.go:64: GWatch 正在退出...
+
+[INFO] 2025/10/27 13:07:11 file_logger.go:64: 开始监控...
+
+[INFO] 2025/10/27 13:07:11 file_logger.go:64: 主机监控已启用，监控间隔: 5s
+
+[INFO] 2025/10/27 13:07:11 file_logger.go:64: 应用层监控已禁用
+
+[INFO] 2025/10/27 13:07:11 file_logger.go:64: 启动全局定时推送调度器...
+
+[INFO] 2025/10/27 13:07:11 file_logger.go:64: 启动时检查全局定时推送时间...
+
+[INFO] 2025/10/27 13:07:11 file_logger.go:64: 检查全局推送时间: 当前时间=13:07, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 13:07 16:00 17:00]
+
+[INFO] 2025/10/27 13:07:11 file_logger.go:64: 匹配到推送时间: 13:07
+
+[INFO] 2025/10/27 13:07:11 file_logger.go:64: 启动时匹配到推送时间，立即执行全局监控报告
+
+[INFO] 2025/10/27 13:07:16 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 13:07:16 file_logger.go:64: CPU 使用率: 3.11%
+
+[INFO] 2025/10/27 13:07:16 file_logger.go:64: 内存使用: 20.03% (6419/32049 MB)
+
+[INFO] 2025/10/27 13:07:16 file_logger.go:64: 磁盘使用: 39.90% (111/294 GB)
+
+[INFO] 2025/10/27 13:07:16 file_logger.go:64: 网络: 下载 7.82 KB/s | 上传 4.25 KB/s
+
+[INFO] 2025/10/27 13:07:16 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 1623.19 KB/s
+
+[INFO] 2025/10/27 13:07:16 file_logger.go:64: 监控时间: 2025-10-27 13:07:16
+
+[INFO] 2025/10/27 13:07:21 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 13:07:21 file_logger.go:64: CPU 使用率: 3.11%
+
+[INFO] 2025/10/27 13:07:21 file_logger.go:64: 内存使用: 20.03% (6419/32049 MB)
+
+[INFO] 2025/10/27 13:07:21 file_logger.go:64: 磁盘使用: 39.90% (111/294 GB)
+
+[INFO] 2025/10/27 13:07:21 file_logger.go:64: 网络: 下载 7.82 KB/s | 上传 4.25 KB/s
+
+[INFO] 2025/10/27 13:07:21 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 1623.19 KB/s
+
+[INFO] 2025/10/27 13:07:21 file_logger.go:64: 监控时间: 2025-10-27 13:07:21
+
+[INFO] 2025/10/27 13:07:21 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 13:07:21 file_logger.go:64: CPU 使用率: 3.10%
+
+[INFO] 2025/10/27 13:07:21 file_logger.go:64: 内存使用: 20.04% (6422/32049 MB)
+
+[INFO] 2025/10/27 13:07:21 file_logger.go:64: 磁盘使用: 39.90% (111/294 GB)
+
+[INFO] 2025/10/27 13:07:21 file_logger.go:64: 网络: 下载 5.40 KB/s | 上传 4.08 KB/s
+
+[INFO] 2025/10/27 13:07:21 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 2612.03 KB/s
+
+[INFO] 2025/10/27 13:07:21 file_logger.go:64: 监控时间: 2025-10-27 13:07:21
+
+[INFO] 2025/10/27 13:07:23 file_logger.go:64: 全局定时推送告警信息已保存: 定时性能报告 (推送时间: 13:07)
+
+[INFO] 2025/10/27 13:07:23 file_logger.go:64: 全局定时推送发送成功
+
+[INFO] 2025/10/27 13:07:23 file_logger.go:64: 检查全局推送时间: 当前时间=13:07, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 13:07 16:00 17:00]
+
+[INFO] 2025/10/27 13:07:23 file_logger.go:64: 时间点 13:07 已在本分钟内推送过，跳过
+
+[INFO] 2025/10/27 13:07:26 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 13:07:26 file_logger.go:64: CPU 使用率: 6.67%
+
+[INFO] 2025/10/27 13:07:26 file_logger.go:64: 内存使用: 20.07% (6431/32049 MB)
+
+[INFO] 2025/10/27 13:07:26 file_logger.go:64: 磁盘使用: 39.90% (111/294 GB)
+
+[INFO] 2025/10/27 13:07:26 file_logger.go:64: 网络: 下载 6.15 KB/s | 上传 4.20 KB/s
+
+[INFO] 2025/10/27 13:07:26 file_logger.go:64: 磁盘IO: 读 25.61 KB/s | 写 94.45 KB/s
+
+[INFO] 2025/10/27 13:07:26 file_logger.go:64: 监控时间: 2025-10-27 13:07:26
+
+[INFO] 2025/10/27 13:07:31 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 13:07:31 file_logger.go:64: CPU 使用率: 6.67%
+
+[INFO] 2025/10/27 13:07:31 file_logger.go:64: 内存使用: 20.07% (6431/32049 MB)
+
+[INFO] 2025/10/27 13:07:31 file_logger.go:64: 磁盘使用: 39.90% (111/294 GB)
+
+[INFO] 2025/10/27 13:07:31 file_logger.go:64: 网络: 下载 6.15 KB/s | 上传 4.20 KB/s
+
+[INFO] 2025/10/27 13:07:31 file_logger.go:64: 磁盘IO: 读 25.61 KB/s | 写 94.45 KB/s
+
+[INFO] 2025/10/27 13:07:31 file_logger.go:64: 监控时间: 2025-10-27 13:07:31
+
+[INFO] 2025/10/27 13:07:31 file_logger.go:64: 检查全局推送时间: 当前时间=13:07, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 13:07 16:00 17:00]
+
+[INFO] 2025/10/27 13:07:31 file_logger.go:64: 时间点 13:07 已在本分钟内推送过，跳过
+
+[INFO] 2025/10/27 13:07:31 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 13:07:31 file_logger.go:64: CPU 使用率: 5.22%
+
+[INFO] 2025/10/27 13:07:31 file_logger.go:64: 内存使用: 20.05% (6426/32049 MB)
+
+[INFO] 2025/10/27 13:07:31 file_logger.go:64: 磁盘使用: 39.90% (111/294 GB)
+
+[INFO] 2025/10/27 13:07:31 file_logger.go:64: 网络: 下载 6.08 KB/s | 上传 2.74 KB/s
+
+[INFO] 2025/10/27 13:07:31 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 6109.70 KB/s
+
+[INFO] 2025/10/27 13:07:31 file_logger.go:64: 监控时间: 2025-10-27 13:07:31
+
+[INFO] 2025/10/27 13:07:36 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 13:07:36 file_logger.go:64: CPU 使用率: 3.95%
+
+[INFO] 2025/10/27 13:07:36 file_logger.go:64: 内存使用: 19.88% (6370/32049 MB)
+
+[INFO] 2025/10/27 13:07:36 file_logger.go:64: 磁盘使用: 39.90% (111/294 GB)
+
+[INFO] 2025/10/27 13:07:36 file_logger.go:64: 网络: 下载 4.71 KB/s | 上传 3.28 KB/s
+
+[INFO] 2025/10/27 13:07:36 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 18.42 KB/s
+
+[INFO] 2025/10/27 13:07:36 file_logger.go:64: 监控时间: 2025-10-27 13:07:36
+
+[INFO] 2025/10/27 13:07:39 file_logger.go:64: 接收到信号 interrupt，正在优雅退出...
+
+[INFO] 2025/10/27 13:07:39 file_logger.go:64: 全局定时推送调度器收到停止信号
+
+[INFO] 2025/10/27 13:07:39 file_logger.go:64: GWatch 正在退出...
+
+[INFO] 2025/10/27 13:07:52 file_logger.go:64: 开始监控...
+
+[INFO] 2025/10/27 13:07:52 file_logger.go:64: 主机监控已启用，监控间隔: 5s
+
+[INFO] 2025/10/27 13:07:52 file_logger.go:64: 应用层监控已禁用
+
+[INFO] 2025/10/27 13:07:52 file_logger.go:64: 启动全局定时推送调度器...
+
+[INFO] 2025/10/27 13:07:52 file_logger.go:64: 启动时检查全局定时推送时间...
+
+[INFO] 2025/10/27 13:07:52 file_logger.go:64: 检查全局推送时间: 当前时间=13:07, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 13:08 16:00 17:00]
+
+[INFO] 2025/10/27 13:07:57 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 13:07:57 file_logger.go:64: CPU 使用率: 2.79%
+
+[INFO] 2025/10/27 13:07:57 file_logger.go:64: 内存使用: 19.86% (6366/32049 MB)
+
+[INFO] 2025/10/27 13:07:57 file_logger.go:64: 磁盘使用: 39.90% (111/294 GB)
+
+[INFO] 2025/10/27 13:07:57 file_logger.go:64: 网络: 下载 5.14 KB/s | 上传 3.50 KB/s
+
+[INFO] 2025/10/27 13:07:57 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 4043.28 KB/s
+
+[INFO] 2025/10/27 13:07:57 file_logger.go:64: 监控时间: 2025-10-27 13:07:57
+
+[INFO] 2025/10/27 13:08:02 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 13:08:02 file_logger.go:64: CPU 使用率: 2.79%
+
+[INFO] 2025/10/27 13:08:02 file_logger.go:64: 内存使用: 19.86% (6366/32049 MB)
+
+[INFO] 2025/10/27 13:08:02 file_logger.go:64: 磁盘使用: 39.90% (111/294 GB)
+
+[INFO] 2025/10/27 13:08:02 file_logger.go:64: 网络: 下载 5.14 KB/s | 上传 3.50 KB/s
+
+[INFO] 2025/10/27 13:08:02 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 4043.28 KB/s
+
+[INFO] 2025/10/27 13:08:02 file_logger.go:64: 监控时间: 2025-10-27 13:08:02
+
+[INFO] 2025/10/27 13:08:02 file_logger.go:64: 检查全局推送时间: 当前时间=13:08, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 13:08 16:00 17:00]
+
+[INFO] 2025/10/27 13:08:02 file_logger.go:64: 匹配到推送时间: 13:08
+
+[INFO] 2025/10/27 13:08:02 file_logger.go:64: 定时器触发：开始执行全局监控报告
+
+[INFO] 2025/10/27 13:08:02 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 13:08:02 file_logger.go:64: CPU 使用率: 2.59%
+
+[INFO] 2025/10/27 13:08:02 file_logger.go:64: 内存使用: 19.85% (6361/32049 MB)
+
+[INFO] 2025/10/27 13:08:02 file_logger.go:64: 磁盘使用: 39.90% (111/294 GB)
+
+[INFO] 2025/10/27 13:08:02 file_logger.go:64: 网络: 下载 4.70 KB/s | 上传 2.77 KB/s
+
+[INFO] 2025/10/27 13:08:02 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 24.79 KB/s
+
+[INFO] 2025/10/27 13:08:02 file_logger.go:64: 监控时间: 2025-10-27 13:08:02
+
+[INFO] 2025/10/27 13:08:07 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 13:08:07 file_logger.go:64: CPU 使用率: 2.57%
+
+[INFO] 2025/10/27 13:08:07 file_logger.go:64: 内存使用: 19.88% (6372/32049 MB)
+
+[INFO] 2025/10/27 13:08:07 file_logger.go:64: 磁盘使用: 39.90% (111/294 GB)
+
+[INFO] 2025/10/27 13:08:07 file_logger.go:64: 网络: 下载 6.94 KB/s | 上传 3.70 KB/s
+
+[INFO] 2025/10/27 13:08:07 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 18.44 KB/s
+
+[INFO] 2025/10/27 13:08:07 file_logger.go:64: 监控时间: 2025-10-27 13:08:07
+
+[INFO] 2025/10/27 13:08:12 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 13:08:12 file_logger.go:64: CPU 使用率: 2.57%
+
+[INFO] 2025/10/27 13:08:12 file_logger.go:64: 内存使用: 19.88% (6372/32049 MB)
+
+[INFO] 2025/10/27 13:08:12 file_logger.go:64: 磁盘使用: 39.90% (111/294 GB)
+
+[INFO] 2025/10/27 13:08:12 file_logger.go:64: 网络: 下载 6.94 KB/s | 上传 3.70 KB/s
+
+[INFO] 2025/10/27 13:08:12 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 18.44 KB/s
+
+[INFO] 2025/10/27 13:08:12 file_logger.go:64: 监控时间: 2025-10-27 13:08:12
+
+[INFO] 2025/10/27 13:08:12 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 13:08:12 file_logger.go:64: CPU 使用率: 2.17%
+
+[INFO] 2025/10/27 13:08:12 file_logger.go:64: 内存使用: 19.87% (6369/32049 MB)
+
+[INFO] 2025/10/27 13:08:12 file_logger.go:64: 磁盘使用: 39.90% (111/294 GB)
+
+[INFO] 2025/10/27 13:08:12 file_logger.go:64: 网络: 下载 4.36 KB/s | 上传 2.82 KB/s
+
+[INFO] 2025/10/27 13:08:12 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 18.39 KB/s
+
+[INFO] 2025/10/27 13:08:12 file_logger.go:64: 监控时间: 2025-10-27 13:08:12
+
+[INFO] 2025/10/27 13:08:12 file_logger.go:64: 全局定时推送告警信息已保存: 定时性能报告 (推送时间: 13:08)
+
+[INFO] 2025/10/27 13:08:12 file_logger.go:64: 全局定时推送发送成功
+
+[INFO] 2025/10/27 13:08:12 file_logger.go:64: 检查全局推送时间: 当前时间=13:08, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 13:08 16:00 17:00]
+
+[INFO] 2025/10/27 13:08:12 file_logger.go:64: 时间点 13:08 已在本分钟内推送过，跳过
+
+[INFO] 2025/10/27 13:08:16 file_logger.go:64: 接收到信号 interrupt，正在优雅退出...
+
+[INFO] 2025/10/27 13:08:16 file_logger.go:64: 全局定时推送调度器收到停止信号
+
+[INFO] 2025/10/27 13:08:16 file_logger.go:64: GWatch 正在退出...
+
+[INFO] 2025/10/27 13:34:06 file_logger.go:64: 开始监控...
+
+[INFO] 2025/10/27 13:34:06 file_logger.go:64: 主机监控已启用，监控间隔: 5s
+
+[INFO] 2025/10/27 13:34:06 file_logger.go:64: 应用层监控已禁用
+
+[INFO] 2025/10/27 13:34:06 file_logger.go:64: 启动全局定时推送调度器...
+
+[INFO] 2025/10/27 13:34:06 file_logger.go:64: 启动时检查全局定时推送时间...
+
+[INFO] 2025/10/27 13:34:06 file_logger.go:64: 检查全局推送时间: 当前时间=13:34, 配置时间=[8:00 9:00 10:00 11:00 12:00 13:00 14:00 15:00 13:08 16:00 17:00]
+
+[INFO] 2025/10/27 13:34:11 file_logger.go:64: ===========采集数据============
+
+[INFO] 2025/10/27 13:34:11 file_logger.go:64: CPU 使用率: 5.32%
+
+[INFO] 2025/10/27 13:34:11 file_logger.go:64: 内存使用: 19.79% (6343/32049 MB)
+
+[INFO] 2025/10/27 13:34:11 file_logger.go:64: 磁盘使用: 39.90% (111/294 GB)
+
+[INFO] 2025/10/27 13:34:11 file_logger.go:64: 网络: 下载 4.33 KB/s | 上传 2.78 KB/s
+
+[INFO] 2025/10/27 13:34:11 file_logger.go:64: 磁盘IO: 读 0.00 KB/s | 写 43.93 KB/s
+
+[INFO] 2025/10/27 13:34:11 file_logger.go:64: 监控时间: 2025-10-27 13:34:11
+
+[INFO] 2025/10/27 13:34:11 file_logger.go:64: 接收到信号 interrupt，正在优雅退出...
+
+[INFO] 2025/10/27 13:34:11 file_logger.go:64: 全局定时推送调度器收到停止信号
+
+[INFO] 2025/10/27 13:34:11 file_logger.go:64: GWatch 正在退出...
+

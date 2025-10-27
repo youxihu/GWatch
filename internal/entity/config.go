@@ -20,10 +20,14 @@ type Config struct {
 	DingTalk          DingTalkConfig         `yaml:"dingtalk"`
 	Log               LogConfig              `yaml:"log"`
 	WhiteProcessList  []string               `yaml:"whiteProcessList"`
+	JavaAppDumpScript *JavaAppDumpScript     `yaml:"javaAppDumpScript,omitempty"`
 }
 
 // HostMonitoringConfig 主机类监控配置
 type HostMonitoringConfig struct {
+	// 是否启用主机监控
+	Enabled bool `yaml:"enabled"` // 是否启用监控
+	
 	// 监控间隔和阈值
 	Interval             time.Duration `yaml:"interval"`
 	ConsecutiveThreshold int           `yaml:"consecutive_threshold"`
@@ -40,13 +44,13 @@ type HostMonitoringConfig struct {
 	DiskThreshold float64 `yaml:"disk_threshold"`
 	
 	// 网络监控（默认启用，无需额外配置）
-	
-	// Java堆转储脚本
-	JavaAppDumpScript *JavaAppDumpScript `yaml:"javaAppDumpScript,omitempty"`
 }
 
 // AppMonitoringConfig 应用层类监控配置
 type AppMonitoringConfig struct {
+	// 是否启用应用监控
+	Enabled bool `yaml:"enabled"` // 是否启用应用监控
+	
 	// Redis监控
 	Redis *RedisConfig `yaml:"redis,omitempty"`
 	
@@ -62,6 +66,9 @@ type AppMonitoringConfig struct {
 
 // MySQLMonitoringConfig MySQL监控配置
 type MySQLMonitoringConfig struct {
+	// 是否启用MySQL监控
+	Enabled bool `yaml:"enabled"` // 是否启用MySQL监控
+	
 	// 连接配置
 	Host     string `yaml:"host"`
 	Port     int    `yaml:"port"`
@@ -73,23 +80,27 @@ type MySQLMonitoringConfig struct {
 	// 监控间隔
 	Interval time.Duration `yaml:"interval"`
 	
-	// 连接与会话监控阈值
-	ConnectionThresholds ConnectionThresholds `yaml:"connection_thresholds"`
-	
-	// 查询性能监控阈值
-	QueryThresholds QueryThresholds `yaml:"query_thresholds"`
-	
-	// InnoDB Buffer Pool监控阈值
-	BufferPoolThresholds BufferPoolThresholds `yaml:"buffer_pool_thresholds"`
+	// 核心监控阈值（精简版）
+	Thresholds MySQLThresholds `yaml:"thresholds"`
 	
 	// 复制状态监控（主从架构）
 	Replication *ReplicationConfig `yaml:"replication,omitempty"`
-	
-	// 锁与阻塞监控阈值
-	LockThresholds LockThresholds `yaml:"lock_thresholds"`
-	
-	// 事务与日志监控阈值
-	TransactionThresholds TransactionThresholds `yaml:"transaction_thresholds"`
+}
+
+// MySQLThresholds MySQL监控阈值（精简版）
+type MySQLThresholds struct {
+	// 连接数使用率（%）
+	MaxConnectionsUsageWarning float64 `yaml:"max_connections_usage_warning"`
+	// 活跃线程数
+	ThreadsRunningWarning int `yaml:"threads_running_warning"`
+	// 每分钟慢查询增量告警阈值
+	SlowQueriesRateWarning int `yaml:"slow_queries_rate_warning"`
+	// Buffer Pool 命中率低于此值告警（%）
+	BufferPoolHitRateWarning float64 `yaml:"buffer_pool_hit_rate_warning"`
+	// 复制延迟告警阈值（秒），仅当 replication.enabled=true 时生效
+	ReplicationDelayWarningSeconds int `yaml:"replication_delay_warning_seconds"`
+	// 每小时死锁次数
+	DeadlocksPerHourWarning int `yaml:"deadlocks_per_hour_warning"`
 }
 
 // ConnectionThresholds 连接与会话监控阈值
@@ -137,6 +148,9 @@ type TransactionThresholds struct {
 
 // HTTPMonitoringConfig HTTP接口监控配置
 type HTTPMonitoringConfig struct {
+	// 是否启用HTTP监控
+	Enabled bool `yaml:"enabled"` // 是否启用HTTP监控
+	
 	ErrorThreshold int             `yaml:"error_threshold"`
 	Interval        time.Duration   `yaml:"interval"`
 	Interfaces      []HTTPInterface `yaml:"interfaces"`
@@ -171,6 +185,9 @@ type JavaAppDumpScript struct {
 
 // RedisConfig Redis连接配置
 type RedisConfig struct {
+	// 是否启用Redis监控
+	Enabled bool `yaml:"enabled"` // 是否启用Redis监控
+	
 	Addr         string        `yaml:"addr"`
 	Password     string        `yaml:"password"`
 	DB           int           `yaml:"db"`
@@ -203,6 +220,9 @@ type HTTPInterface struct {
 
 // TickersConfig 定时器配置
 type TickersConfig struct {
+	// 是否启用定时器监控
+	Enabled bool `yaml:"enabled"` // 是否启用定时器监控
+	
 	AlertTitle       string                `yaml:"alert_title"`
 	TickerInterfaces []TickerHTTPInterface `yaml:"ticker_interfaces"`
 }

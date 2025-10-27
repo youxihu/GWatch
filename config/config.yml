@@ -79,7 +79,7 @@ app_monitoring:
 # 全局定时推送配置
 scheduled_push:
   enabled: true
-  push_times: ["8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"]
+  push_times: ["8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "13:08","16:00", "17:00"]
   title: "定时性能报告"
   include_host_monitoring: true
   include_app_monitoring: true
@@ -91,8 +91,8 @@ scheduled_push:
 
 # 通用配置
 dingtalk:
-  webhook_url: "https://oapi.dingtalk.com/robot/send?access_token=bfd9580e74b7b1a695fab1b46c7010b06ebad"
-  secret: "SEC0b0f0a3d4f43d1d21d0a66d49aadbae66d12fe97b22fa"
+  webhook_url: "https://oapi.dingtalk.com/robot/send?access_token=bfd9580e7d49a959e986c7438bfa014ddb694b7b1a695fab1b46c7010b06ebad"
+  secret: "SEC0b0f0a3d4f43d1d21d0a66d0d4dbd6b5c16450266d49aadbae66d12fe97b22fa"
   at_mobiles: ["19******502"]
 
 log:

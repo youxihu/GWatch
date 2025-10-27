@@ -79,8 +79,8 @@ func (useCase *MonitoringUseCase) Run(config *entity.Config) error {
 func (useCase *MonitoringUseCase) CollectOnce(config *entity.Config) *entity.SystemMetrics {
 	metrics := &entity.SystemMetrics{Timestamp: time.Now()}
 
-	// 主机类监控：只有当host_monitoring配置存在时才执行
-	if config != nil && config.HostMonitoring != nil {
+	// 主机类监控：只有当host_monitoring配置存在且启用时才执行
+	if config != nil && config.HostMonitoring != nil && config.HostMonitoring.Enabled {
 		// CPU监控
 		metrics.CPU.Percent, metrics.CPU.Error = useCase.hostCollector.GetCPUPercent()
 		
@@ -95,10 +95,10 @@ func (useCase *MonitoringUseCase) CollectOnce(config *entity.Config) *entity.Sys
 		metrics.Network.DownloadKBps, metrics.Network.UploadKBps, metrics.Network.Error = useCase.hostCollector.GetNetworkRate()
 	}
 
-	// 应用层类监控：只有当app_monitoring配置存在时才执行
-	if config != nil && config.AppMonitoring != nil {
-		// Redis监控：只有当Redis配置存在时才监控
-		if config.AppMonitoring.Redis != nil {
+	// 应用层类监控：只有当app_monitoring配置存在且启用时才执行
+	if config != nil && config.AppMonitoring != nil && config.AppMonitoring.Enabled {
+		// Redis监控：只有当Redis配置存在且启用时才监控
+		if config.AppMonitoring.Redis != nil && config.AppMonitoring.Redis.Enabled {
 		if !useCase.isRedisInited {
 			if err := useCase.redisClient.Init(); err != nil {
 				metrics.Redis.ConnectionError = err
@@ -118,8 +118,8 @@ func (useCase *MonitoringUseCase) CollectOnce(config *entity.Config) *entity.Sys
 		}
 		}
 
-		// MySQL监控：只有当MySQL配置存在时才监控
-		if config.AppMonitoring.MySQL != nil {
+		// MySQL监控：只有当MySQL配置存在且启用时才监控
+		if config.AppMonitoring.MySQL != nil && config.AppMonitoring.MySQL.Enabled {
 			if !useCase.isMySQLInited {
 				if err := useCase.mysqlCollector.Init(); err != nil {
 					metrics.MySQL.Error = err
@@ -225,8 +225,8 @@ func (useCase *MonitoringUseCase) CollectOnce(config *entity.Config) *entity.Sys
 			}
 		}
 
-		// HTTP接口监控：只有当HTTP配置存在时才监控
-		if config.AppMonitoring.HTTP != nil {
+		// HTTP接口监控：只有当HTTP配置存在且启用时才监控
+		if config.AppMonitoring.HTTP != nil && config.AppMonitoring.HTTP.Enabled {
 			if !useCase.isHTTPInited {
 				if err := useCase.httpCollector.Init(); err != nil {
 					metrics.HTTP.Error = err
@@ -301,8 +301,8 @@ func (useCase *MonitoringUseCase) PrintMetrics(config *entity.Config, metrics *e
 	now := time.Now() // 获取当前时间
 	log.Println("===========采集数据============")
 	
-	// 主机类监控信息 - 只有当host_monitoring配置存在时才显示
-	if config != nil && config.HostMonitoring != nil {
+	// 主机类监控信息 - 只有当host_monitoring配置存在且启用时才显示
+	if config != nil && config.HostMonitoring != nil && config.HostMonitoring.Enabled {
 		if metrics.CPU.Error != nil {
 			log.Println("CPU 监控失败:", metrics.CPU.Error.Error())
 		} else {
@@ -327,8 +327,8 @@ func (useCase *MonitoringUseCase) PrintMetrics(config *entity.Config, metrics *e
 		log.Printf("磁盘IO: 读 %.2f KB/s | 写 %.2f KB/s\n", metrics.Disk.ReadKBps, metrics.Disk.WriteKBps)
 	}
 
-	// Redis监控信息 - 只有当app_monitoring和redis配置存在时才显示
-	if config != nil && config.AppMonitoring != nil && config.AppMonitoring.Redis != nil {
+	// Redis监控信息 - 只有当app_monitoring和redis配置存在且启用时才显示
+	if config != nil && config.AppMonitoring != nil && config.AppMonitoring.Enabled && config.AppMonitoring.Redis != nil && config.AppMonitoring.Redis.Enabled {
 		if metrics.Redis.ConnectionError != nil {
 			log.Println("Redis 连接失败:", metrics.Redis.ConnectionError.Error())
 		} else {
@@ -336,8 +336,8 @@ func (useCase *MonitoringUseCase) PrintMetrics(config *entity.Config, metrics *e
 		}
 	}
 
-	// MySQL监控信息 - 只有当app_monitoring和mysql配置存在时才显示
-	if config != nil && config.AppMonitoring != nil && config.AppMonitoring.MySQL != nil {
+	// MySQL监控信息 - 只有当app_monitoring和mysql配置存在且启用时才显示
+	if config != nil && config.AppMonitoring != nil && config.AppMonitoring.Enabled && config.AppMonitoring.MySQL != nil && config.AppMonitoring.MySQL.Enabled {
 		if metrics.MySQL.Error != nil {
 			log.Println("MySQL 连接失败:", metrics.MySQL.Error.Error())
 		} else {
@@ -353,8 +353,8 @@ func (useCase *MonitoringUseCase) PrintMetrics(config *entity.Config, metrics *e
 		}
 	}
 
-	// HTTP接口监控信息 - 只有当app_monitoring和http配置存在时才显示
-	if config != nil && config.AppMonitoring != nil && config.AppMonitoring.HTTP != nil {
+	// HTTP接口监控信息 - 只有当app_monitoring和http配置存在且启用时才显示
+	if config != nil && config.AppMonitoring != nil && config.AppMonitoring.Enabled && config.AppMonitoring.HTTP != nil && config.AppMonitoring.HTTP.Enabled {
 		if metrics.HTTP.Error != nil {
 			log.Println("HTTP接口监控失败:", metrics.HTTP.Error.Error())
 		} else {
@@ -415,8 +415,8 @@ func CombineMetrics(baseMetrics, httpMetrics *entity.SystemMetrics) *entity.Syst
 func (useCase *MonitoringUseCase) CollectBaseOnce(config *entity.Config) *entity.SystemMetrics {
 	metrics := &entity.SystemMetrics{Timestamp: time.Now()}
 
-	// 主机类监控：只有当host_monitoring配置存在时才执行
-	if config != nil && config.HostMonitoring != nil {
+	// 主机类监控：只有当host_monitoring配置存在且启用时才执行
+	if config != nil && config.HostMonitoring != nil && config.HostMonitoring.Enabled {
 		metrics.CPU.Percent, metrics.CPU.Error = useCase.hostCollector.GetCPUPercent()
 		metrics.Memory.Percent, metrics.Memory.UsedMB, metrics.Memory.TotalMB, metrics.Memory.Error = useCase.hostCollector.GetMemoryUsage()
 		metrics.Disk.Percent, metrics.Disk.UsedGB, metrics.Disk.TotalGB, metrics.Disk.Error = useCase.hostCollector.GetDiskUsage()
@@ -424,8 +424,8 @@ func (useCase *MonitoringUseCase) CollectBaseOnce(config *entity.Config) *entity
 		metrics.Network.DownloadKBps, metrics.Network.UploadKBps, metrics.Network.Error = useCase.hostCollector.GetNetworkRate()
 	}
 
-	// Redis监控：只有当app_monitoring和Redis配置存在时才执行
-	if config != nil && config.AppMonitoring != nil && config.AppMonitoring.Redis != nil {
+	// Redis监控：只有当app_monitoring存在且启用，Redis配置存在且启用时才执行
+	if config != nil && config.AppMonitoring != nil && config.AppMonitoring.Enabled && config.AppMonitoring.Redis != nil && config.AppMonitoring.Redis.Enabled {
 		if !useCase.isRedisInited {
 			if err := useCase.redisClient.Init(); err != nil {
 				metrics.Redis.ConnectionError = err
@@ -445,8 +445,8 @@ func (useCase *MonitoringUseCase) CollectBaseOnce(config *entity.Config) *entity
 		}
 	}
 
-	// MySQL监控：只有当app_monitoring和MySQL配置存在时才执行
-	if config != nil && config.AppMonitoring != nil && config.AppMonitoring.MySQL != nil {
+	// MySQL监控：只有当app_monitoring存在且启用，MySQL配置存在且启用时才执行
+	if config != nil && config.AppMonitoring != nil && config.AppMonitoring.Enabled && config.AppMonitoring.MySQL != nil && config.AppMonitoring.MySQL.Enabled {
 		if !useCase.isMySQLInited {
 			if err := useCase.mysqlCollector.Init(); err != nil {
 				metrics.MySQL.Error = err
@@ -559,8 +559,8 @@ func (useCase *MonitoringUseCase) CollectBaseOnce(config *entity.Config) *entity
 func (useCase *MonitoringUseCase) CollectHTTPOnce(config *entity.Config) *entity.SystemMetrics {
 	metrics := &entity.SystemMetrics{Timestamp: time.Now()}
 
-	// HTTP接口监控：只有当app_monitoring和HTTP配置存在时才执行
-	if config != nil && config.AppMonitoring != nil && config.AppMonitoring.HTTP != nil {
+	// HTTP接口监控：只有当app_monitoring存在且启用，HTTP配置存在且启用时才执行
+	if config != nil && config.AppMonitoring != nil && config.AppMonitoring.Enabled && config.AppMonitoring.HTTP != nil && config.AppMonitoring.HTTP.Enabled {
 		if !useCase.isHTTPInited {
 			if err := useCase.httpCollector.Init(); err != nil {
 				metrics.HTTP.Error = err
@@ -659,7 +659,6 @@ func (useCase *MonitoringUseCase) buildAlertMessageAndMaybeDump(
 	metrics *entity.SystemMetrics,
 	alertType entity.AlertType,
 ) (string, bool, bool) {
-
 	message := alertType.String() // 默认使用 AlertType 的 String()
 	isTriggerAsyncDump := false
 
@@ -694,34 +693,34 @@ func (useCase *MonitoringUseCase) buildAlertMessageAndMaybeDump(
 				)
 			}
 
-			// 执行脚本并等待最多 3 秒
-			if config.HostMonitoring != nil && config.HostMonitoring.JavaAppDumpScript != nil {
-				done := make(chan struct{}, 1)
-				var result string
-				go func() {
-					r, err := utils.ExecuteJavaDumpScriptResult(config.HostMonitoring.JavaAppDumpScript.Path, 3*time.Second)
-					if err == nil {
-						result = r
-					}
-					done <- struct{}{}
-				}()
+				// 执行脚本并等待最多 3 秒
+				if config.JavaAppDumpScript != nil {
+					done := make(chan struct{}, 1)
+					var result string
+					go func() {
+						r, err := utils.ExecuteJavaDumpScriptResult(config.JavaAppDumpScript.Path, 3*time.Second)
+						if err == nil {
+							result = r
+						}
+						done <- struct{}{}
+					}()
 
-				select {
-				case <-done:
-					if strings.Contains(result, "file_exist") {
-						message += "\n\n> 提示：堆转储文件已存在，跳过生成"
-					} else if strings.Contains(result, "failed") {
-						message += "\n\n> 提示：Java堆转储生成失败"
-					} else if strings.Contains(result, "success") {
-						message += "\n\n> 提示：已生成 Java 堆转储"
-					} else if result != "" {
-						message += "\n\n> 提示：" + result
+					select {
+					case <-done:
+						if strings.Contains(result, "file_exist") {
+							message += "\n\n> 提示：堆转储文件已存在，跳过生成"
+						} else if strings.Contains(result, "failed") {
+							message += "\n\n> 提示：Java堆转储生成失败"
+						} else if strings.Contains(result, "success") {
+							message += "\n\n> 提示：已生成 Java 堆转储"
+						} else if result != "" {
+							message += "\n\n> 提示：" + result
+						}
+					case <-time.After(3 * time.Second):
+						go utils.ExecuteJavaDumpScriptAsync(config.JavaAppDumpScript.Path)
+						isTriggerAsyncDump = true
 					}
-				case <-time.After(3 * time.Second):
-					go utils.ExecuteJavaDumpScriptAsync(config.HostMonitoring.JavaAppDumpScript.Path)
-					isTriggerAsyncDump = true
 				}
-			}
 		}
 	}
 

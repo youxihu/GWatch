@@ -34,8 +34,8 @@ func (f *MarkdownFormatter) Build(title string, cfg *entity.Config, m *entity.Sy
 		text += fmt.Sprintf("**主机IP**: %s (%s)\n\n", hostname, ip)
 	}
 	
-	// 主机类监控指标 - 只有当host_monitoring配置存在时才显示
-	if cfg.HostMonitoring != nil {
+	// 主机类监控指标 - 只有当host_monitoring配置存在且启用时才显示
+	if cfg.HostMonitoring != nil && cfg.HostMonitoring.Enabled {
 		if m.CPU.Error != nil {
 			text += fmt.Sprintf("**CPU**: 监控失败 - %v\n\n", m.CPU.Error)
 		} else {
@@ -59,8 +59,8 @@ func (f *MarkdownFormatter) Build(title string, cfg *entity.Config, m *entity.Sy
 		text += fmt.Sprintf("**磁盘IO**: 读 %.2f KB/s | 写 %.2f KB/s\n\n", m.Disk.ReadKBps, m.Disk.WriteKBps)
 	}
 	
-	// Redis监控指标 - 只有当app_monitoring和redis配置存在时才显示
-	if cfg.AppMonitoring != nil && cfg.AppMonitoring.Redis != nil {
+	// Redis监控指标 - 只有当app_monitoring和redis配置存在且启用时才显示
+	if cfg.AppMonitoring != nil && cfg.AppMonitoring.Enabled && cfg.AppMonitoring.Redis != nil && cfg.AppMonitoring.Redis.Enabled {
 		if m.Redis.ConnectionError != nil {
 			text += fmt.Sprintf("**Redis**: 连接失败 - %v\n\n", m.Redis.ConnectionError)
 		} else {
@@ -68,8 +68,8 @@ func (f *MarkdownFormatter) Build(title string, cfg *entity.Config, m *entity.Sy
 		}
 	}
 
-	// MySQL监控指标 - 只有当app_monitoring和mysql配置存在时才显示
-	if cfg.AppMonitoring != nil && cfg.AppMonitoring.MySQL != nil {
+	// MySQL监控指标 - 只有当app_monitoring和mysql配置存在且启用时才显示
+	if cfg.AppMonitoring != nil && cfg.AppMonitoring.Enabled && cfg.AppMonitoring.MySQL != nil && cfg.AppMonitoring.MySQL.Enabled {
 		if m.MySQL.Error != nil {
 			text += fmt.Sprintf("**MySQL**: 连接失败 - %v\n\n", m.MySQL.Error)
 		} else {
@@ -77,17 +77,16 @@ func (f *MarkdownFormatter) Build(title string, cfg *entity.Config, m *entity.Sy
 				m.MySQL.Connections.ThreadsConnected,
 				m.MySQL.Connections.MaxConnections,
 				m.MySQL.Connections.ConnectionUsage,
-				mysqlConnectionStatus(m.MySQL.Connections.ConnectionUsage, cfg.AppMonitoring.MySQL.ConnectionThresholds.MaxConnectionsWarning))
-			text += fmt.Sprintf("**MySQL QPS**: %d %s\n\n", 
-				m.MySQL.QueryPerformance.QPS,
-				mysqlQPSStatus(m.MySQL.QueryPerformance.QPS, cfg.AppMonitoring.MySQL.QueryThresholds.QPSWarning))
+				mysqlConnectionStatus(m.MySQL.Connections.ConnectionUsage, cfg.AppMonitoring.MySQL.Thresholds.MaxConnectionsUsageWarning))
+			text += fmt.Sprintf("**MySQL QPS**: %d\n\n", 
+				m.MySQL.QueryPerformance.QPS)
 			text += fmt.Sprintf("**MySQL Buffer Pool**: %.2f%%命中率 %s\n\n", 
 				m.MySQL.BufferPool.HitRate,
-				mysqlBufferStatus(m.MySQL.BufferPool.HitRate, cfg.AppMonitoring.MySQL.BufferPoolThresholds.HitRateWarning))
+				mysqlBufferStatus(m.MySQL.BufferPool.HitRate, cfg.AppMonitoring.MySQL.Thresholds.BufferPoolHitRateWarning))
 		}
 	}
-	// HTTP接口监控信息 - 只有当app_monitoring和http配置存在时才显示
-	if cfg.AppMonitoring != nil && cfg.AppMonitoring.HTTP != nil {
+	// HTTP接口监控信息 - 只有当app_monitoring和http配置存在且启用时才显示
+	if cfg.AppMonitoring != nil && cfg.AppMonitoring.Enabled && cfg.AppMonitoring.HTTP != nil && cfg.AppMonitoring.HTTP.Enabled {
 		if m.HTTP.Error != nil {
 			text += fmt.Sprintf("**HTTP接口**: 监控失败 - %v\n\n", m.HTTP.Error)
 		} else if len(m.HTTP.Interfaces) > 0 {
@@ -131,7 +130,7 @@ func status(value, threshold float64) string {
 	return "[正常]"
 }
 func redisStatus(count int, cfg *entity.Config) string {
-	if cfg.AppMonitoring != nil && cfg.AppMonitoring.Redis != nil {
+	if cfg.AppMonitoring != nil && cfg.AppMonitoring.Enabled && cfg.AppMonitoring.Redis != nil && cfg.AppMonitoring.Redis.Enabled {
 		if count < cfg.AppMonitoring.Redis.MinClients {
 			return "[连接数过低]"
 		}
@@ -143,16 +142,9 @@ func redisStatus(count int, cfg *entity.Config) string {
 }
 
 // MySQL状态判断函数
-func mysqlConnectionStatus(usage float64, threshold int) string {
-	if usage > float64(threshold) {
+func mysqlConnectionStatus(usage float64, threshold float64) string {
+	if usage > threshold {
 		return "[连接数过高]"
-	}
-	return "[正常]"
-}
-
-func mysqlQPSStatus(qps int, threshold int) string {
-	if qps > threshold {
-		return "[QPS过高]"
 	}
 	return "[正常]"
 }
