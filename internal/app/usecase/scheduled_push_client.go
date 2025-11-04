@@ -14,16 +14,19 @@ import (
 type ClientUseCaseImpl struct {
 	metricsCollector     *MetricsCollector
 	clientDataRepository common.ClientDataRepository
+	dataLogStorage       common.ScheduledPushDataLogStorage
 }
 
 // NewClientUseCase 创建客户端模式用例
 func NewClientUseCase(
 	metricsCollector *MetricsCollector,
 	clientDataRepository common.ClientDataRepository,
+	dataLogStorage common.ScheduledPushDataLogStorage,
 ) client.ClientUseCase {
 	return &ClientUseCaseImpl{
 		metricsCollector:     metricsCollector,
 		clientDataRepository: clientDataRepository,
+		dataLogStorage:       dataLogStorage,
 	}
 }
 
@@ -73,6 +76,19 @@ func (cu *ClientUseCaseImpl) Run(config *entity.Config) error {
 	// 保存到 Redis，设置 5 分钟过期时间
 	if err := cu.clientDataRepository.SaveClientData(clientData, 5*time.Minute); err != nil {
 		return fmt.Errorf("保存客户端数据到 Redis 失败: %v", err)
+	}
+
+	// 保存到数据日志文件（如果启用）
+	if cu.dataLogStorage != nil {
+		if err := cu.dataLogStorage.Init(config); err != nil {
+			log.Printf("[Client模式] 初始化数据日志存储失败: %v", err)
+		} else {
+			if err := cu.dataLogStorage.SaveClientData(clientData, clientData.Timestamp); err != nil {
+				log.Printf("[Client模式] 保存数据日志失败: %v", err)
+			} else {
+				log.Printf("[Client模式] 已保存数据日志")
+			}
+		}
 	}
 
 	log.Printf("[Client模式] 成功上报监控数据到 Redis: %s (%s, Title: %s)，注意：Client模式不会发送任何通知", 

@@ -62,9 +62,10 @@ func InitializeApp() (*App, error) {
 	tickerScheduler := NewTickerScheduler(tickerUseCase)
 	metricsCollector := NewMetricsCollector(hostCollector, redisClient, httpCollector)
 	clientDataRepository := NewClientDataRepository()
-	clientUseCase := NewClientUseCase(metricsCollector, clientDataRepository)
+	scheduledPushDataLogStorage := NewDataLogStorage()
+	clientUseCase := NewClientUseCase(metricsCollector, clientDataRepository, scheduledPushDataLogStorage)
 	scheduledPushFormatter := NewScheduledPushFormatter()
-	serverUseCase := NewServerUseCase(metricsCollector, clientDataRepository, scheduledPushFormatter, notifier)
+	serverUseCase := NewServerUseCase(metricsCollector, clientDataRepository, scheduledPushFormatter, notifier, scheduledPushDataLogStorage)
 	scheduledPushUseCase := NewScheduledPushUseCase(clientUseCase, serverUseCase)
 	scheduledPushScheduler := NewScheduledPushScheduler(scheduledPushUseCase)
 	loggerFactory := NewLoggerFactory(config)
@@ -118,6 +119,7 @@ var ProviderSet = wire.NewSet(
 
 	NewClientDataRepository,
 	NewScheduledPushFormatter,
+	NewDataLogStorage,
 	NewMetricsCollector,
 	NewClientUseCase,
 	NewServerUseCase,
@@ -298,12 +300,18 @@ func NewMetricsCollector(
 	return usecase.NewMetricsCollector(hostCollector, redisClient, httpCollector)
 }
 
+// NewDataLogStorage 创建数据日志存储服务
+func NewDataLogStorage() common.ScheduledPushDataLogStorage {
+	return common2.NewScheduledPushDataLogStorage()
+}
+
 // NewClientUseCase 创建客户端用例
 func NewClientUseCase(
 	metricsCollector *usecase.MetricsCollector,
 	clientDataRepository common.ClientDataRepository,
+	dataLogStorage common.ScheduledPushDataLogStorage,
 ) client.ClientUseCase {
-	return usecase.NewClientUseCase(metricsCollector, clientDataRepository)
+	return usecase.NewClientUseCase(metricsCollector, clientDataRepository, dataLogStorage)
 }
 
 // NewServerUseCase 创建服务端用例
@@ -312,8 +320,9 @@ func NewServerUseCase(
 	clientDataRepository common.ClientDataRepository,
 	scheduledPushFormatter common.ScheduledPushFormatter,
 	notifier monitoring2.Notifier,
+	dataLogStorage common.ScheduledPushDataLogStorage,
 ) server.ServerUseCase {
-	return usecase.NewServerUseCase(metricsCollector, clientDataRepository, scheduledPushFormatter, notifier)
+	return usecase.NewServerUseCase(metricsCollector, clientDataRepository, scheduledPushFormatter, notifier, dataLogStorage)
 }
 
 // NewScheduledPushUseCase 创建全局定时推送用例

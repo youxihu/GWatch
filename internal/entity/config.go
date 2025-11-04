@@ -283,5 +283,26 @@ type ScheduledPushConfig struct {
 	// Server模式聚合延迟时间（秒），用于等待所有Client上传完数据
 	// 默认60秒，表示在推送时间点后延迟60秒再聚合
 	ServerAggregationDelaySeconds int `yaml:"server_aggregation_delay_seconds"`
+	
+	// 数据日志存储配置
+	DataLog *ScheduledPushDataLogConfig `yaml:"data_log,omitempty"`
+}
+
+// ScheduledPushDataLogConfig 定时推送数据日志存储配置
+type ScheduledPushDataLogConfig struct {
+	// 是否启用数据日志存储
+	Enabled bool `yaml:"enabled"`
+	
+	// 客户端数据日志路径模板
+	// 支持时间格式化：%y(年), %m(月), %d(日), %H(时), %M(分), %S(秒)
+	// 示例: "logs/scheduled_push/client/%y/%m-%d/client-%H%M-%S.json"
+	ClientDataLogPathTemplate string `yaml:"client_data_log_path_template"`
+	
+	// 服务器报告日志路径模板
+	// 示例: "logs/scheduled_push/server/%y/%m-%d/report-%H%M-%S.md"
+	ServerReportLogPathTemplate string `yaml:"server_report_log_path_template"`
+	
+	// 日志文件保留天数（超过此天数的文件将被自动清理）
+	RetentionDays int `yaml:"retention_days"`
 }
 

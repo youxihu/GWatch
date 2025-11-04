@@ -16,6 +16,7 @@ type ServerUseCaseImpl struct {
 	clientDataRepository    common.ClientDataRepository
 	scheduledPushFormatter  common.ScheduledPushFormatter
 	notifier                Notifier
+	dataLogStorage          common.ScheduledPushDataLogStorage
 }
 
 // NewServerUseCase 创建服务端模式用例
@@ -24,12 +25,14 @@ func NewServerUseCase(
 	clientDataRepository common.ClientDataRepository,
 	scheduledPushFormatter common.ScheduledPushFormatter,
 	notifier Notifier,
+	dataLogStorage common.ScheduledPushDataLogStorage,
 ) server.ServerUseCase {
 	return &ServerUseCaseImpl{
 		metricsCollector:       metricsCollector,
 		clientDataRepository:   clientDataRepository,
 		scheduledPushFormatter: scheduledPushFormatter,
 		notifier:               notifier,
+		dataLogStorage:         dataLogStorage,
 	}
 }
 
@@ -191,6 +194,28 @@ func (su *ServerUseCaseImpl) Run(config *entity.Config) error {
 	}
 
 	log.Printf("[Server模式] ✅ 成功发送合并报告到钉钉，标题: %s，包含 %d 台主机的数据", title, len(clientDataList))
+
+	// 保存报告到数据日志文件（如果启用）
+	if su.dataLogStorage != nil {
+		if err := su.dataLogStorage.Init(config); err != nil {
+			log.Printf("[Server模式] 初始化数据日志存储失败: %v", err)
+		} else {
+			reportTimestamp := time.Now()
+			if err := su.dataLogStorage.SaveServerReport(report, title, reportTimestamp); err != nil {
+				log.Printf("[Server模式] 保存报告日志失败: %v", err)
+			} else {
+				log.Printf("[Server模式] 已保存报告日志")
+				// 清理过期日志（后台执行，不阻塞）
+				go func() {
+					if err := su.dataLogStorage.CleanupOldLogs(); err != nil {
+						log.Printf("[Server模式] 清理过期日志失败: %v", err)
+					} else {
+						log.Printf("[Server模式] 已清理过期日志")
+					}
+				}()
+			}
+		}
+	}
 
 	// 清理已发送的数据（可选）
 	for _, key := range validKeys {

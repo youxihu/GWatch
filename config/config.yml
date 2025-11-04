@@ -86,12 +86,17 @@ scheduled_push:
   push_times: ["8:00", "9:00", "10:00", "10:55", "11:16", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"]
   title: "169完整监控指标"
   include_host_monitoring: true
-  include_app_monitoring: true
-  alert_storage:
-    enabled: true
-    alert_log_path_template: "logs/%y/%m-%d/scheduled_push-%H%M.log"
-    format: "json"
-    retention_days: 30
+  include_app_monitoring: true  # Server模式包含应用监控
+  server_aggregation_delay_seconds: 30  # Server模式延迟聚合时间（秒），确保所有客户端数据都已上传
+  
+  # 数据日志存储配置（用于追溯历史数据）
+  data_log:
+    enabled: true  # 是否启用数据日志存储
+    # 客户端数据日志路径模板（支持时间格式化：%y(年), %m(月), %d(日), %H(时), %M(分), %S(秒)）
+    client_data_log_path_template: "logs/scheduled_push/client/%y/%m-%d/client-%H%M-%S.json"
+    # 服务器报告日志路径模板
+    server_report_log_path_template: "logs/scheduled_push/server/%y/%m-%d/report-%H%M-%S.md"
+    retention_days: 30  # 日志文件保留天数
 
 # 通用配置
 dingtalk:
