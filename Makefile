@@ -14,10 +14,10 @@ build: wire
 	@ls -lh bin/Gwatch
 
 deploy169:
-	scp bin/Gwatch youxihu@172.235.216.169:/tmp
+	scp bin/Gwatch config/config_server.yml youxihu@172.235.216.169:/tmp
 
 deploy171:
-	scp bin/Gwatch youxihu@172.235.216.171:/tmp
+	scp bin/Gwatch config/config_client.yml youxihu@172.235.216.171:/tmp
 
 deploy172:
-	scp bin/Gwatch youxihu@172.235.216.172:/tmp
+	scp bin/Gwatch config/config_client.yml youxihu@172.235.216.172:/tmp

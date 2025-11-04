@@ -1,0 +1,153 @@
+# GWatch 监控工具配置文件模板
+# 复制此文件为 config.yml、config_client.yml 或 config_server.yml 并根据实际情况修改
+
+# 主机类监控配置
+host_monitoring:
+  enabled: true
+  interval: 5s                    # 监控间隔
+  consecutive_threshold: 3        # 连续触发次数阈值（达到此次数才告警）
+  alert_interval: 5m             # 告警间隔（避免频繁告警）
+  alert_title: "服务器告警"        # 告警标题
+  cpu_threshold: 80.0            # CPU使用率阈值（%）
+  memory_threshold: 70.0         # 内存使用率阈值（%）
+  disk_threshold: 80.0           # 磁盘使用率阈值（%）
+
+# 应用层类监控配置
+app_monitoring:
+  enabled: false                 # 是否启用应用层监控
+
+  redis:
+    enabled: true                # 是否启用Redis监控
+    addr: "localhost:6379"       # Redis地址
+    password: ""                 # Redis密码（如有）
+    db: 0                        # Redis数据库编号
+    timeout: 5s                  # 连接超时时间
+    pool_size: 5                 # 连接池大小
+    min_idle_conns: 1            # 最小空闲连接数
+    max_idle_conns: 3            # 最大空闲连接数
+    min_clients: 0               # 最小客户端连接数告警阈值
+    max_clients: 100             # 最大客户端连接数告警阈值
+
+  mysql:
+    enabled: false               # 是否启用MySQL监控
+    host: "localhost"            # MySQL主机地址
+    port: 3306                   # MySQL端口
+    username: "user"             # MySQL用户名
+    password: "password"         # MySQL密码
+    database: "information_schema"  # 连接的数据库
+    timeout: 10s                 # 连接超时时间
+    interval: 60s                # 监控间隔
+    # 核心监控阈值（精简版）
+    thresholds:
+      max_connections_usage_warning: 85.0   # 连接数使用率告警阈值（%）
+      threads_running_warning: 50           # 活跃线程数告警阈值
+      slow_queries_rate_warning: 10         # 每分钟慢查询增量告警阈值
+      buffer_pool_hit_rate_warning: 95.0    # Buffer Pool 命中率告警阈值（%）
+      replication_delay_warning_seconds: 300 # 主从复制延迟告警阈值（秒）
+      deadlocks_per_hour_warning: 5         # 每小时死锁次数告警阈值
+
+    replication:
+      enabled: false             # 是否启用主从复制监控
+      delay_warning_seconds: 300 # 复制延迟告警阈值（秒）
+
+  http:
+    enabled: false               # 是否启用HTTP接口监控
+    error_threshold: 0           # 错误次数阈值
+    interval: 10s                # 监控间隔
+    interfaces:
+      - name: "API接口1"         # 接口名称
+        url: "https://api.example.com/health"  # 接口URL
+        need_alert: true         # 是否需要告警
+        timeout: 10s             # 请求超时时间
+        allowed_codes: [200, 201, 204]  # 允许的HTTP状态码
+
+  tickers:
+    enabled: false               # 是否启用定时器监控
+    alert_title: "定时报告"      # 定时报告标题
+    ticker_interfaces:
+      - name: "设备数量统计"
+        device_url: "https://api.example.com/api/device/query/getDDCTree"
+        alert_time: ["8:00", "10:00", "13:00", "16:00"]  # 报告时间点
+        auth:
+          mode: "static"         # 认证模式：static（静态token）或dynamic（动态登录）
+          static_token: "Bearer YOUR_TOKEN_HERE"  # 静态token（mode=static时使用）
+          # dynamic模式配置（mode=dynamic时使用）
+          # login_url: "https://api.example.com/login"
+          # username: "user"
+          # password: "password"
+          # backdoor_code: "123456"
+          # token_cache_duration: "1h"
+
+# 全局定时推送配置（分布式架构）
+scheduled_push:
+  enabled: true                  # 是否启用定时推送
+  mode: "server"                 # 运行模式：client（客户端模式）或server（服务端模式）
+                                 # client: 收集数据并上传到Redis，不发送通知
+                                 # server: 从Redis聚合所有客户端数据，统一发送报告
+  
+  # Redis连接配置（用于client/server数据交换）
+  rds_url: "localhost:6379"      # Redis地址
+  rds_password: ""               # Redis密码（如有）
+  rds_db: 2                      # Redis数据库编号（建议使用独立的DB，避免与监控Redis冲突）
+  
+  # 推送时间点列表，格式: ["8:00", "12:00", "18:00"]
+  push_times: ["8:00", "12:00", "18:00"]
+  
+  # 推送标题
+  # Client模式：作为客户端标识，用于区分同一机器上的多个客户端
+  # Server模式：作为钉钉通知的标题
+  title: "服务器性能监控定时报告"
+  
+  # 是否包含主机监控信息
+  include_host_monitoring: true
+  
+  # 是否包含应用监控信息
+  # Client模式：如果设置为true，会收集应用监控数据上传
+  # Server模式：建议设置为true，包含自己的应用监控数据
+  include_app_monitoring: true
+  
+  # Server模式聚合延迟时间（秒）
+  # 用于等待所有Client上传完数据后再聚合
+  # 建议30-60秒，确保所有客户端数据都已上传
+  server_aggregation_delay_seconds: 30
+  
+  # 数据日志存储配置（用于追溯历史数据）
+  data_log:
+    enabled: true                # 是否启用数据日志存储
+    # 客户端数据日志路径模板（Client模式使用）
+    # 支持时间格式化占位符：%y(年), %m(月), %d(日), %H(时), %M(分), %S(秒)
+    # 示例: "logs/scheduled_push/client/%y/%m-%d/client-%H%M-%S.json"
+    client_data_log_path_template: "logs/scheduled_push/client/%y/%m-%d/client-%H%M-%S.json"
+    
+    # 服务器报告日志路径模板（Server模式使用）
+    # 示例: "logs/scheduled_push/server/%y/%m-%d/report-%H%M-%S.md"
+    server_report_log_path_template: "logs/scheduled_push/server/%y/%m-%d/report-%H%M-%S.md"
+    
+    # 日志文件保留天数（超过此天数的文件将被自动清理）
+    retention_days: 30
+
+# 通用配置
+dingtalk:
+  webhook_url: "https://oapi.dingtalk.com/robot/send?access_token=YOUR_ACCESS_TOKEN"
+  secret: "YOUR_SECRET"          # 钉钉机器人密钥（如有）
+  at_mobiles: ["13800138000"]    # @的手机号列表（可选）
+
+log:
+  mode: both                     # 日志输出模式：console（控制台）、file（文件）、both（两者）
+  level: info                    # 日志级别：debug、info、warn、error
+  output: logs/gwatch.log        # 日志文件路径（file或both模式使用）
+  enable_rotation: true          # 是否启用日志轮转
+  max_size: 100                  # 单个日志文件最大大小（MB）
+  max_age: 30                    # 日志文件保留天数
+  max_backups: 10                # 最大备份文件数
+
+# 白名单进程列表（这些进程的监控告警会被忽略）
+whiteProcessList:
+  - "cursor"
+  - "goland"
+  - "bash"
+  - "vim"
+
+# 独立工具脚本配置（非监控项，仅路径引用）
+javaAppDumpScript:
+  path: /path/to/createJavaMapDump.sh  # Java堆转储脚本路径

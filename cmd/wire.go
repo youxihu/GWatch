@@ -94,7 +94,10 @@ var ProviderSet = wire.NewSet(
 
 // NewConfigProvider 创建配置提供者
 func NewConfigProvider() (config.Provider, error) {
-	// 从环境变量获取配置文件路径，默认使用 config.yml（通过mode字段区分client/server）
+	// 配置文件路径优先级：
+	// 1. 命令行参数 -config 或 -c（在 main.go 中会设置到环境变量 GWATCH_CONFIG）
+	// 2. 环境变量 GWATCH_CONFIG
+	// 3. 默认值 config/config.yml
 	configPath := os.Getenv("GWATCH_CONFIG")
 	if configPath == "" {
 		configPath = "config/config.yml"

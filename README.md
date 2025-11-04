@@ -32,11 +32,14 @@ GWatch 是一款专为企业内部使用的高性能服务器监控系统，提�
 - **定时推送**：支持多时间点定时推送监控报告
 - **完整报告**：包含主机信息、应用状态、网络信息等完整监控数据
 - **聚合延迟**：Server模式支持延迟聚合，确保所有客户端数据上传完成
+- **数据日志存储**：自动保存客户端原始数据（JSON）和服务器聚合报告（Markdown）到文件，支持历史追溯
+- **日志自动清理**：根据配置的保留天数自动清理过期日志文件
 
 ### 5. 高级功能
-- **主机信息显示**：自动获取并显示监控主机的IP地址和主机名
+- **主机信息显示**：自动获取并显示监控主机的IP地址和主机名（显示优先级：主机名 > IP > 配置标题 > "未命名主机"）
 - **Java堆转储**：高负载时自动触发Java应用堆转储
 - **配置化管理**：所有监控参数均可通过配置文件调整
+- **灵活配置**：支持命令行参数、环境变量、默认配置文件三种方式指定配置文件
 - **优雅退出**：支持信号处理和优雅关闭
 
 ## 项目结构
@@ -170,7 +173,7 @@ GWatch/
 
 1. **克隆项目**
 ```bash
-git clone <repository-url>
+git clone git@github.com:youxihu/GWatch.git
 cd GWatch
 ```
 
@@ -181,8 +184,14 @@ go mod tidy
 
 3. **配置系统**
 ```bash
+# 方式1：使用默认配置文件
 cp config/config_new_example.yml config/config.yml
 # 编辑配置文件，设置监控参数和通知方式
+
+# 方式2：使用不同的配置文件（推荐用于区分client/server）
+cp config/config_new_example.yml config/config_server.yml
+cp config/config_new_example.yml config/config_client.yml
+# 分别编辑server和client配置文件
 ```
 
 4. **生成依赖注入代码**
@@ -192,17 +201,35 @@ make wire
 
 5. **启动监控**
 ```bash
+# 使用默认配置启动
 make run
+
+# 或使用指定配置文件启动（编译后）
+./bin/Gwatch -c config/config_server.yml
 ```
 
 ### 编译部署
 ```bash
-# 编译
+# 编译（会生成静态链接的Linux二进制文件，使用UPX压缩）
 make build
 
-# 运行
-./bin/gwatch
+# 运行方式1：使用默认配置文件 config/config.yml
+./bin/Gwatch
+
+# 运行方式2：通过命令行参数指定配置文件（推荐）
+./bin/Gwatch -c config/config_server.yml
+# 或
+./bin/Gwatch -config config/config_client.yml
+
+# 运行方式3：通过环境变量指定配置文件
+export GWATCH_CONFIG=config/config_server.yml
+./bin/Gwatch
 ```
+
+**配置文件指定优先级**（从高到低）：
+1. 命令行参数 `-c` 或 `-config`
+2. 环境变量 `GWATCH_CONFIG`
+3. 默认配置文件 `config/config.yml`
 
 ## 配置说明
 
@@ -279,13 +306,26 @@ scheduled_push:
   # Server模式聚合延迟时间（秒），用于等待所有Client上传完数据
   # 默认60秒，建议30-60秒之间，确保所有客户端数据都已上传
   server_aggregation_delay_seconds: 30
+  
+  # 数据日志存储配置（用于追溯历史数据）
+  data_log:
+    enabled: true  # 是否启用数据日志存储
+    # 客户端数据日志路径模板（支持时间格式化：%y(年), %m(月), %d(日), %H(时), %M(分), %S(秒)）
+    client_data_log_path_template: "logs/scheduled_push/client/%y/%m-%d/client-%H%M-%S.json"
+    # 服务器报告日志路径模板
+    server_report_log_path_template: "logs/scheduled_push/server/%y/%m-%d/report-%H%M-%S.md"
+    retention_days: 30  # 日志文件保留天数（超过此天数的文件将被自动清理）
 ```
 
 **模式说明：**
 - **Client模式**：运行在被监控的服务器上，收集监控数据并上传到Redis，不发送通知
 - **Server模式**：运行在中心服务器上，从Redis聚合所有客户端数据，统一发送报告
-- **多客户端支持**：同一机器可运行多个客户端，通过不同的`title`配置区分
+- **多客户端支持**：同一机器可运行多个客户端，通过不同的`title`配置区分（区分依据：`IP + Title`）
 - **数据聚合**：Server会聚合所有Client的数据，包括Server自己的监控数据
+- **数据日志**：
+  - Client模式：保存原始监控数据（JSON格式）到指定路径
+  - Server模式：保存聚合报告（Markdown格式）到指定路径
+  - 支持自动清理过期日志文件（根据`retention_days`配置）
 
 ### 日志配置
 ```yaml
@@ -345,15 +385,22 @@ log:
 ## 日志管理
 
 ### 日志类型
-1. **运行日志**：程序运行状态和错误信息
-2. **告警日志**：定时推送的监控报告
+1. **运行日志**：程序运行状态和错误信息（通过`log`配置）
+2. **数据日志**：定时推送的原始数据和聚合报告（通过`scheduled_push.data_log`配置）
+   - **客户端数据日志**：保存Client上传的原始监控数据（JSON格式）
+   - **服务器报告日志**：保存Server聚合后的监控报告（Markdown格式）
 3. **调试日志**：详细的调试信息
 
-### 日志轮转
+### 运行日志轮转
 - **大小轮转**：单个文件达到指定大小时自动轮转
 - **时间轮转**：按时间自动轮转日志文件
 - **备份管理**：自动管理备份文件数量和保留时间
-- **清理机制**：自动清理过期日志文件
+
+### 数据日志管理
+- **自动保存**：Client/Server模式自动保存监控数据到配置的路径
+- **路径模板**：支持时间格式化占位符（`%y`年、`%m`月、`%d`日、`%H`时、`%M`分、`%S`秒）
+- **自动清理**：根据配置的`retention_days`自动清理过期日志文件和空目录
+- **历史追溯**：通过日志文件可以追溯历史监控数据和报告
 
 ## 部署建议
 
@@ -434,6 +481,8 @@ GWatch支持分布式部署，通过Client/Server模式实现多服务器监控�
 
 ---
 
-**版本信息**：v1.1.0  
+**版本信息**：v2.0.2  
 **最后更新**：2025年11月4日  
+**详细更新日志**：请查看 [CHANGELOG.md](./CHANGELOG.md)
+
 **维护团队**：系统运维团队

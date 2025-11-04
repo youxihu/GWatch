@@ -3,10 +3,24 @@ package main
 
 import (
 	"GWatch/internal/infra/logger"
+	"flag"
 	"log"
+	"os"
 )
 
 func main() {
+	// 解析命令行参数
+	var configPath string
+	flag.StringVar(&configPath, "config", "", "配置文件路径（优先级高于环境变量 GWATCH_CONFIG）")
+	flag.StringVar(&configPath, "c", "", "配置文件路径（-config 的简写）")
+	flag.Parse()
+
+	// 如果通过命令行参数指定了配置文件，设置到环境变量中（这样 NewConfigProvider 可以读取）
+	if configPath != "" {
+		os.Setenv("GWATCH_CONFIG", configPath)
+		log.Printf("使用配置文件: %s", configPath)
+	}
+
 	log.Println("GWatch 服务器监控工具启动")
 	log.Println("正在初始化...")
 
