@@ -50,7 +50,7 @@ app_monitoring:
       delay_warning_seconds: 300
 
   http:
-    enabled: false
+    enabled: true
     error_threshold: 0
     interval: 10s
     interfaces:
@@ -79,8 +79,12 @@ app_monitoring:
 # 全局定时推送配置
 scheduled_push:
   enabled: true
-  push_times: ["8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "13:08","16:00", "17:00"]
-  title: "定时性能报告"
+  mode: "server"  # client: 上传数据到Redis, server: 从Redis聚合并发送
+  rds_url: "192.168.1.218:6379"  # Redis地址（用于client/server数据交换）
+  rds_password: "ningzaichun"
+  rds_db: 2  # 使用独立的Redis DB，避免与监控Redis冲突
+  push_times: ["8:00", "9:00", "10:00", "10:55", "11:16", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"]
+  title: "169完整监控指标"
   include_host_monitoring: true
   include_app_monitoring: true
   alert_storage:

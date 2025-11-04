@@ -21,7 +21,4 @@ type ScheduledPushScheduler interface {
 type ScheduledPushUseCase interface {
 	// RunScheduledPush 执行全局定时推送
 	RunScheduledPush(config *entity.Config) error
-	
-	// CollectAllMetrics 收集所有监控指标
-	CollectAllMetrics(config *entity.Config) (*entity.ScheduledPushMetrics, error)
 }

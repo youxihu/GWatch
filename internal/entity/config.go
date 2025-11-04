@@ -260,6 +260,14 @@ type ScheduledPushConfig struct {
 	// 是否启用全局定时推送
 	Enabled bool `yaml:"enabled"`
 	
+	// 运行模式: "client" 或 "server"
+	Mode string `yaml:"mode"` // client: 上传数据到Redis, server: 从Redis聚合并发送
+	
+	// Redis 连接配置（用于 client/server 模式数据交换）
+	RdsURL      string `yaml:"rds_url"`
+	RdsPassword string `yaml:"rds_password"`
+	RdsDB       int    `yaml:"rds_db"`
+	
 	// 推送时间点列表，格式: ["7:00", "9:00", "11:00", "13:00", "15:00", "17:00", "19:00"]
 	PushTimes []string `yaml:"push_times"`
 	
@@ -271,6 +279,10 @@ type ScheduledPushConfig struct {
 	
 	// 是否包含应用监控信息
 	IncludeAppMonitoring bool `yaml:"include_app_monitoring"`
+	
+	// Server模式聚合延迟时间（秒），用于等待所有Client上传完数据
+	// 默认60秒，表示在推送时间点后延迟60秒再聚合
+	ServerAggregationDelaySeconds int `yaml:"server_aggregation_delay_seconds"`
 	
 	// 告警信息保存配置
 	AlertStorage *ScheduledPushAlertStorageConfig `yaml:"alert_storage,omitempty"`

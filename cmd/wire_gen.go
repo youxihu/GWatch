@@ -20,6 +20,7 @@ import (
 	"GWatch/internal/infra/config"
 	logger2 "GWatch/internal/infra/logger"
 	"GWatch/internal/infra/monitoring"
+	"GWatch/internal/infra/repository"
 	scheduled_push2 "GWatch/internal/infra/scheduled_push"
 	ticker2 "GWatch/internal/infra/ticker"
 	"GWatch/internal/infra/ticker/auth"
@@ -58,7 +59,9 @@ func InitializeApp() (*App, error) {
 	tickerUseCase := NewTickerUseCase(tickerCollector, tokenProvider, systemMetricsService, evaluator, formatter, tickerFormatter, notifier)
 	tickerScheduler := NewTickerScheduler(tickerUseCase)
 	scheduledPushAlertStorage := NewScheduledPushAlertStorage(config)
-	scheduledPushUseCase := NewScheduledPushUseCase(hostCollector, redisClient, httpCollector, tickerCollector, tokenProvider, systemMetricsService, evaluator, formatter, notifier, scheduledPushAlertStorage)
+	clientDataRepository := NewClientDataRepository()
+	scheduledPushFormatter := NewScheduledPushFormatter()
+	scheduledPushUseCase := NewScheduledPushUseCase(hostCollector, redisClient, httpCollector, tickerCollector, tokenProvider, systemMetricsService, evaluator, formatter, notifier, scheduledPushAlertStorage, clientDataRepository, scheduledPushFormatter)
 	scheduledPushScheduler := NewScheduledPushScheduler(scheduledPushUseCase)
 	loggerFactory := NewLoggerFactory(config)
 	logger := NewLogger(loggerFactory)
@@ -108,11 +111,19 @@ var ProviderSet = wire.NewSet(
 
 	NewBaseMonitoringUseCase,
 	NewHTTPMonitoringUseCase,
+
+	NewClientDataRepository,
+	NewScheduledPushFormatter,
 )
 
 // NewConfigProvider 创建配置提供者
 func NewConfigProvider() (config.Provider, error) {
-	return configimpl.NewYAMLProvider("config/config.yml")
+
+	configPath := os.Getenv("GWATCH_CONFIG")
+	if configPath == "" {
+		configPath = "config/config.yml"
+	}
+	return configimpl.NewYAMLProvider(configPath)
 }
 
 // NewHostCollector 创建主机信息收集器
@@ -283,6 +294,8 @@ func NewScheduledPushUseCase(
 	formatter monitoring2.Formatter,
 	notifier monitoring2.Notifier,
 	alertStorage scheduled_push.ScheduledPushAlertStorage,
+	clientDataRepository scheduled_push.ClientDataRepository,
+	scheduledPushFormatter scheduled_push.ScheduledPushFormatter,
 ) scheduled_push.ScheduledPushUseCase {
 	return usecase.NewScheduledPushUseCase(
 		hostInfo,
@@ -295,7 +308,19 @@ func NewScheduledPushUseCase(
 		formatter,
 		notifier,
 		alertStorage,
+		clientDataRepository,
+		scheduledPushFormatter,
 	)
+}
+
+// NewClientDataRepository 创建客户端数据仓库
+func NewClientDataRepository() scheduled_push.ClientDataRepository {
+	return repository.NewClientDataRepository()
+}
+
+// NewScheduledPushFormatter 创建定时推送格式化器
+func NewScheduledPushFormatter() scheduled_push.ScheduledPushFormatter {
+	return monitoring.NewScheduledPushFormatter()
 }
 
 // NewScheduledPushAlertStorage 创建全局定时推送告警存储

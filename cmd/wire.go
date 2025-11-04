@@ -27,6 +27,7 @@ import (
 	configimpl "GWatch/internal/infra/config"
 	loggerImpl "GWatch/internal/infra/logger"
 	scheduledPushStorage "GWatch/internal/infra/scheduled_push"
+	repository "GWatch/internal/infra/repository"
 
 	"github.com/google/wire"
 )
@@ -77,11 +78,20 @@ var ProviderSet = wire.NewSet(
 	// 监控用例提供者
 	NewBaseMonitoringUseCase,
 	NewHTTPMonitoringUseCase,
+
+	// 新增的提供者
+	NewClientDataRepository,
+	NewScheduledPushFormatter,
 )
 
 // NewConfigProvider 创建配置提供者
 func NewConfigProvider() (config.Provider, error) {
-	return configimpl.NewYAMLProvider("config/config.yml")
+	// 从环境变量获取配置文件路径，默认使用 config.yml（通过mode字段区分client/server）
+	configPath := os.Getenv("GWATCH_CONFIG")
+	if configPath == "" {
+		configPath = "config/config.yml"
+	}
+	return configimpl.NewYAMLProvider(configPath)
 }
 
 // NewHostCollector 创建主机信息收集器
@@ -271,6 +281,8 @@ func NewScheduledPushUseCase(
 	formatter monitoring.Formatter,
 	notifier monitoring.Notifier,
 	alertStorage scheduled_push.ScheduledPushAlertStorage,
+	clientDataRepository scheduled_push.ClientDataRepository,
+	scheduledPushFormatter scheduled_push.ScheduledPushFormatter,
 ) scheduled_push.ScheduledPushUseCase {
 	return usecase.NewScheduledPushUseCase(
 		hostInfo,
@@ -283,7 +295,19 @@ func NewScheduledPushUseCase(
 		formatter,
 		notifier,
 		alertStorage,
+		clientDataRepository,
+		scheduledPushFormatter,
 	)
+}
+
+// NewClientDataRepository 创建客户端数据仓库
+func NewClientDataRepository() scheduled_push.ClientDataRepository {
+	return repository.NewClientDataRepository()
+}
+
+// NewScheduledPushFormatter 创建定时推送格式化器
+func NewScheduledPushFormatter() scheduled_push.ScheduledPushFormatter {
+	return monitoringImpl.NewScheduledPushFormatter()
 }
 
 // NewScheduledPushAlertStorage 创建全局定时推送告警存储
