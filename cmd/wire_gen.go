@@ -13,6 +13,9 @@ import (
 	"GWatch/internal/domain/logger"
 	monitoring2 "GWatch/internal/domain/monitoring"
 	"GWatch/internal/domain/scheduled_push"
+	"GWatch/internal/domain/scheduled_push/client"
+	"GWatch/internal/domain/scheduled_push/common"
+	"GWatch/internal/domain/scheduled_push/server"
 	"GWatch/internal/domain/ticker"
 	"GWatch/internal/entity"
 	"GWatch/internal/infra/collector/external"
@@ -20,8 +23,7 @@ import (
 	"GWatch/internal/infra/config"
 	logger2 "GWatch/internal/infra/logger"
 	"GWatch/internal/infra/monitoring"
-	"GWatch/internal/infra/repository"
-	scheduled_push2 "GWatch/internal/infra/scheduled_push"
+	common2 "GWatch/internal/infra/scheduled_push/common"
 	ticker2 "GWatch/internal/infra/ticker"
 	"GWatch/internal/infra/ticker/auth"
 	"github.com/google/wire"
@@ -58,10 +60,12 @@ func InitializeApp() (*App, error) {
 	tickerFormatter := NewTickerMarkdownFormatter()
 	tickerUseCase := NewTickerUseCase(tickerCollector, tokenProvider, systemMetricsService, evaluator, formatter, tickerFormatter, notifier)
 	tickerScheduler := NewTickerScheduler(tickerUseCase)
-	scheduledPushAlertStorage := NewScheduledPushAlertStorage(config)
+	metricsCollector := NewMetricsCollector(hostCollector, redisClient, httpCollector)
 	clientDataRepository := NewClientDataRepository()
+	clientUseCase := NewClientUseCase(metricsCollector, clientDataRepository)
 	scheduledPushFormatter := NewScheduledPushFormatter()
-	scheduledPushUseCase := NewScheduledPushUseCase(hostCollector, redisClient, httpCollector, tickerCollector, tokenProvider, systemMetricsService, evaluator, formatter, notifier, scheduledPushAlertStorage, clientDataRepository, scheduledPushFormatter)
+	serverUseCase := NewServerUseCase(metricsCollector, clientDataRepository, scheduledPushFormatter, notifier)
+	scheduledPushUseCase := NewScheduledPushUseCase(clientUseCase, serverUseCase)
 	scheduledPushScheduler := NewScheduledPushScheduler(scheduledPushUseCase)
 	loggerFactory := NewLoggerFactory(config)
 	logger := NewLogger(loggerFactory)
@@ -114,6 +118,9 @@ var ProviderSet = wire.NewSet(
 
 	NewClientDataRepository,
 	NewScheduledPushFormatter,
+	NewMetricsCollector,
+	NewClientUseCase,
+	NewServerUseCase,
 )
 
 // NewConfigProvider 创建配置提供者
@@ -282,53 +289,49 @@ func NewTickerScheduler(tickerRunner ticker.TickerUseCase) ticker.TickerSchedule
 	return usecase.NewTickerScheduler(tickerRunner)
 }
 
+// NewMetricsCollector 创建指标收集器
+func NewMetricsCollector(
+	hostCollector collector.HostCollector,
+	redisClient usecase.RedisClient,
+	httpCollector collector.HTTPCollector,
+) *usecase.MetricsCollector {
+	return usecase.NewMetricsCollector(hostCollector, redisClient, httpCollector)
+}
+
+// NewClientUseCase 创建客户端用例
+func NewClientUseCase(
+	metricsCollector *usecase.MetricsCollector,
+	clientDataRepository common.ClientDataRepository,
+) client.ClientUseCase {
+	return usecase.NewClientUseCase(metricsCollector, clientDataRepository)
+}
+
+// NewServerUseCase 创建服务端用例
+func NewServerUseCase(
+	metricsCollector *usecase.MetricsCollector,
+	clientDataRepository common.ClientDataRepository,
+	scheduledPushFormatter common.ScheduledPushFormatter,
+	notifier monitoring2.Notifier,
+) server.ServerUseCase {
+	return usecase.NewServerUseCase(metricsCollector, clientDataRepository, scheduledPushFormatter, notifier)
+}
+
 // NewScheduledPushUseCase 创建全局定时推送用例
 func NewScheduledPushUseCase(
-	hostInfo collector.HostCollector,
-	redisInfo usecase.RedisClient,
-	httpInfo collector.HTTPCollector,
-	tickerInfo ticker.TickerCollector,
-	tokenProvider ticker.TokenProvider,
-	systemMetricsService *usecase.SystemMetricsService,
-	evaluator monitoring2.Evaluator,
-	formatter monitoring2.Formatter,
-	notifier monitoring2.Notifier,
-	alertStorage scheduled_push.ScheduledPushAlertStorage,
-	clientDataRepository scheduled_push.ClientDataRepository,
-	scheduledPushFormatter scheduled_push.ScheduledPushFormatter,
+	clientUseCase client.ClientUseCase,
+	serverUseCase server.ServerUseCase,
 ) scheduled_push.ScheduledPushUseCase {
-	return usecase.NewScheduledPushUseCase(
-		hostInfo,
-		redisInfo,
-		httpInfo,
-		tickerInfo,
-		tokenProvider,
-		systemMetricsService,
-		evaluator,
-		formatter,
-		notifier,
-		alertStorage,
-		clientDataRepository,
-		scheduledPushFormatter,
-	)
+	return usecase.NewScheduledPushUseCase(clientUseCase, serverUseCase)
 }
 
 // NewClientDataRepository 创建客户端数据仓库
-func NewClientDataRepository() scheduled_push.ClientDataRepository {
-	return repository.NewClientDataRepository()
+func NewClientDataRepository() common.ClientDataRepository {
+	return common2.NewClientDataRepository()
 }
 
 // NewScheduledPushFormatter 创建定时推送格式化器
-func NewScheduledPushFormatter() scheduled_push.ScheduledPushFormatter {
-	return monitoring.NewScheduledPushFormatter()
-}
-
-// NewScheduledPushAlertStorage 创建全局定时推送告警存储
-func NewScheduledPushAlertStorage(config2 *entity.Config) scheduled_push.ScheduledPushAlertStorage {
-	if config2.ScheduledPush == nil || config2.ScheduledPush.AlertStorage == nil {
-		return nil
-	}
-	return scheduled_push2.NewFileAlertStorage(config2.ScheduledPush.AlertStorage)
+func NewScheduledPushFormatter() common.ScheduledPushFormatter {
+	return common2.NewScheduledPushFormatter()
 }
 
 // NewScheduledPushScheduler 创建全局定时推送调度器

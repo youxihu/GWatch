@@ -1,5 +1,5 @@
-// Package scheduled_push internal/domain/scheduled_push/repository.go
-package scheduled_push
+// Package common internal/domain/scheduled_push/common/repository.go
+package common
 
 import (
 	"GWatch/internal/entity"

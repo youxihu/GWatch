@@ -1,8 +1,8 @@
-// Package repository internal/infra/repository/client_data_repository_impl.go
-package repository
+// Package common internal/infra/scheduled_push/common/client_data_repository_impl.go
+package common
 
 import (
-	"GWatch/internal/domain/scheduled_push"
+	"GWatch/internal/domain/scheduled_push/common"
 	"GWatch/internal/entity"
 	"context"
 	"encoding/json"
@@ -18,7 +18,7 @@ type ClientDataRepositoryImpl struct {
 }
 
 // NewClientDataRepository 创建客户端数据仓库
-func NewClientDataRepository() scheduled_push.ClientDataRepository {
+func NewClientDataRepository() common.ClientDataRepository {
 	return &ClientDataRepositoryImpl{}
 }
 

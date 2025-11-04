@@ -1,5 +1,5 @@
-// Package scheduled_push internal/domain/scheduled_push/formatter.go
-package scheduled_push
+// Package common internal/domain/scheduled_push/common/formatter.go
+package common
 
 import "GWatch/internal/entity"
 

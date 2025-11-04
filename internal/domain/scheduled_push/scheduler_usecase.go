@@ -1,4 +1,4 @@
-// Package scheduled_push internal/domain/scheduled_push/scheduler.go
+// Package scheduled_push internal/domain/scheduled_push/scheduler_usecase.go
 package scheduled_push
 
 import (
@@ -17,8 +17,8 @@ type ScheduledPushScheduler interface {
 	IsTimeToPush(pushTimes []string) bool
 }
 
-// ScheduledPushUseCase 全局定时推送用例接口
+// ScheduledPushUseCase 全局定时推送用例接口（统一接口，内部根据mode调用client或server）
 type ScheduledPushUseCase interface {
-	// RunScheduledPush 执行全局定时推送
+	// RunScheduledPush 执行全局定时推送（根据 mode 决定是 client 还是 server 模式）
 	RunScheduledPush(config *entity.Config) error
 }

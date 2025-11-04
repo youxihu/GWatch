@@ -1,8 +1,8 @@
-// Package monitoring internal/infra/monitoring/scheduled_push_formatter_impl.go
-package monitoring
+// Package common internal/infra/scheduled_push/common/scheduled_push_formatter_impl.go
+package common
 
 import (
-	"GWatch/internal/domain/scheduled_push"
+	"GWatch/internal/domain/scheduled_push/common"
 	"GWatch/internal/entity"
 	"fmt"
 	"strings"
@@ -13,7 +13,7 @@ import (
 type ScheduledPushFormatterImpl struct{}
 
 // NewScheduledPushFormatter 创建定时推送格式化器
-func NewScheduledPushFormatter() scheduled_push.ScheduledPushFormatter {
+func NewScheduledPushFormatter() common.ScheduledPushFormatter {
 	return &ScheduledPushFormatterImpl{}
 }
 

@@ -283,23 +283,5 @@ type ScheduledPushConfig struct {
 	// Server模式聚合延迟时间（秒），用于等待所有Client上传完数据
 	// 默认60秒，表示在推送时间点后延迟60秒再聚合
 	ServerAggregationDelaySeconds int `yaml:"server_aggregation_delay_seconds"`
-	
-	// 告警信息保存配置
-	AlertStorage *ScheduledPushAlertStorageConfig `yaml:"alert_storage,omitempty"`
-}
-
-// ScheduledPushAlertStorageConfig 全局定时推送告警存储配置
-type ScheduledPushAlertStorageConfig struct {
-	// 是否启用告警信息保存
-	Enabled bool `yaml:"enabled"`
-	
-	// 告警信息保存路径模板（按天存储）
-	AlertLogPathTemplate string `yaml:"alert_log_path_template"`
-	
-	// 告警信息保存格式: json, text
-	Format string `yaml:"format"`
-	
-	// 告警信息保留天数（0表示永久保留）
-	RetentionDays int `yaml:"retention_days"`
 }
 
