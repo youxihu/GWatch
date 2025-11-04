@@ -44,7 +44,7 @@ func (f *ScheduledPushFormatterImpl) FormatClientReport(data []*entity.ClientMon
 			hostTitle = clientData.HostIP
 		}
 		// 如果主机名和IP都没有，使用配置的title作为后备
-		if hostTitle == "" {
+		if hostTitle == "" || hostTitle == "unknown-ip" {
 			hostTitle = clientData.Title
 			if hostTitle == "" {
 				hostTitle = title
@@ -52,11 +52,18 @@ func (f *ScheduledPushFormatterImpl) FormatClientReport(data []*entity.ClientMon
 		}
 		sb.WriteString(fmt.Sprintf("#### %s\n", hostTitle))
 		
-		// 主机信息（显示IP和主机名，如果主机名可用）
-		if clientData.HostName != "" && clientData.HostName != "unknown-host" {
-			sb.WriteString(fmt.Sprintf("主机IP: %s (%s)\n", clientData.HostIP, clientData.HostName))
+		// 主机信息（显示IP和主机名）
+		displayHostName := clientData.HostName
+		if displayHostName == "" || displayHostName == "unknown-host" {
+			// 如果主机名不可用，使用"未命名主机"
+			displayHostName = "未命名主机"
+		}
+		
+		if clientData.HostIP != "" && clientData.HostIP != "unknown-ip" {
+			sb.WriteString(fmt.Sprintf("主机IP: %s (%s)\n", clientData.HostIP, displayHostName))
 		} else {
-			sb.WriteString(fmt.Sprintf("主机IP: %s\n", clientData.HostIP))
+			// 如果IP也不可用，只显示主机名（或未命名主机）
+			sb.WriteString(fmt.Sprintf("主机: %s\n", displayHostName))
 		}
 
 		// CPU 信息（必须有）

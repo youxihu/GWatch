@@ -35,7 +35,7 @@ Thumbs.db
 
 # 配置文件（包含敏感信息）
 config/config*.yml
-!config/config.example.yml
+!config/config.yml
 
 # 备份文件
 *.bak
