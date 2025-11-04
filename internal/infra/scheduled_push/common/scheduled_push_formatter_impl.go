@@ -38,22 +38,26 @@ func (f *ScheduledPushFormatterImpl) FormatClientReport(data []*entity.ClientMon
 			continue
 		}
 
-		// 每个主机的二级标题（优先使用client上传的title，如果没有则使用主机名，再没有则使用IP，最后使用server配置的title）
-		hostTitle := clientData.Title
-		if hostTitle == "" {
-			hostTitle = clientData.HostName
-		}
+		// 每个主机的二级标题（优先使用真实主机名，如果没有则使用IP，最后使用配置的title作为后备）
+		hostTitle := clientData.HostName
 		if hostTitle == "" || hostTitle == "unknown-host" {
 			hostTitle = clientData.HostIP
 		}
-		// 如果都没有，使用server配置的title作为后备
+		// 如果主机名和IP都没有，使用配置的title作为后备
 		if hostTitle == "" {
-			hostTitle = title
+			hostTitle = clientData.Title
+			if hostTitle == "" {
+				hostTitle = title
+			}
 		}
 		sb.WriteString(fmt.Sprintf("#### %s\n", hostTitle))
 		
-		// 主机IP
-		sb.WriteString(fmt.Sprintf("主机IP: %s (%s)\n", clientData.HostIP, clientData.HostIP))
+		// 主机信息（显示IP和主机名，如果主机名可用）
+		if clientData.HostName != "" && clientData.HostName != "unknown-host" {
+			sb.WriteString(fmt.Sprintf("主机IP: %s (%s)\n", clientData.HostIP, clientData.HostName))
+		} else {
+			sb.WriteString(fmt.Sprintf("主机IP: %s\n", clientData.HostIP))
+		}
 
 		// CPU 信息（必须有）
 		if metrics.CPU != nil && metrics.CPU.Error == nil {

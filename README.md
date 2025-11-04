@@ -2,7 +2,7 @@
 
 ## 系统概述
 
-GWatch 是一款专为企业内部使用的高性能服务器监控系统，提供全面的系统监控、应用监控、告警通知和定时报告功能。系统采用领域驱动设计（DDD）架构，确保代码的可维护性和扩展性。
+GWatch 是一款专为企业内部使用的高性能服务器监控系统，提供全面的系统监控、应用监控、告警通知和定时报告功能。系统采用领域驱动设计（DDD）架构，支持分布式部署的Client/Server模式，确保代码的可维护性和扩展性。
 
 ## 核心功能
 
@@ -24,11 +24,14 @@ GWatch 是一款专为企业内部使用的高性能服务器监控系统，提�
 - **多渠道通知**：支持钉钉、邮件等多种通知方式
 - **告警策略**：可配置的告警策略和过滤规则
 
-### 4. 定时报告
+### 4. 定时报告（分布式架构）
+- **Client/Server模式**：支持分布式部署，多客户端数据聚合
+- **Client模式**：收集监控数据并上传到Redis，不发送通知
+- **Server模式**：从Redis聚合所有客户端数据，统一发送报告
+- **多客户端支持**：支持同一机器运行多个客户端（通过不同title区分）
 - **定时推送**：支持多时间点定时推送监控报告
 - **完整报告**：包含主机信息、应用状态、网络信息等完整监控数据
-- **日志存储**：自动保存告警日志，支持按日期分类存储
-- **日志轮转**：自动日志轮转，防止磁盘空间不足
+- **聚合延迟**：Server模式支持延迟聚合，确保所有客户端数据上传完成
 
 ### 5. 高级功能
 - **主机信息显示**：自动获取并显示监控主机的IP地址和主机名
@@ -46,17 +49,25 @@ GWatch/
 │   └── wire_gen.go               # Wire生成的代码
 │
 ├── config/                        # 配置文件
-│   ├── config.yml                # 主配置文件
+│   ├── config.yml                # 主配置文件（通过mode字段区分client/server）
+│   ├── config_client.yml         # Client模式测试配置
+│   ├── config_server.yml         # Server模式测试配置
 │   └── config_new_example.yml    # 配置示例
+│
+├── test_client_server.sh         # 分布式测试脚本
 │
 └── internal/                      # 内部代码
     ├── app/usecase/               # 应用层 - 用例实现
     │   ├── monitoring_metrics.go      # 监控指标收集
     │   ├── monitoring_system.go       # 系统指标服务
     │   ├── scheduler_coordinator.go    # 调度协调器
-    │   ├── scheduler_push.go           # 定时推送调度
+    │   ├── scheduler_push.go           # 定时推送调度器
     │   ├── scheduler_ticker.go         # Ticker调度
-    │   └── service_logger.go           # 日志服务
+    │   ├── service_logger.go           # 日志服务
+    │   ├── scheduled_push_client.go    # Client模式用例实现
+    │   ├── scheduled_push_server.go    # Server模式用例实现
+    │   ├── scheduled_push_unified.go   # 统一调度用例
+    │   └── scheduled_push_common.go    # 共享指标收集逻辑
     │
     ├── domain/                    # 领域层 - 接口定义
     │   ├── collector/             # 数据收集器接口
@@ -69,8 +80,14 @@ GWatch/
     │   ├── monitoring/            # 监控核心（Evaluator/Policy/Formatter/Notifier）
     │   │   └── monitoring.go
     │   ├── scheduled_push/        # 定时推送接口
-    │   │   ├── scheduler_usecase.go
-    │   │   └── storage.go
+    │   │   ├── scheduler_usecase.go   # 调度器接口
+    │   │   ├── client/                # Client模式接口
+    │   │   │   └── usecase.go
+    │   │   ├── server/                # Server模式接口
+    │   │   │   └── usecase.go
+    │   │   └── common/                # 共享接口
+    │   │       ├── repository.go      # 数据仓库接口
+    │   │       └── formatter.go       # 格式化器接口
     │   └── ticker/                # 定时器接口
     │       ├── ticker_collector.go
     │       ├── ticker_scheduler.go
@@ -108,7 +125,9 @@ GWatch/
     │   │   ├── formatter_ticker_markdown.go
     │   │   └── dingtalk.go
     │   ├── scheduled_push/        # 定时推送实现
-    │   │   └── file_alert_storage.go
+    │   │   └── common/
+    │   │       ├── client_data_repository_impl.go  # Redis数据仓库实现
+    │   │       └── scheduled_push_formatter_impl.go # 报告格式化实现
     │   └── ticker/                # 定时器实现
     │       ├── ticker_collector.go
     │       └── auth/
@@ -234,22 +253,39 @@ app_monitoring:
         allowed_codes: [200, 201, 204]
 ```
 
-### 定时推送配置
+### 定时推送配置（分布式架构）
 ```yaml
 scheduled_push:
   enabled: true
-  push_times: ["8:00", "12:00", "18:00"]  # 推送时间点
+  mode: "client"  # 或 "server" - 运行模式：client上传数据，server聚合发送
+  
+  # Redis连接配置（用于client/server数据交换）
+  rds_url: "192.168.1.218:6379"
+  rds_password: "password"
+  rds_db: 2  # 使用独立的Redis DB，避免与监控Redis冲突
+  
+  # 推送时间点列表，格式: ["8:00", "12:00", "18:00"]
+  push_times: ["8:00", "12:00", "18:00"]
+  
+  # 推送标题（Client模式下作为标识，Server模式下作为通知标题）
   title: "服务器性能监控定时报告"
+  
+  # 是否包含主机监控信息
   include_host_monitoring: true
+  
+  # 是否包含应用监控信息（Server模式建议开启）
   include_app_monitoring: true
   
-  # 告警存储配置
-  alert_storage:
-    enabled: true
-    alert_log_path_template: "logs/%y/%m-%d/scheduled_push-%H%M.log"
-    format: "json"
-    retention_days: 30
+  # Server模式聚合延迟时间（秒），用于等待所有Client上传完数据
+  # 默认60秒，建议30-60秒之间，确保所有客户端数据都已上传
+  server_aggregation_delay_seconds: 30
 ```
+
+**模式说明：**
+- **Client模式**：运行在被监控的服务器上，收集监控数据并上传到Redis，不发送通知
+- **Server模式**：运行在中心服务器上，从Redis聚合所有客户端数据，统一发送报告
+- **多客户端支持**：同一机器可运行多个客户端，通过不同的`title`配置区分
+- **数据聚合**：Server会聚合所有Client的数据，包括Server自己的监控数据
 
 ### 日志配置
 ```yaml
@@ -333,6 +369,37 @@ log:
 - 配置合适的日志保留策略
 - 定期检查和优化配置参数
 
+## 分布式部署
+
+### Client/Server架构
+GWatch支持分布式部署，通过Client/Server模式实现多服务器监控数据的集中聚合：
+
+1. **Client部署**：在被监控的服务器上部署Client模式
+   - 配置`mode: "client"`
+   - 设置相同的Redis地址和推送时间点
+   - 每个客户端可以设置不同的`title`用于标识
+
+2. **Server部署**：在中心服务器上部署Server模式
+   - 配置`mode: "server"`
+   - 配置聚合延迟时间（建议30-60秒）
+   - Server会自动收集自己的监控数据并聚合所有客户端数据
+
+3. **数据流程**：
+   - Client在推送时间点收集数据并上传到Redis（TTL 5分钟）
+   - Server在推送时间点延迟N秒后从Redis读取所有客户端数据
+   - Server聚合所有数据（包括自己的）并发送统一报告
+   - Server清理已处理的数据
+
+### 测试脚本
+使用`test_client_server.sh`脚本可以快速测试分布式功能：
+```bash
+# 脚本会自动：
+# 1. 创建两个客户端配置（不同title）
+# 2. 启动两个Client和一个Server
+# 3. 设置测试时间点为下一分钟
+./test_client_server.sh
+```
+
 ## 故障排查
 
 ### 常见问题
@@ -367,6 +434,6 @@ log:
 
 ---
 
-**版本信息**：v1.0.0  
-**最后更新**：2025年10月24日  
+**版本信息**：v1.1.0  
+**最后更新**：2025年11月4日  
 **维护团队**：系统运维团队
