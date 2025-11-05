@@ -20,7 +20,8 @@ func NewScheduledPushFormatter() common.ScheduledPushFormatter {
 // FormatClientReport 格式化合并后的客户端报告（按照 dingformat.md 的格式）
 // 只显示已开启的监控项，如果没有开启就取消该栏
 // title: 配置的title，用于每个主机的二级标题（#### {title}）
-func (f *ScheduledPushFormatterImpl) FormatClientReport(data []*entity.ClientMonitorData, title string) string {
+// config: 配置信息，用于判断阈值和状态
+func (f *ScheduledPushFormatterImpl) FormatClientReport(data []*entity.ClientMonitorData, title string, config *entity.Config) string {
 	if len(data) == 0 {
 		return "暂无监控数据"
 	}
@@ -38,17 +39,17 @@ func (f *ScheduledPushFormatterImpl) FormatClientReport(data []*entity.ClientMon
 			continue
 		}
 
-		// 每个主机的二级标题（优先使用真实主机名，如果没有则使用IP，最后使用配置的title作为后备）
-		hostTitle := clientData.HostName
+		// 每个主机的二级标题（优先使用配置的title，如果没有则使用主机名，最后使用IP）
+		hostTitle := clientData.Title
+		if hostTitle == "" {
+			hostTitle = clientData.HostName
+		}
 		if hostTitle == "" || hostTitle == "unknown-host" {
 			hostTitle = clientData.HostIP
 		}
-		// 如果主机名和IP都没有，使用配置的title作为后备
+		// 如果配置的title、主机名和IP都没有，使用传入的默认title
 		if hostTitle == "" || hostTitle == "unknown-ip" {
-			hostTitle = clientData.Title
-			if hostTitle == "" {
-				hostTitle = title
-			}
+			hostTitle = title
 		}
 		sb.WriteString(fmt.Sprintf("#### %s\n", hostTitle))
 		
@@ -97,7 +98,8 @@ func (f *ScheduledPushFormatterImpl) FormatClientReport(data []*entity.ClientMon
 
 		// Redis（如果开启才显示）
 		if metrics.Redis != nil && metrics.Redis.ConnectionError == nil {
-			sb.WriteString(fmt.Sprintf("- Redis: %d个连接 [正常]\n", metrics.Redis.ClientCount))
+			redisStatusText := f.getRedisStatus(metrics.Redis.ClientCount, config)
+			sb.WriteString(fmt.Sprintf("- Redis: %d个连接 %s\n", metrics.Redis.ClientCount, redisStatusText))
 		}
 
 		// MySQL（如果开启才显示）
@@ -144,4 +146,21 @@ func (f *ScheduledPushFormatterImpl) FormatClientReport(data []*entity.ClientMon
 	sb.WriteString(fmt.Sprintf("---\n监控时间: %s\n", reportTime))
 
 	return sb.String()
+}
+
+// getRedisStatus 根据Redis连接数和阈值判断状态
+func (f *ScheduledPushFormatterImpl) getRedisStatus(count int, config *entity.Config) string {
+	if config == nil || config.AppMonitoring == nil || !config.AppMonitoring.Enabled {
+		return "[正常]"
+	}
+	if config.AppMonitoring.Redis == nil || !config.AppMonitoring.Redis.Enabled {
+		return "[正常]"
+	}
+	if count < config.AppMonitoring.Redis.MinClients {
+		return "[连接数过低]"
+	}
+	if count > config.AppMonitoring.Redis.MaxClients {
+		return "[连接数过高]"
+	}
+	return "[正常]"
 }

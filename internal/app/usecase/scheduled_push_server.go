@@ -184,8 +184,8 @@ func (su *ServerUseCaseImpl) Run(config *entity.Config) error {
 			i+1, data.HostIP, data.HostName, data.Title)
 	}
 	
-	// 格式化报告（传入title用于每个主机的二级标题）
-	report := su.scheduledPushFormatter.FormatClientReport(clientDataList, title)
+	// 格式化报告（传入title用于每个主机的二级标题，传入config用于判断阈值）
+	report := su.scheduledPushFormatter.FormatClientReport(clientDataList, title, config)
 
 	// 发送通知（使用配置的title作为通知标题）
 	log.Printf("[Server模式] 正在发送通知到钉钉，标题: %s", title)

@@ -2,12 +2,15 @@
 
 本文档记录 GWatch 项目的所有重要变更。
 
-格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
-版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
+## [2.0.3] - 2025-11-05
 
-## [Unreleased]
-
-（暂无未发布的功能）
+### 修复
+- 定时推送报告标题显示问题
+  - 优先使用配置的 `title` 作为主机标题，而不是 hostname
+  - 显示优先级：配置title > 主机名 > IP > 默认标题
+- 定时推送 Redis 状态判断问题
+  - 根据配置的阈值（`max_clients`/`min_clients`）正确判断状态
+  - 超过阈值时显示 `[连接数过高]` 或 `[连接数过低]`，而不是总是显示 `[正常]`
 
 ---
 
