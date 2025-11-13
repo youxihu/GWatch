@@ -367,7 +367,19 @@ type App struct {
 
 // Start 启动应用程序
 func (app *App) Start() error {
-	log.Println("开始监控...")
+	// 根据模式显示不同的启动信息
+	if app.Config.ScheduledPush != nil && app.Config.ScheduledPush.Enabled {
+		mode := app.Config.ScheduledPush.Mode
+		if mode == "client" {
+			log.Println("Client模式开始监控...")
+		} else if mode == "server" {
+			log.Println("Server模式开始监控...")
+		} else {
+			log.Println("开始监控...")
+		}
+	} else {
+		log.Println("开始监控...")
+	}
 	
 	// 打印监控状态
 	app.printMonitoringStatus()

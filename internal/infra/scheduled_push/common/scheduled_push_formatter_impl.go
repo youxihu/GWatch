@@ -4,6 +4,7 @@ package common
 import (
 	"GWatch/internal/domain/scheduled_push/common"
 	"GWatch/internal/entity"
+	"GWatch/internal/utils"
 	"fmt"
 	"strings"
 	"time"
@@ -86,14 +87,14 @@ func (f *ScheduledPushFormatterImpl) FormatClientReport(data []*entity.ClientMon
 
 		// 网络IO（必须有）
 		if metrics.Network != nil && metrics.Network.Error == nil {
-			sb.WriteString(fmt.Sprintf("- 网络IO: 下载 %.2f KB/s | 上传 %.2f KB/s\n",
-				metrics.Network.DownloadKBps, metrics.Network.UploadKBps))
+			sb.WriteString(fmt.Sprintf("- 网络IO: %s\n",
+				utils.FormatIOSpeedPair(metrics.Network.DownloadKBps, metrics.Network.UploadKBps, "下载", "上传")))
 		}
 
 		// 磁盘IO（必须有）
 		if metrics.Disk != nil && metrics.Disk.Error == nil {
-			sb.WriteString(fmt.Sprintf("- 磁盘IO: 读 %.2f KB/s | 写 %.2f KB/s\n",
-				metrics.Disk.ReadKBps, metrics.Disk.WriteKBps))
+			sb.WriteString(fmt.Sprintf("- 磁盘IO: %s\n",
+				utils.FormatIOSpeedPair(metrics.Disk.ReadKBps, metrics.Disk.WriteKBps, "读", "写")))
 		}
 
 		// Redis（如果开启才显示）

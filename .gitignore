@@ -36,6 +36,7 @@ Thumbs.db
 # 配置文件（包含敏感信息）
 # 排除真实使用的配置文件，但保留示例模板
 config/config_client.yml
+config/config_client2.yml
 config/config_server.yml
 config/config.yml
 # 允许示例模板文件上传

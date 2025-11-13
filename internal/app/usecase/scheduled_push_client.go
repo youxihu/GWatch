@@ -5,6 +5,7 @@ import (
 	"GWatch/internal/domain/scheduled_push/client"
 	"GWatch/internal/domain/scheduled_push/common"
 	"GWatch/internal/entity"
+	"GWatch/internal/utils"
 	"fmt"
 	"log"
 	"time"
@@ -47,6 +48,15 @@ func (cu *ClientUseCaseImpl) Run(config *entity.Config) error {
 
 	// 收集主机监控指标（Client模式目前只收集主机监控数据）
 	hostMetrics := cu.metricsCollector.CollectBasicHostMetrics()
+
+	// 调试日志：记录 disk 数据收集情况
+	if hostMetrics.Disk.Error != nil {
+		log.Printf("[Client模式] 警告：磁盘数据收集失败: %v", hostMetrics.Disk.Error)
+	} else {
+		log.Printf("[Client模式] 磁盘数据收集成功: 使用率=%.2f%%, 已用=%dGB, 总计=%dGB, 读IO=%s, 写IO=%s",
+			hostMetrics.Disk.Percent, hostMetrics.Disk.UsedGB, hostMetrics.Disk.TotalGB,
+			utils.FormatIOSpeed(hostMetrics.Disk.ReadKBps), utils.FormatIOSpeed(hostMetrics.Disk.WriteKBps))
+	}
 
 	// 构建客户端数据（目前只包含主机监控）
 	clientMetrics := &entity.ClientMetrics{

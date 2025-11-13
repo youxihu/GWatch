@@ -164,6 +164,8 @@ func (c *Collector) GetTopProcesses(n int) ([]entity.ProcessInfo, []entity.Proce
 }
 
 // GetDiskIORate returns disk read/write rate in KB/s
+// 该方法需要至少1秒的时间间隔才能准确计算速率
+// 如果时间间隔不足，会返回上次的速率或0
 func (c *Collector) GetDiskIORate() (float64, float64, error) {
 	diskCounters, err := disk.IOCounters()
 	if err != nil || len(diskCounters) == 0 {
@@ -192,18 +194,40 @@ func (c *Collector) GetDiskIORate() (float64, float64, error) {
 	}
 	
 	elapsed := now.Sub(lastDiskTime).Seconds()
-	if elapsed <= 0 || lastDiskIO == nil {
+	
+	// 如果这是第一次调用，或者时间间隔不足1秒，更新基准值并返回0
+	// 需要至少1秒的时间间隔才能准确计算速率
+	const minIntervalSeconds = 1.0
+	if elapsed < minIntervalSeconds || lastDiskIO == nil {
 		lastDiskIO = &curr
 		lastDiskTime = now
 		return 0, 0, nil
 	}
 	
+	// 计算时间差内的IO变化量
 	bytesRead := float64(curr.ReadBytes - lastDiskIO.ReadBytes)
 	bytesWrite := float64(curr.WriteBytes - lastDiskIO.WriteBytes)
 	
-	readRate := bytesRead / elapsed / 1024  // KB/s
-	writeRate := bytesWrite / elapsed / 1024 // KB/s
+	// 处理计数器回绕的情况（虽然不太可能，但需要处理）
+	if bytesRead < 0 {
+		bytesRead = 0
+	}
+	if bytesWrite < 0 {
+		bytesWrite = 0
+	}
 	
+	// 基于时间差计算速率（KB/s）
+	readRate := bytesRead / elapsed / 1024
+	writeRate := bytesWrite / elapsed / 1024
+	
+	// 调试日志：如果速率为0但时间间隔足够，记录详细信息
+	if readRate == 0 && writeRate == 0 && elapsed >= minIntervalSeconds {
+		// 只在调试时输出，避免日志过多
+		// fmt.Printf("[GetDiskIORate] 调试: elapsed=%.2fs, curr.ReadBytes=%d, lastDiskIO.ReadBytes=%d, curr.WriteBytes=%d, lastDiskIO.WriteBytes=%d, disk=%s\n",
+		// 	elapsed, curr.ReadBytes, lastDiskIO.ReadBytes, curr.WriteBytes, lastDiskIO.WriteBytes, curr.Name)
+	}
+	
+	// 更新基准值
 	lastDiskIO = &curr
 	lastDiskTime = now
 	

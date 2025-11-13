@@ -140,10 +140,10 @@ func (f *TickerMarkdownFormatter) buildSystemMetrics(m *entity.SystemMetrics, cf
 		text += fmt.Sprintf("**磁盘**: %.2f%% (%d/%d GB) %s\n\n", m.Disk.Percent, m.Disk.UsedGB, m.Disk.TotalGB, status(m.Disk.Percent, cfg.HostMonitoring.DiskThreshold))
 
 		// 网络IO
-		text += fmt.Sprintf("**网络IO**: 下载 %.2f KB/s | 上传 %.2f KB/s\n\n", m.Network.DownloadKBps, m.Network.UploadKBps)
+		text += fmt.Sprintf("**网络IO**: %s\n\n", utils.FormatIOSpeedPair(m.Network.DownloadKBps, m.Network.UploadKBps, "下载", "上传"))
 
 		// 磁盘IO
-		text += fmt.Sprintf("**磁盘IO**: 读 %.2f KB/s | 写 %.2f KB/s\n\n", m.Disk.ReadKBps, m.Disk.WriteKBps)
+		text += fmt.Sprintf("**磁盘IO**: %s\n\n", utils.FormatIOSpeedPair(m.Disk.ReadKBps, m.Disk.WriteKBps, "读", "写"))
 	}
 
 	// Redis状态 - 只有当app_monitoring和redis配置存在时才显示

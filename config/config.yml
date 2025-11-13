@@ -82,8 +82,8 @@ scheduled_push:
   mode: "server"  # client: 上传数据到Redis, server: 从Redis聚合并发送
   rds_url: "192.168.1.218:6379"  # Redis地址（用于client/server数据交换）
   rds_password: "ningzaichun"
-  rds_db: 2  # 使用独立的Redis DB，避免与监控Redis冲突
-  push_times: ["8:00", "9:00", "10:00", "10:55", "11:16", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"]
+  rds_db: 10  # 使用独立的Redis DB，避免与监控Redis冲突
+  push_times: ["18:24","8:00", "9:00", "10:00", "10:55", "11:16", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"]
   title: "169完整监控指标"
   include_host_monitoring: true
   include_app_monitoring: true  # Server模式包含应用监控

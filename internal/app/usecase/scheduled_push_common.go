@@ -4,6 +4,7 @@ package usecase
 import (
 	"GWatch/internal/domain/collector"
 	"GWatch/internal/entity"
+	"GWatch/internal/utils"
 	"log"
 	"net"
 	"os"
@@ -54,6 +55,9 @@ func (mc *MetricsCollector) CollectBasicHostMetrics() *entity.SystemMetrics {
 
 	// 收集磁盘指标
 	diskPercent, usedGB, totalGB, err := mc.hostCollector.GetDiskUsage()
+	if err != nil {
+		log.Printf("[MetricsCollector] 警告：获取磁盘使用率失败: %v", err)
+	}
 	hostMetrics.Disk = entity.DiskMetrics{
 		Percent: diskPercent,
 		UsedGB:  usedGB,
@@ -62,10 +66,29 @@ func (mc *MetricsCollector) CollectBasicHostMetrics() *entity.SystemMetrics {
 	}
 
 	// 收集磁盘IO指标
+	// 先调用一次进行初始化（如果还没有初始化），确保有基准值
+	initRead, initWrite, initErr := mc.hostCollector.GetDiskIORate()
+	if initErr != nil {
+		log.Printf("[MetricsCollector] 警告：初始化磁盘IO统计失败: %v", initErr)
+	} else {
+		log.Printf("[MetricsCollector] 磁盘IO初始化: 读=%s, 写=%s (基准值)", utils.FormatIOSpeed(initRead), utils.FormatIOSpeed(initWrite))
+	}
+	
+	// 等待至少1.5秒，确保有足够的时间间隔来计算准确的速率
+	// 使用1.5秒而不是1.1秒，确保超过最小间隔要求（1.0秒）
+	time.Sleep(1500 * time.Millisecond)
+	
+	// 再次调用获取基于时间差的真实速率
 	readKBps, writeKBps, err := mc.hostCollector.GetDiskIORate()
-	if err == nil {
+	if err != nil {
+		log.Printf("[MetricsCollector] 警告：获取磁盘IO速率失败: %v", err)
+	} else {
 		hostMetrics.Disk.ReadKBps = readKBps
 		hostMetrics.Disk.WriteKBps = writeKBps
+		log.Printf("[MetricsCollector] 磁盘IO最终结果: 读=%s, 写=%s", utils.FormatIOSpeed(readKBps), utils.FormatIOSpeed(writeKBps))
+		if readKBps == 0 && writeKBps == 0 {
+			log.Printf("[MetricsCollector] 提示：磁盘IO速率为0（可能磁盘空闲或时间间隔不足）")
+		}
 	}
 
 	// 收集网络指标
